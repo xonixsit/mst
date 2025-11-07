@@ -1,0 +1,182 @@
+<?php
+
+namespace App\Http\Controllers\Admin;
+
+use App\Http\Controllers\Controller;
+use App\Http\Requests\StoreInvoiceRequest;
+use App\Models\Client;
+use App\Models\Invoice;
+use App\Services\InvoiceService;
+use Illuminate\Http\Request;
+use Inertia\Inertia;
+
+class InvoiceController extends Controller
+{
+    public function __construct(
+        private InvoiceService $invoiceService
+    ) {}
+
+    public function index(Request $request)
+    {
+        $query = Invoice::with(['client', 'items']);
+
+        // Filter by client
+        if ($request->filled('client_id')) {
+            $query->where('client_id', $request->client_id);
+        }
+
+        // Filter by status
+        if ($request->filled('status')) {
+            $query->where('status', $request->status);
+        }
+
+        // Filter by date range
+        if ($request->filled('date_from')) {
+            $query->whereDate('created_at', '>=', $request->date_from);
+        }
+
+        if ($request->filled('date_to')) {
+            $query->whereDate('created_at', '<=', $request->date_to);
+        }
+
+        // Search
+        if ($request->filled('search')) {
+            $search = $request->search;
+            $query->where(function ($q) use ($search) {
+                $q->where('invoice_number', 'like', "%{$search}%")
+                  ->orWhere('title', 'like', "%{$search}%")
+                  ->orWhereHas('client', function ($clientQuery) use ($search) {
+                      $clientQuery->where('first_name', 'like', "%{$search}%")
+                                  ->orWhere('last_name', 'like', "%{$search}%")
+                                  ->orWhere('email', 'like', "%{$search}%");
+                  });
+            });
+        }
+
+        $invoices = $query->orderBy('created_at', 'desc')
+                         ->paginate(25)
+                         ->withQueryString();
+
+        $clients = Client::select('id', 'first_name', 'last_name', 'email')
+                        ->orderBy('first_name')
+                        ->get();
+
+        $stats = $this->invoiceService->getInvoiceStats();
+
+        return Inertia::render('Admin/Invoices/Index', [
+            'invoices' => $invoices,
+            'clients' => $clients,
+            'stats' => $stats,
+            'filters' => $request->only(['client_id', 'status', 'date_from', 'date_to', 'search']),
+        ]);
+    }
+
+    public function create(Request $request)
+    {
+        $clients = Client::select('id', 'first_name', 'last_name', 'email', 'phone', 'mobile_number')
+                        ->orderBy('first_name')
+                        ->get();
+
+        $defaultServices = $this->invoiceService->getDefaultServices();
+
+        $preselectedClient = null;
+        $clientFinancialSummary = null;
+        if ($request->filled('client_id')) {
+            $preselectedClient = Client::with(['invoices', 'assets', 'expenses'])->find($request->client_id);
+            if ($preselectedClient) {
+                $clientFinancialSummary = $this->invoiceService->getClientFinancialSummary($preselectedClient);
+            }
+        }
+
+        return Inertia::render('Admin/Invoices/Create', [
+            'clients' => $clients,
+            'defaultServices' => $defaultServices,
+            'preselectedClient' => $preselectedClient,
+            'clientFinancialSummary' => $clientFinancialSummary,
+            'currentYear' => date('Y'),
+        ]);
+    }
+
+    public function store(StoreInvoiceRequest $request)
+    {
+        $invoice = $this->invoiceService->createInvoice($request->validated());
+
+        if ($request->has('send_email') && $request->send_email) {
+            $this->invoiceService->sendInvoice($invoice);
+            return redirect()->route('admin.invoices.index')
+                           ->with('success', 'Invoice created and sent successfully!');
+        }
+
+        return redirect()->route('admin.invoices.index')
+                       ->with('success', 'Invoice created successfully!');
+    }
+
+    public function show(Invoice $invoice)
+    {
+        $invoice->load(['client', 'items']);
+
+        return Inertia::render('Admin/Invoices/Show', [
+            'invoice' => $invoice,
+        ]);
+    }
+
+    public function edit(Invoice $invoice)
+    {
+        $invoice->load(['client', 'items']);
+        
+        $clients = Client::select('id', 'first_name', 'last_name', 'email')
+                        ->orderBy('first_name')
+                        ->get();
+
+        $defaultServices = $this->invoiceService->getDefaultServices();
+
+        return Inertia::render('Admin/Invoices/Edit', [
+            'invoice' => $invoice,
+            'clients' => $clients,
+            'defaultServices' => $defaultServices,
+        ]);
+    }
+
+    public function update(StoreInvoiceRequest $request, Invoice $invoice)
+    {
+        $this->invoiceService->updateInvoice($invoice, $request->validated());
+
+        if ($request->has('send_email') && $request->send_email) {
+            $this->invoiceService->sendInvoice($invoice);
+            return redirect()->route('admin.invoices.index')
+                           ->with('success', 'Invoice updated and sent successfully!');
+        }
+
+        return redirect()->route('admin.invoices.index')
+                       ->with('success', 'Invoice updated successfully!');
+    }
+
+    public function destroy(Invoice $invoice)
+    {
+        $invoice->delete();
+
+        return redirect()->route('admin.invoices.index')
+                       ->with('success', 'Invoice deleted successfully!');
+    }
+
+    public function markAsPaid(Invoice $invoice)
+    {
+        $invoice->markAsPaid();
+
+        return redirect()->back()
+                       ->with('success', 'Invoice marked as paid!');
+    }
+
+    public function sendEmail(Invoice $invoice)
+    {
+        $success = $this->invoiceService->sendInvoice($invoice);
+
+        if ($success) {
+            return redirect()->back()
+                           ->with('success', 'Invoice sent successfully!');
+        }
+
+        return redirect()->back()
+                       ->with('error', 'Failed to send invoice. Please try again.');
+    }
+}
