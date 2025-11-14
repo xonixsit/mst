@@ -4,11 +4,18 @@ namespace App\Services;
 
 use App\Models\Invoice;
 use App\Models\InvoiceItem;
+use App\Models\User;
+use App\Notifications\InvoiceCreatedNotification;
+use App\Services\AdminNotificationService;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
 
 class InvoiceService
 {
+    public function __construct(
+        private AdminNotificationService $adminNotificationService
+    ) {}
+
     public function createInvoice(array $data): Invoice
     {
         return DB::transaction(function () use ($data) {
@@ -34,6 +41,12 @@ class InvoiceService
             $invoice->load('items');
             $invoice->calculateTotals();
             $invoice->save();
+
+            // Send notification to client
+            $clientUser = User::where('email', $invoice->client->email)->first();
+            if ($clientUser) {
+                $clientUser->notify(new InvoiceCreatedNotification($invoice));
+            }
 
             return $invoice;
         });

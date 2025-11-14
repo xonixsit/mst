@@ -21,9 +21,9 @@
       <!-- Quick Actions -->
       <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         <!-- Tax Information Card -->
-        <div class="bg-white overflow-hidden shadow rounded-lg hover:shadow-md transition-shadow duration-200">
-          <div class="p-6">
-            <div class="flex items-center">
+        <div class="bg-white overflow-hidden shadow rounded-lg hover:shadow-md transition-shadow duration-200 h-48 flex flex-col">
+          <div class="p-6 flex-1 flex flex-col">
+            <div class="flex items-center mb-4">
               <div class="flex-shrink-0">
                 <div class="w-10 h-10 bg-indigo-100 rounded-lg flex items-center justify-center">
                   <DocumentTextIcon class="w-6 h-6 text-indigo-600" />
@@ -31,10 +31,10 @@
               </div>
               <div class="ml-4">
                 <h3 class="text-lg font-medium text-gray-900">Tax Information</h3>
-                <p class="text-sm text-gray-600">Complete your comprehensive tax details</p>
+                <p class="text-sm text-gray-600 h-10 flex items-center">Complete your comprehensive tax details</p>
               </div>
             </div>
-            <div class="mt-4 flex items-center justify-between">
+            <div class="mt-auto">
               <Link 
                 href="/client/information" 
                 class="inline-flex items-center text-indigo-600 hover:text-indigo-500 font-medium transition-colors duration-200"
@@ -42,15 +42,14 @@
                 Complete Info
                 <ArrowRightIcon class="ml-1 w-4 h-4" />
               </Link>
-
             </div>
           </div>
         </div>
 
         <!-- Profile Card -->
-        <div class="bg-white overflow-hidden shadow rounded-lg hover:shadow-md transition-shadow duration-200">
-          <div class="p-6">
-            <div class="flex items-center">
+        <div class="bg-white overflow-hidden shadow rounded-lg hover:shadow-md transition-shadow duration-200 h-48 flex flex-col">
+          <div class="p-6 flex-1 flex flex-col">
+            <div class="flex items-center mb-4">
               <div class="flex-shrink-0">
                 <div class="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
                   <UserIcon class="w-6 h-6 text-blue-600" />
@@ -58,10 +57,10 @@
               </div>
               <div class="ml-4">
                 <h3 class="text-lg font-medium text-gray-900">Profile</h3>
-                <p class="text-sm text-gray-600">Manage your account settings</p>
+                <p class="text-sm text-gray-600 h-10 flex items-center">Manage your account settings</p>
               </div>
             </div>
-            <div class="mt-4">
+            <div class="mt-auto">
               <a 
                 href="/client/profile" 
                 class="inline-flex items-center text-blue-600 hover:text-blue-500 font-medium transition-colors duration-200"
@@ -74,9 +73,9 @@
         </div>
 
         <!-- Documents Card -->
-        <div class="bg-white overflow-hidden shadow rounded-lg hover:shadow-md transition-shadow duration-200">
-          <div class="p-6">
-            <div class="flex items-center">
+        <div class="bg-white overflow-hidden shadow rounded-lg hover:shadow-md transition-shadow duration-200 h-48 flex flex-col">
+          <div class="p-6 flex-1 flex flex-col">
+            <div class="flex items-center mb-4">
               <div class="flex-shrink-0">
                 <div class="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center">
                   <DocumentTextIcon class="w-6 h-6 text-green-600" />
@@ -84,10 +83,10 @@
               </div>
               <div class="ml-4">
                 <h3 class="text-lg font-medium text-gray-900">Documents</h3>
-                <p class="text-sm text-gray-600">Upload and manage tax documents</p>
+                <p class="text-sm text-gray-600 h-10 flex items-center">Upload and manage tax documents</p>
               </div>
             </div>
-            <div class="mt-4">
+            <div class="mt-auto">
               <Link 
                 href="/client/documents" 
                 class="inline-flex items-center text-green-600 hover:text-green-500 font-medium transition-colors duration-200"
@@ -100,9 +99,9 @@
         </div>
 
         <!-- Messages Card -->
-        <div class="bg-white overflow-hidden shadow rounded-lg hover:shadow-md transition-shadow duration-200">
-          <div class="p-6">
-            <div class="flex items-center">
+        <div class="bg-white overflow-hidden shadow rounded-lg hover:shadow-md transition-shadow duration-200 h-48 flex flex-col">
+          <div class="p-6 flex-1 flex flex-col">
+            <div class="flex items-center mb-4">
               <div class="flex-shrink-0">
                 <div class="w-10 h-10 bg-purple-100 rounded-lg flex items-center justify-center">
                   <ChatBubbleLeftRightIcon class="w-6 h-6 text-purple-600" />
@@ -110,10 +109,10 @@
               </div>
               <div class="ml-4">
                 <h3 class="text-lg font-medium text-gray-900">Messages</h3>
-                <p class="text-sm text-gray-600">Communicate with your tax professional</p>
+                <p class="text-sm text-gray-600 h-10 flex items-center">Communicate with your tax professional</p>
               </div>
             </div>
-            <div class="mt-4">
+            <div class="mt-auto">
               <Link 
                 href="/client/messages" 
                 class="inline-flex items-center text-purple-600 hover:text-purple-500 font-medium transition-colors duration-200"

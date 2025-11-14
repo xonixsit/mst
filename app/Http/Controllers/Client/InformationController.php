@@ -89,7 +89,7 @@ class InformationController extends Controller
                 ]);
             });
             
-            Log::info('Created new client record', [
+            Log::info('Created new client record information', [
                 'client_id' => $client->id,
                 'user_id' => $user->id,
                 'email' => $user->email
@@ -134,22 +134,27 @@ class InformationController extends Controller
                 'email' => $client->spouse->email,
                 'phone' => $client->spouse->phone,
                 'ssn' => $client->spouse->ssn,
-                'date_of_birth' => $client->spouse->date_of_birth?->format('Y-m-d'),
+                'date_of_birth' => $client->spouse->date_of_birth?->format('Y-m-d') ?? '',
                 'occupation' => $client->spouse->occupation,
             ] : [],
             'employee' => $client->employees->map(function ($employee) {
                 return [
                     'id' => $employee->id,
-                    'employer_name' => $employee->employer_name,
-                    'position' => $employee->position,
-                    'start_date' => $employee->start_date?->format('Y-m-d'),
-                    'end_date' => $employee->end_date?->format('Y-m-d'),
-                    'employment_status' => $employee->employment_status,
-                    'salary' => $employee->salary,
-                    'pay_frequency' => $employee->pay_frequency,
-                    'work_location' => $employee->work_location,
-                    'notes' => $employee->notes,
-                    'benefits' => $employee->benefits ?? [],
+                    'employerName' => $employee->employer_name,
+                    'position' => $employee->job_title,
+                    'startDate' => $employee->start_date?->format('Y-m-d'),
+                    'endDate' => $employee->end_date?->format('Y-m-d'),
+                    'employmentStatus' => $employee->employment_type,
+                    'salary' => $employee->annual_salary,
+                    'payFrequency' => $employee->pay_frequency,
+                    'workLocation' => $employee->work_location,
+                    'notes' => $employee->work_description,
+                    'benefits' => $employee->benefits ?? [
+                        'healthInsurance' => false,
+                        'retirementPlan' => false,
+                        'dentalInsurance' => false,
+                        'visionInsurance' => false
+                    ],
                 ];
             })->toArray(),
             'projects' => $client->projects->toArray(),
@@ -240,7 +245,7 @@ class InformationController extends Controller
         $completeEmployees = 0;
         
         foreach ($client->employees as $employee) {
-            if (!empty($employee->employer_name) && !empty($employee->position)) {
+            if (!empty($employee->employer_name) && !empty($employee->job_title)) {
                 $completeEmployees++;
             }
         }
@@ -336,12 +341,12 @@ class InformationController extends Controller
                 // Update cache for real-time sync
                 Cache::put("client_sync_{$client->id}", now(), 3600);
                 
-                // Log successful update
-                Log::info('Client information updated successfully', [
-                    'client_id' => $client->id,
-                    'user_id' => Auth::id(),
-                    'sections_updated' => array_keys($validatedData)
-                ]);
+                // // Log successful update
+                // Log::info('Client information updated successfully', [
+                //     'client_id' => $client->id,
+                //     'user_id' => Auth::id(),
+                //     'sections_updated' => array_keys($validatedData)
+                // ]);
             });
 
             return redirect()->back()->with('success', 'Your information has been saved successfully!');
@@ -364,6 +369,9 @@ class InformationController extends Controller
      */
     private function validateClientInformation(Request $request): array
     {
+         Log::debug('employee data', [
+            'request' => $request
+            ]);
         return $request->validate([
             // Personal information validation
             'personal.first_name' => 'required|string|max:50',
@@ -399,14 +407,14 @@ class InformationController extends Controller
             
             // Employee information validation
             'employee' => 'nullable|array',
-            'employee.*.employer_name' => 'nullable|string|max:100',
+            'employee.*.employerName' => 'nullable|string|max:100',
             'employee.*.position' => 'nullable|string|max:100',
-            'employee.*.start_date' => 'nullable|date',
-            'employee.*.end_date' => 'nullable|date|after_or_equal:employee.*.start_date',
-            'employee.*.employment_status' => 'nullable|in:full-time,part-time,contract,temporary,terminated',
+            'employee.*.startDate' => 'nullable|date',
+            'employee.*.endDate' => 'nullable|date|after_or_equal:employee.*.startDate',
+            'employee.*.employmentStatus' => 'nullable|in:full-time,part-time,contract,temporary,terminated',
             'employee.*.salary' => 'nullable|numeric|min:0',
-            'employee.*.pay_frequency' => 'nullable|in:weekly,bi-weekly,semi-monthly,monthly,annually',
-            'employee.*.work_location' => 'nullable|in:office,remote,hybrid,field,multiple',
+            'employee.*.payFrequency' => 'nullable|in:weekly,bi-weekly,semi-monthly,monthly,annually',
+            'employee.*.workLocation' => 'nullable|in:office,remote,hybrid,field,multiple',
             'employee.*.notes' => 'nullable|string|max:1000',
             'employee.*.benefits' => 'nullable|array',
             
@@ -435,113 +443,7 @@ class InformationController extends Controller
         ]);
     }
 
-    /**
-     * Auto-save client information with enhanced error handling and real-time sync
-     */
-    public function autoSave(Request $request)
-    {
-        $user = Auth::user();
-        
-        // Ensure user has client role
-        if (!$user->hasRole('client')) {
-            return response()->json(['error' => 'Access denied. Client role required.'], 403);
-        }
-        
-        $client = Client::where('email', $user->email)->first();
 
-        if (!$client) {
-            return response()->json(['error' => 'Client record not found.'], 404);
-        }
-
-        // Check authorization
-        if (!Gate::allows('update', $client)) {
-            return response()->json(['error' => 'Unauthorized to update this client information.'], 403);
-        }
-
-        try {
-            // Validate auto-save data (less strict than full save)
-            $data = $this->validateAutoSaveData($request);
-            
-            if (!empty($data)) {
-                DB::transaction(function () use ($client, $data) {
-                    $this->clientInformationService->updateClient($client->id, $data);
-                    
-                    // Update real-time sync cache
-                    Cache::put("client_sync_{$client->id}", now(), 3600);
-                });
-                
-                // Calculate updated completion status
-                $client->refresh();
-                $completionStatus = $this->calculateCompletionStatus($client);
-                
-                Log::debug('Auto-save successful', [
-                    'client_id' => $client->id,
-                    'user_id' => $user->id,
-                    'data_sections' => array_keys($data),
-                    'completion' => $completionStatus['overall']
-                ]);
-            }
-
-            return response()->json([
-                'success' => true, 
-                'message' => 'Auto-saved successfully',
-                'timestamp' => now()->toISOString(),
-                'completionStatus' => $completionStatus ?? null,
-                'syncId' => "sync_" . time() . "_" . $client->id
-            ]);
-            
-        } catch (ValidationException $e) {
-            return response()->json([
-                'error' => 'Validation failed',
-                'errors' => $e->errors()
-            ], 422);
-        } catch (\Exception $e) {
-            Log::error('Auto-save failed', [
-                'client_id' => $client->id,
-                'user_id' => $user->id,
-                'error' => $e->getMessage(),
-                'trace' => $e->getTraceAsString()
-            ]);
-            return response()->json(['error' => 'Auto-save failed'], 500);
-        }
-    }
-
-    /**
-     * Validate auto-save data with relaxed rules
-     */
-    private function validateAutoSaveData(Request $request): array
-    {
-        // More lenient validation for auto-save
-        return $request->validate([
-            'personal' => 'nullable|array',
-            'personal.first_name' => 'nullable|string|max:50',
-            'personal.middle_name' => 'nullable|string|max:50',
-            'personal.last_name' => 'nullable|string|max:50',
-            'personal.email' => 'nullable|email|max:255',
-            'personal.phone' => 'nullable|string|max:20',
-            'personal.ssn' => 'nullable|string',
-            'personal.date_of_birth' => 'nullable|date',
-            'personal.marital_status' => 'nullable|in:single,married,divorced,widowed',
-            'personal.occupation' => 'nullable|string|max:100',
-            'personal.insurance_covered' => 'nullable|boolean',
-            'personal.street_no' => 'nullable|string|max:255',
-            'personal.apartment_no' => 'nullable|string|max:50',
-            'personal.zip_code' => 'nullable|string|max:10',
-            'personal.city' => 'nullable|string|max:100',
-            'personal.state' => 'nullable|string|max:2',
-            'personal.country' => 'nullable|string|max:100',
-            'personal.mobile_number' => 'nullable|string|max:20',
-            'personal.work_number' => 'nullable|string|max:20',
-            'personal.visa_status' => 'nullable|string|max:50',
-            'personal.date_of_entry_us' => 'nullable|date',
-            
-            'spouse' => 'nullable|array',
-            'employee' => 'nullable|array',
-            'projects' => 'nullable|array',
-            'assets' => 'nullable|array',
-            'expenses' => 'nullable|array',
-        ]);
-    }
 
     /**
      * Export client data in PDF format
@@ -652,9 +554,9 @@ class InformationController extends Controller
                 'name' => trim($client->first_name . ' ' . ($client->middle_name ?? '') . ' ' . $client->last_name),
                 'email' => $client->email,
                 'phone' => $client->phone,
-                'date_of_birth' => $client->date_of_birth?->format('F j, Y'),
-                'marital_status' => ucfirst($client->marital_status ?? 'Not specified'),
-                'occupation' => $client->occupation ?? 'Not specified',
+                'date_of_birth' => $client->date_of_birth ? date('F j, Y', strtotime($client->date_of_birth)) : 'Not Specified2',
+                'marital_status' => ucfirst($client->marital_status ?? 'Not Specified2'),
+                'occupation' => $client->occupation ?? 'Not Specified2',
                 'insurance_covered' => $client->insurance_covered ? 'Yes' : 'No',
                 'address' => [
                     'street' => $client->street_no . ($client->apartment_no ? ', ' . $client->apartment_no : ''),
@@ -676,8 +578,8 @@ class InformationController extends Controller
                 'name' => trim($client->spouse->first_name . ' ' . ($client->spouse->middle_name ?? '') . ' ' . $client->spouse->last_name),
                 'email' => $client->spouse->email,
                 'phone' => $client->spouse->phone,
-                'date_of_birth' => $client->spouse->date_of_birth?->format('F j, Y'),
-                'occupation' => $client->spouse->occupation ?? 'Not specified'
+                'date_of_birth' => $client->spouse->date_of_birth ? date('F j, Y', strtotime($client->spouse->date_of_birth)) : 'Not Specified2',
+                'occupation' => $client->spouse->occupation ?? 'Not Specified2'
             ] : null,
             'employment_information' => $client->employees->map(function ($employee) {
                 return [
@@ -689,7 +591,7 @@ class InformationController extends Controller
                     ],
                     'status' => $employee->employment_status,
                     'compensation' => [
-                        'salary' => $employee->salary ? '$' . number_format($employee->salary, 2) : 'Not specified',
+                        'salary' => $employee->salary ? '$' . number_format($employee->salary, 2) : 'Not Specified2',
                         'frequency' => $employee->pay_frequency
                     ],
                     'work_location' => $employee->work_location,
@@ -970,6 +872,165 @@ class InformationController extends Controller
             'clientStatus' => $client->status,
             'lastUpdated' => $client->updated_at->toISOString(),
             'completionStatus' => $this->calculateCompletionStatus($client)
+        ]);
+    }
+
+    /**
+     * Auto-save client information with enhanced error handling and real-time sync
+     */
+    public function autoSave(Request $request)
+    {
+        $user = Auth::user();
+        
+        // Ensure user has client role
+        if (!$user->hasRole('client')) {
+            return response()->json(['error' => 'Access denied. Client role required.'], 403);
+        }
+        
+        $client = Client::where('email', $user->email)->first();
+
+        if (!$client) {
+            return response()->json(['error' => 'Client record not found.'], 404);
+        }
+
+        // Check authorization
+        if (!Gate::allows('update', $client)) {
+            return response()->json(['error' => 'Unauthorized to update this client information.'], 403);
+        }
+
+        // Log the complete request data for debugging
+        Log::debug('Auto-save request received 222', [
+            'client_id' => $client->id,
+            'user_id' => $user->id,
+            'request_data' => $request->all(),
+            'employee_data' => $request->get('employee'),
+            'has_employee_data' => !empty($request->get('employee'))
+        ]);
+
+        try {
+            // Validate auto-save data (less strict than full save)
+            $data = $this->validateAutoSaveData($request);
+
+             Log::debug('Auto-save data validated', [
+                   $data['employee']
+                ]);
+            
+            if (!empty($data)) {
+                DB::transaction(function () use ($client, $data) {
+                    $this->clientInformationService->updateClient($client->id, $data);
+                    
+                    // Update real-time sync cache
+                    Cache::put("client_sync_{$client->id}", now(), 3600);
+                });
+                
+                // Calculate updated completion status
+                $client->refresh();
+                $completionStatus = $this->calculateCompletionStatus($client);
+                
+                Log::debug('Auto-save successful', [
+                    'client_id' => $client->id,
+                    'user_id' => $user->id,
+                    'data_sections' => array_keys($data),
+                    'completion' => $completionStatus['overall']
+                ]);
+            }
+
+            return response()->json([
+                'success' => true, 
+                'message' => 'Auto-saved successfully',
+                'timestamp' => now()->toISOString(),
+                'completionStatus' => $completionStatus ?? null,
+                'syncId' => "sync_" . time() . "_" . $client->id
+            ]);
+            
+        } catch (ValidationException $e) {
+            return response()->json([
+                'error' => 'Validation failed',
+                'errors' => $e->errors()
+            ], 422);
+        } catch (\Exception $e) {
+            Log::error('Auto-save failed', [
+                'client_id' => $client->id,
+                'user_id' => $user->id,
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ]);
+            return response()->json(['error' => 'Auto-save failed'], 500);
+        }
+    }
+
+    /**
+     * Validate auto-save data with relaxed rules
+     */
+    private function validateAutoSaveData(Request $request): array
+    {
+         Log::info('Auto-save request22', [$request]);
+
+        //  More lenient validation for auto-save
+        return $request->validate([
+            'personal' => 'nullable|array',
+            'personal.first_name' => 'nullable|string|max:50',
+            'personal.middle_name' => 'nullable|string|max:50',
+            'personal.last_name' => 'nullable|string|max:50',
+            'personal.email' => 'nullable|email|max:255',
+            'personal.phone' => 'nullable|string|max:20',
+            'personal.ssn' => 'nullable|string',
+            'personal.date_of_birth' => 'nullable|date|date_format:Y-m-d',
+            'personal.marital_status' => 'nullable|in:single,married,divorced,widowed',
+            'personal.occupation' => 'nullable|string|max:100',
+            'personal.insurance_covered' => 'nullable|boolean',
+            'personal.street_no' => 'nullable|string|max:255',
+            'personal.apartment_no' => 'nullable|string|max:50',
+            'personal.zip_code' => 'nullable|string|max:10',
+            'personal.city' => 'nullable|string|max:100',
+            'personal.state' => 'nullable|string|max:2',
+            'personal.country' => 'nullable|string|max:100',
+            'personal.mobile_number' => 'nullable|string|max:20',
+            'personal.work_number' => 'nullable|string|max:20',
+            'personal.visa_status' => 'nullable|string|max:50',
+            'personal.date_of_entry_us' => 'nullable|date|date_format:Y-m-d',
+            
+            'spouse' => 'nullable|array',
+            'spouse.first_name' => 'nullable|string|max:50',
+            'spouse.middle_name' => 'nullable|string|max:50',
+            'spouse.last_name' => 'nullable|string|max:50',
+            'spouse.email' => 'nullable|email|max:255',
+            'spouse.phone' => 'nullable|string|max:20',
+            'spouse.ssn' => 'nullable|string',
+            'spouse.date_of_birth' => 'nullable|date|date_format:Y-m-d',
+            'spouse.occupation' => 'nullable|string|max:100',
+            
+            'employee' => 'nullable|array',
+            'employee.*.employer_name' => 'nullable|string|max:100',
+            'employee.*.position' => 'nullable|string|max:100',
+            'employee.*.startDate' => 'nullable|date|date_format:Y-m-d',
+            'employee.*.endDate' => 'nullable|date|date_format:Y-m-d',
+            'employee.*.employmentStatus' => 'nullable|in:full-time,part-time,contract,temporary,terminated',
+            'employee.*.salary' => 'nullable|numeric|min:0',
+            'employee.*.payFrequency' => 'nullable|in:weekly,bi-weekly,semi-monthly,monthly,annually',
+            'employee.*.workLocation' => 'nullable|in:office,remote,hybrid,field,multiple',
+            'employee.*.notes' => 'nullable|string|max:1000',
+            'employee.*.benefits' => 'nullable|array',
+            
+            'projects' => 'nullable|array',
+            'projects.*.name' => 'nullable|string|max:200',
+            'projects.*.description' => 'nullable|string|max:1000',
+            'projects.*.status' => 'nullable|string|max:50',
+            
+            'assets' => 'nullable|array',
+            'assets.*.asset_name' => 'nullable|string|max:200',
+            'assets.*.date_of_purchase' => 'nullable|date|date_format:Y-m-d',
+            'assets.*.percentage_used_in_business' => 'nullable|numeric|min:0|max:100',
+            'assets.*.cost_of_acquisition' => 'nullable|numeric|min:0',
+            'assets.*.any_reimbursement' => 'nullable|numeric|min:0',
+            
+            'expenses' => 'nullable|array',
+            'expenses.*.category' => 'nullable|in:miscellaneous,residency',
+            'expenses.*.particulars' => 'nullable|string|max:200',
+            'expenses.*.tax_payer' => 'nullable|string|max:100',
+            'expenses.*.spouse' => 'nullable|string|max:100',
+            'expenses.*.amount' => 'nullable|numeric|min:0',
+            'expenses.*.remarks' => 'nullable|string|max:500',
         ]);
     }
 

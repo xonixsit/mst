@@ -164,7 +164,10 @@ const form = useForm({
 })
 
 const handleSubmit = () => {
-  form.post('/register', {
+  // Determine the correct registration endpoint based on role
+  const endpoint = form.role === 'client' ? '/client/register' : '/admin/register'
+  
+  form.post(endpoint, {
     onError: () => {
       // Clear passwords on error for security
       form.password = ''

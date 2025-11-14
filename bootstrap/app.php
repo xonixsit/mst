@@ -16,11 +16,18 @@ return Application::configure(basePath: dirname(__DIR__))
             \App\Http\Middleware\HandleInertiaRequests::class,
         ]);
         
+        // Configure Sanctum middleware for session management
+        $middleware->api(prepend: [
+            \Laravel\Sanctum\Http\Middleware\EnsureFrontendRequestsAreStateful::class,
+        ]);
+        
         $middleware->alias([
             'admin' => \App\Http\Middleware\AdminMiddleware::class,
             'client' => \App\Http\Middleware\ClientMiddleware::class,
             'permission' => \App\Http\Middleware\CheckPermission::class,
             'role' => \App\Http\Middleware\CheckRole::class,
+            'auth.session' => \Laravel\Sanctum\Http\Middleware\AuthenticateSession::class,
+            'session.timeout' => \App\Http\Middleware\SessionTimeoutMiddleware::class,
         ]);
     })
     ->withProviders([

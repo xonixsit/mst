@@ -49,4 +49,3 @@ defineProps({
 // State
 const showTooltip = ref(false)
 </script>
-</template>

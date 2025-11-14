@@ -3,6 +3,7 @@
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
+use Illuminate\Support\Facades\DB;
 
 return new class extends Migration
 {
@@ -11,76 +12,70 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('clients', function (Blueprint $table) {
-            // Indexes for frequently queried fields
-            $table->index(['email'], 'clients_email_index');
-            $table->index(['status'], 'clients_status_index');
-            $table->index(['user_id'], 'clients_user_id_index');
-            $table->index(['created_at'], 'clients_created_at_index');
-            $table->index(['updated_at'], 'clients_updated_at_index');
-            
-            // Composite indexes for common query patterns
-            $table->index(['status', 'created_at'], 'clients_status_created_index');
-            $table->index(['user_id', 'status'], 'clients_user_status_index');
-            $table->index(['first_name', 'last_name'], 'clients_name_index');
-            
-            // Full-text search index for name and email searches
-            $table->index(['first_name', 'last_name', 'email'], 'clients_search_index');
-            
-            // Index for archived data queries
-            $table->index(['archived_at'], 'clients_archived_at_index');
-            $table->index(['status', 'archived_at'], 'clients_status_archived_index');
-        });
+        // Add indexes to clients table if they don't exist
+        $this->addIndexIfNotExists('clients', ['status'], 'clients_status_index');
+        $this->addIndexIfNotExists('clients', ['created_at'], 'clients_created_at_index');
+        $this->addIndexIfNotExists('clients', ['updated_at'], 'clients_updated_at_index');
+        $this->addIndexIfNotExists('clients', ['status', 'created_at'], 'clients_status_created_index');
+        $this->addIndexIfNotExists('clients', ['user_id', 'status'], 'clients_user_status_index');
+        $this->addIndexIfNotExists('clients', ['first_name', 'last_name'], 'clients_name_index');
+        $this->addIndexIfNotExists('clients', ['first_name', 'last_name', 'email'], 'clients_search_index');
+        $this->addIndexIfNotExists('clients', ['archived_at'], 'clients_archived_at_index');
+        $this->addIndexIfNotExists('clients', ['status', 'archived_at'], 'clients_status_archived_index');
 
-        // Add indexes to related tables
-        Schema::table('client_spouses', function (Blueprint $table) {
-            $table->index(['client_id'], 'client_spouses_client_id_index');
-        });
+        // Add indexes to core tables that we know exist
+        if (Schema::hasTable('invoices')) {
+            $this->addIndexIfNotExists('invoices', ['client_id'], 'invoices_client_id_index');
+            $this->addIndexIfNotExists('invoices', ['status'], 'invoices_status_index');
+            $this->addIndexIfNotExists('invoices', ['created_at'], 'invoices_created_at_index');
+            $this->addIndexIfNotExists('invoices', ['client_id', 'status'], 'invoices_client_status_index');
+        }
 
-        Schema::table('client_employees', function (Blueprint $table) {
-            $table->index(['client_id'], 'client_employees_client_id_index');
-        });
+        if (Schema::hasTable('documents')) {
+            $this->addIndexIfNotExists('documents', ['client_id'], 'documents_client_id_index');
+            $this->addIndexIfNotExists('documents', ['document_type'], 'documents_document_type_index');
+            $this->addIndexIfNotExists('documents', ['created_at'], 'documents_created_at_index');
+        }
 
-        Schema::table('client_projects', function (Blueprint $table) {
-            $table->index(['client_id'], 'client_projects_client_id_index');
-            $table->index(['status'], 'client_projects_status_index');
-        });
+        if (Schema::hasTable('messages')) {
+            $this->addIndexIfNotExists('messages', ['client_id'], 'messages_client_id_index');
+            $this->addIndexIfNotExists('messages', ['sender_id'], 'messages_sender_id_index');
+            $this->addIndexIfNotExists('messages', ['recipient_id'], 'messages_recipient_id_index');
+            $this->addIndexIfNotExists('messages', ['created_at'], 'messages_created_at_index');
+        }
 
-        Schema::table('client_assets', function (Blueprint $table) {
-            $table->index(['client_id'], 'client_assets_client_id_index');
-            $table->index(['date_of_purchase'], 'client_assets_date_index');
-        });
+        if (Schema::hasTable('audit_logs')) {
+            $this->addIndexIfNotExists('audit_logs', ['auditable_type', 'auditable_id'], 'audit_logs_auditable_index');
+            $this->addIndexIfNotExists('audit_logs', ['user_id'], 'audit_logs_user_id_index');
+            $this->addIndexIfNotExists('audit_logs', ['created_at'], 'audit_logs_created_at_index');
+            $this->addIndexIfNotExists('audit_logs', ['event'], 'audit_logs_event_index');
+        }
+    }
 
-        Schema::table('client_expenses', function (Blueprint $table) {
-            $table->index(['client_id'], 'client_expenses_client_id_index');
-            $table->index(['category'], 'client_expenses_category_index');
-        });
+    /**
+     * Helper method to add index if it doesn't exist.
+     */
+    private function addIndexIfNotExists(string $table, array $columns, string $indexName): void
+    {
+        if (!$this->indexExists($table, $indexName)) {
+            Schema::table($table, function (Blueprint $table) use ($columns, $indexName) {
+                $table->index($columns, $indexName);
+            });
+        }
+    }
 
-        Schema::table('invoices', function (Blueprint $table) {
-            $table->index(['client_id'], 'invoices_client_id_index');
-            $table->index(['status'], 'invoices_status_index');
-            $table->index(['created_at'], 'invoices_created_at_index');
-            $table->index(['client_id', 'status'], 'invoices_client_status_index');
-        });
-
-        Schema::table('documents', function (Blueprint $table) {
-            $table->index(['client_id'], 'documents_client_id_index');
-            $table->index(['type'], 'documents_type_index');
-            $table->index(['created_at'], 'documents_created_at_index');
-        });
-
-        Schema::table('messages', function (Blueprint $table) {
-            $table->index(['client_id'], 'messages_client_id_index');
-            $table->index(['user_id'], 'messages_user_id_index');
-            $table->index(['created_at'], 'messages_created_at_index');
-        });
-
-        Schema::table('audit_logs', function (Blueprint $table) {
-            $table->index(['auditable_type', 'auditable_id'], 'audit_logs_auditable_index');
-            $table->index(['user_id'], 'audit_logs_user_id_index');
-            $table->index(['created_at'], 'audit_logs_created_at_index');
-            $table->index(['event'], 'audit_logs_event_index');
-        });
+    /**
+     * Check if index exists.
+     */
+    private function indexExists(string $table, string $indexName): bool
+    {
+        $indexes = DB::select("SHOW INDEX FROM {$table}");
+        foreach ($indexes as $index) {
+            if ($index->Key_name === $indexName) {
+                return true;
+            }
+        }
+        return false;
     }
 
     /**
@@ -88,67 +83,37 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('clients', function (Blueprint $table) {
-            $table->dropIndex('clients_email_index');
-            $table->dropIndex('clients_status_index');
-            $table->dropIndex('clients_user_id_index');
-            $table->dropIndex('clients_created_at_index');
-            $table->dropIndex('clients_updated_at_index');
-            $table->dropIndex('clients_status_created_index');
-            $table->dropIndex('clients_user_status_index');
-            $table->dropIndex('clients_name_index');
-            $table->dropIndex('clients_search_index');
-            $table->dropIndex('clients_archived_at_index');
-            $table->dropIndex('clients_status_archived_index');
-        });
+        // Drop indexes if they exist
+        $indexesToDrop = [
+            'clients' => [
+                'clients_status_index', 'clients_created_at_index', 'clients_updated_at_index',
+                'clients_status_created_index', 'clients_user_status_index', 'clients_name_index',
+                'clients_search_index', 'clients_archived_at_index', 'clients_status_archived_index'
+            ],
+            'invoices' => ['invoices_client_id_index', 'invoices_status_index', 'invoices_created_at_index', 'invoices_client_status_index'],
+            'documents' => ['documents_client_id_index', 'documents_document_type_index', 'documents_created_at_index'],
+            'messages' => ['messages_client_id_index', 'messages_sender_id_index', 'messages_recipient_id_index', 'messages_created_at_index'],
+            'audit_logs' => ['audit_logs_auditable_index', 'audit_logs_user_id_index', 'audit_logs_created_at_index', 'audit_logs_event_index']
+        ];
 
-        Schema::table('client_spouses', function (Blueprint $table) {
-            $table->dropIndex('client_spouses_client_id_index');
-        });
+        foreach ($indexesToDrop as $table => $indexes) {
+            if (Schema::hasTable($table)) {
+                foreach ($indexes as $indexName) {
+                    $this->dropIndexIfExists($table, $indexName);
+                }
+            }
+        }
+    }
 
-        Schema::table('client_employees', function (Blueprint $table) {
-            $table->dropIndex('client_employees_client_id_index');
-        });
-
-        Schema::table('client_projects', function (Blueprint $table) {
-            $table->dropIndex('client_projects_client_id_index');
-            $table->dropIndex('client_projects_status_index');
-        });
-
-        Schema::table('client_assets', function (Blueprint $table) {
-            $table->dropIndex('client_assets_client_id_index');
-            $table->dropIndex('client_assets_date_index');
-        });
-
-        Schema::table('client_expenses', function (Blueprint $table) {
-            $table->dropIndex('client_expenses_client_id_index');
-            $table->dropIndex('client_expenses_category_index');
-        });
-
-        Schema::table('invoices', function (Blueprint $table) {
-            $table->dropIndex('invoices_client_id_index');
-            $table->dropIndex('invoices_status_index');
-            $table->dropIndex('invoices_created_at_index');
-            $table->dropIndex('invoices_client_status_index');
-        });
-
-        Schema::table('documents', function (Blueprint $table) {
-            $table->dropIndex('documents_client_id_index');
-            $table->dropIndex('documents_type_index');
-            $table->dropIndex('documents_created_at_index');
-        });
-
-        Schema::table('messages', function (Blueprint $table) {
-            $table->dropIndex('messages_client_id_index');
-            $table->dropIndex('messages_user_id_index');
-            $table->dropIndex('messages_created_at_index');
-        });
-
-        Schema::table('audit_logs', function (Blueprint $table) {
-            $table->dropIndex('audit_logs_auditable_index');
-            $table->dropIndex('audit_logs_user_id_index');
-            $table->dropIndex('audit_logs_created_at_index');
-            $table->dropIndex('audit_logs_event_index');
-        });
+    /**
+     * Helper method to drop index if it exists.
+     */
+    private function dropIndexIfExists(string $table, string $indexName): void
+    {
+        if ($this->indexExists($table, $indexName)) {
+            Schema::table($table, function (Blueprint $table) use ($indexName) {
+                $table->dropIndex($indexName);
+            });
+        }
     }
 };

@@ -37,19 +37,20 @@ class LoginController extends Controller
 
             $user = Auth::user();
             
-            // Redirect based on user role and current route context
-            $intendedUrl = $request->session()->get('url.intended');
+            // Check if email verification is required
+            if ($user instanceof \Illuminate\Contracts\Auth\MustVerifyEmail && !$user->hasVerifiedEmail()) {
+                if ($user->isAdmin() || $user->isTaxProfessional()) {
+                    return redirect()->route('admin.verification.notice');
+                } else {
+                    return redirect()->route('client.verification.notice');
+                }
+            }
             
+            // Redirect based on user role
             if ($user->isAdmin() || $user->isTaxProfessional()) {
-                if (str_contains($intendedUrl, '/client/')) {
-                    return redirect()->route('admin.login');
-                }
-                return redirect()->intended(route('admin.dashboard'));
+                return redirect()->route('admin.dashboard');
             } else {
-                if (str_contains($intendedUrl, '/admin/')) {
-                    return redirect()->route('client.login');
-                }
-                return redirect()->intended(route('client.dashboard'));
+                return redirect()->route('client.dashboard');
             }
         }
 
@@ -63,6 +64,11 @@ class LoginController extends Controller
      */
     public function logout(Request $request)
     {
+        // Revoke all tokens for the user (Sanctum)
+        if ($request->user()) {
+            $request->user()->tokens()->delete();
+        }
+
         Auth::logout();
 
         $request->session()->invalidate();

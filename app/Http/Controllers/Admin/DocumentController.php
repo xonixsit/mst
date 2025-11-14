@@ -5,12 +5,20 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Document;
 use App\Models\Client;
+use App\Models\User;
+use App\Notifications\DocumentApprovedNotification;
+use App\Notifications\DocumentRejectedNotification;
+use App\Services\AdminNotificationService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Inertia\Inertia;
 
 class DocumentController extends Controller
 {
+    public function __construct(
+        private AdminNotificationService $adminNotificationService
+    ) {}
+
     public function index(Request $request)
     {
         $query = Document::with(['client:id,first_name,last_name,email,phone,status', 'uploader:id,name']);
@@ -100,10 +108,25 @@ class DocumentController extends Controller
             'notes' => 'nullable|string|max:500'
         ]);
 
+        $oldStatus = $document->status;
+        
         $document->update([
             'status' => $request->status,
             'notes' => $request->notes
         ]);
+
+        // Send notification to client if status changed
+        if ($oldStatus !== $request->status) {
+            $clientUser = User::where('email', $document->client->email)->first();
+            
+            if ($clientUser) {
+                if ($request->status === 'approved') {
+                    $clientUser->notify(new DocumentApprovedNotification($document));
+                } elseif ($request->status === 'rejected') {
+                    $clientUser->notify(new DocumentRejectedNotification($document));
+                }
+            }
+        }
 
         return back()->with('success', 'Document status updated successfully.');
     }

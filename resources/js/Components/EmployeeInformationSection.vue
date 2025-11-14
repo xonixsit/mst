@@ -298,6 +298,7 @@ const emit = defineEmits(['update:modelValue', 'update', 'validate'])
 
 // Local reactive data
 const localData = reactive({
+  id: null,
   employerName: '',
   position: '',
   startDate: '',
@@ -335,6 +336,7 @@ const salaryInputClasses = computed(() => {
 
 // Validation methods
 const validateField = (fieldName) => {
+  console.log('fieldName',fieldName);
   const value = localData[fieldName]
   let error = null
 
@@ -393,6 +395,13 @@ const handleInput = (fieldName, value) => {
     delete fieldErrors[fieldName]
   }
   
+  // Debug logging
+  console.log('EmployeeInformationSection handleInput:', {
+    fieldName,
+    value,
+    localData: { ...localData }
+  })
+  
   // Emit update
   emit('update:modelValue', { ...localData })
   emit('update', { ...localData })
@@ -412,11 +421,12 @@ const handleSubmit = () => {
   
   let isValid = true
   requiredFields.forEach(field => {
+    console.log('field', field);
     if (!validateField(field)) {
       isValid = false
     }
   })
-  
+  console.log('localData',...localData);
   if (isValid) {
     emit('submit', { ...localData })
   }

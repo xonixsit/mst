@@ -171,4 +171,3 @@ const updatePreferences = () => {
   })
 }
 </script>
-</template>

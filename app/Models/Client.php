@@ -65,8 +65,7 @@ class Client extends Model
      * @var array<string, string>
      */
     protected $casts = [
-        'date_of_birth' => 'date',
-        'date_of_entry_us' => 'date',
+        // Note: date_of_birth and date_of_entry_us are handled by custom accessors/mutators due to encryption
         'insurance_covered' => 'boolean',
         'review_requested_at' => 'datetime',
         'review_sections' => 'array',
@@ -97,6 +96,7 @@ class Client extends Model
     protected $encrypted = [
         'ssn',
         'date_of_birth',
+        'date_of_entry_us',
         'mobile_number',
         'work_number',
     ];
@@ -298,9 +298,9 @@ class Client extends Model
         
         switch ($type) {
             case 'email':
-                return $this->email_notifications_enabled;
+                return $this->email_notifications_enabled ?? true;
             case 'sms':
-                return $this->sms_notifications_enabled;
+                return $this->sms_notifications_enabled ?? false;
             case 'document':
                 return $preferences['document_notifications'] ?? true;
             case 'invoice':
@@ -310,5 +310,136 @@ class Client extends Model
             default:
                 return true;
         }
+    }
+
+    /**
+     * Get the date of birth attribute.
+     */
+    public function getDateOfBirthAttribute($value)
+    {
+        if (empty($value)) {
+            return null;
+        }
+
+        // The encryption trait handles decryption, so we just need to convert to Carbon
+        try {
+            return \Carbon\Carbon::createFromFormat('Y-m-d', $value);
+        } catch (\Exception $e) {
+            // If parsing fails, try other common formats
+            try {
+                return \Carbon\Carbon::parse($value);
+            } catch (\Exception $e) {
+                return null;
+            }
+        }
+    }
+
+    /**
+     * Set the date of birth attribute.
+     */
+    public function setDateOfBirthAttribute($value)
+    {
+        if (empty($value)) {
+            $this->attributes['date_of_birth'] = null;
+            return;
+        }
+
+        // Convert to string format if it's a date object
+        if ($value instanceof \DateTime || $value instanceof \Carbon\Carbon) {
+            $value = $value->format('Y-m-d');
+        } elseif (is_string($value)) {
+            // Validate and normalize the date format
+            try {
+                $date = \Carbon\Carbon::createFromFormat('Y-m-d', $value);
+                if (!$date) {
+                    $date = \Carbon\Carbon::parse($value);
+                }
+                $value = $date->format('Y-m-d');
+            } catch (\Exception $e) {
+                // If date parsing fails, set to null to avoid database errors
+                \Log::warning('Invalid date_of_birth format', [
+                    'value' => $value,
+                    'client_id' => $this->id ?? 'new',
+                    'error' => $e->getMessage()
+                ]);
+                $this->attributes['date_of_birth'] = null;
+                return;
+            }
+        }
+
+        // Store the raw value - encryption will be handled by the trait
+        $this->attributes['date_of_birth'] = $value;
+    }
+
+    /**
+     * Get the date of entry US attribute.
+     */
+    public function getDateOfEntryUsAttribute($value)
+    {
+        if (empty($value)) {
+            return null;
+        }
+
+        // The encryption trait handles decryption, so we just need to convert to Carbon
+        try {
+            return \Carbon\Carbon::createFromFormat('Y-m-d', $value);
+        } catch (\Exception $e) {
+            // If parsing fails, try other common formats
+            try {
+                return \Carbon\Carbon::parse($value);
+            } catch (\Exception $e) {
+                return null;
+            }
+        }
+    }
+
+    /**
+     * Set the date of entry US attribute.
+     */
+    public function setDateOfEntryUsAttribute($value)
+    {
+        if (empty($value)) {
+            $this->attributes['date_of_entry_us'] = null;
+            return;
+        }
+
+        // Convert to string format if it's a date object
+        if ($value instanceof \DateTime || $value instanceof \Carbon\Carbon) {
+            $value = $value->format('Y-m-d');
+        } elseif (is_string($value)) {
+            // Validate and normalize the date format
+            try {
+                $date = \Carbon\Carbon::createFromFormat('Y-m-d', $value);
+                if (!$date) {
+                    $date = \Carbon\Carbon::parse($value);
+                }
+                $value = $date->format('Y-m-d');
+            } catch (\Exception $e) {
+                // If date parsing fails, set to null to avoid database errors
+                \Log::warning('Invalid date_of_entry_us format', [
+                    'value' => $value,
+                    'client_id' => $this->id ?? 'new',
+                    'error' => $e->getMessage()
+                ]);
+                $this->attributes['date_of_entry_us'] = null;
+                return;
+            }
+        }
+
+        // Store the raw value - encryption will be handled by the trait
+        $this->attributes['date_of_entry_us'] = $value;
+    }
+
+    /**
+     * Check if a value is encrypted (helper method for accessors).
+     */
+    private function isEncrypted($value): bool
+    {
+        if (!is_string($value)) {
+            return false;
+        }
+        
+        return strpos($value, 'eyJpdiI6') === 0 || 
+               (strlen($value) > 100 && preg_match('/^[A-Za-z0-9+\/]+=*$/', $value));
     }
 }

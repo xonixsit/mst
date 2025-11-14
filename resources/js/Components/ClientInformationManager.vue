@@ -445,30 +445,93 @@ const scheduleAutoSave = debounce(() => {
   }, 500)
 }, 1000)
 
+// Field mapping function to convert camelCase to snake_case
+const mapFieldsToBackend = (data) => {
+  const fieldMapping = {
+    // Personal fields
+    firstName: 'first_name',
+    middleName: 'middle_name',
+    lastName: 'last_name',
+    dateOfBirth: 'date_of_birth',
+    maritalStatus: 'marital_status',
+    insuranceCovered: 'insurance_covered',
+    streetNo: 'street_no',
+    apartmentNo: 'apartment_no',
+    zipCode: 'zip_code',
+    mobileNumber: 'mobile_number',
+    workNumber: 'work_number',
+    visaStatus: 'visa_status',
+    dateOfEntryUS: 'date_of_entry_us'
+  }
+  
+  const mapObject = (obj) => {
+    if (!obj || typeof obj !== 'object') return obj
+    
+    const mapped = {}
+    for (const [key, value] of Object.entries(obj)) {
+      const mappedKey = fieldMapping[key] || key
+      mapped[mappedKey] = Array.isArray(value) ? value.map(mapObject) : 
+                         (value && typeof value === 'object') ? mapObject(value) : value
+    }
+    return mapped
+  }
+  
+  const mappedData = mapObject(data)
+  
+  // Special handling for employee data - convert single object to array
+  if (mappedData.employee && typeof mappedData.employee === 'object' && !Array.isArray(mappedData.employee)) {
+    // Only include employee in array if it has meaningful data
+    if (mappedData.employee.employerName || mappedData.employee.position) {
+      mappedData.employee = [mappedData.employee]
+    } else {
+      mappedData.employee = []
+    }
+  }
+  
+  return mappedData
+}
+
 const autoSave = async () => {
   if (props.readonly || props.isAdmin) return // Disable auto-save in admin context
   
   try {
     autoSaveStatus.value = 'saving'
     
-    const clientId = props.client?.id || props.clientId
-    const response = await router.post(`/clients/${clientId}/information`, {
-      data: formData,
-      auto_save: true
-    }, {
-      preserveState: true,
-      preserveScroll: true,
-      only: ['errors']
+    const mappedData = mapFieldsToBackend(formData)
+    
+    // Use the same route as the Information page
+    const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content')
+    
+    if (!csrfToken) {
+      console.error('CSRF token not found')
+      autoSaveStatus.value = 'error'
+      return
+    }
+    
+    const response = await fetch('/client/information/auto-save', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-CSRF-TOKEN': csrfToken,
+        'Accept': 'application/json',
+        'X-Requested-With': 'XMLHttpRequest',
+      },
+      body: JSON.stringify(mappedData)
     })
     
-    autoSaveStatus.value = 'saved'
+    const result = await response.json()
     
-    // Reset status after 3 seconds
-    setTimeout(() => {
-      if (autoSaveStatus.value === 'saved') {
-        autoSaveStatus.value = 'idle'
-      }
-    }, 3000)
+    if (response.ok && result.success) {
+      autoSaveStatus.value = 'saved'
+      setTimeout(() => {
+        if (autoSaveStatus.value === 'saved') {
+          autoSaveStatus.value = 'idle'
+        }
+      }, 3000)
+    } else {
+      autoSaveStatus.value = 'error'
+      console.error('Auto-save failed:', result.error || 'Unknown error')
+    }
     
   } catch (error) {
     autoSaveStatus.value = 'error'
@@ -482,8 +545,20 @@ const saveData = async () => {
   try {
     isSaving.value = true
     
-    // Emit the save event with form data for parent component to handle
-    emit('save', formData)
+    // Map fields to backend format
+    const mappedData = mapFieldsToBackend(formData)
+    
+    // Use Inertia to save data to the correct route
+    await router.post('/client/information', mappedData, {
+      preserveState: true,
+      preserveScroll: true,
+      onSuccess: () => {
+        // Success handled by flash message
+      },
+      onError: (errors) => {
+        console.error('Save failed:', errors)
+      }
+    })
     
   } catch (error) {
     console.error('Save failed:', error)
@@ -564,6 +639,9 @@ const loadInitialData = measurePerformance('loadInitialData', () => {
     // Use direct assignment for arrays (more efficient)
     if (clientData.employees?.length) {
       formData.employee = clientData.employees[0] || {}
+    } else {
+      // Initialize empty employee object if no employees exist
+      formData.employee = {}
     }
     
     if (clientData.projects?.length) {

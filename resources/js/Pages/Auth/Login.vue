@@ -79,7 +79,7 @@
         <p class="text-sm text-gray-600">
           Don't have an account?
           <a 
-            href="/register" 
+            :href="registerLink" 
             class="font-medium text-indigo-600 hover:text-indigo-500 transition-colors duration-200"
           >
             Create account
@@ -93,6 +93,7 @@
 <script setup>
 import { EnvelopeIcon, LockClosedIcon } from '@heroicons/vue/24/outline'
 import { useForm } from '@inertiajs/vue3'
+import { computed } from 'vue'
 import AuthLayout from '../../Layouts/AuthLayout.vue'
 import FormInput from '../../Components/Form/FormInput.vue'
 import FormButton from '../../Components/Form/FormButton.vue'
@@ -101,6 +102,12 @@ const form = useForm({
   email: '',
   password: '',
   remember: false
+})
+
+// Determine the correct registration link based on current URL
+const registerLink = computed(() => {
+  const currentPath = window.location.pathname
+  return currentPath.includes('/client/') ? '/client/register' : '/admin/register'
 })
 
 const handleSubmit = () => {

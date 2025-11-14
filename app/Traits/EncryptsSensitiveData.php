@@ -3,16 +3,10 @@
 namespace App\Traits;
 
 use Illuminate\Support\Facades\Crypt;
+use Illuminate\Support\Facades\Log;
 
 trait EncryptsSensitiveData
 {
-    /**
-     * The attributes that should be encrypted.
-     *
-     * @var array
-     */
-    protected $encrypted = [];
-
     /**
      * Boot the trait.
      */
@@ -36,7 +30,34 @@ trait EncryptsSensitiveData
             if (isset($this->attributes[$attribute]) && !empty($this->attributes[$attribute])) {
                 // Only encrypt if not already encrypted
                 if (!$this->isEncrypted($this->attributes[$attribute])) {
-                    $this->attributes[$attribute] = Crypt::encryptString($this->attributes[$attribute]);
+                    // Convert dates to string format before encryption
+                    $value = $this->attributes[$attribute];
+                    if ($this->isEncryptedDateAttribute($attribute)) {
+                        if ($value instanceof \DateTime || $value instanceof \Carbon\Carbon) {
+                            $value = $value->format('Y-m-d');
+                        } elseif (is_string($value)) {
+                            // Ensure date is in proper format and validate it
+                            try {
+                                // Try to parse the date to validate it
+                                $date = \Carbon\Carbon::createFromFormat('Y-m-d', $value);
+                                if (!$date) {
+                                    // Try other common formats
+                                    $date = \Carbon\Carbon::parse($value);
+                                    $value = $date->format('Y-m-d');
+                                }
+                            } catch (\Exception $e) {
+                                // If date parsing fails, don't encrypt invalid dates
+                                \Log::warning('Invalid date format for encryption', [
+                                    'attribute' => $attribute,
+                                    'value' => $value,
+                                    'error' => $e->getMessage()
+                                ]);
+                                continue;
+                            }
+                        }
+                    }
+                    
+                    $this->attributes[$attribute] = Crypt::encryptString($value);
                 }
             }
         }
@@ -52,7 +73,19 @@ trait EncryptsSensitiveData
                 try {
                     // Only decrypt if it's encrypted
                     if ($this->isEncrypted($this->attributes[$attribute])) {
-                        $this->attributes[$attribute] = Crypt::decryptString($this->attributes[$attribute]);
+                        $decryptedValue = Crypt::decryptString($this->attributes[$attribute]);
+                        
+                        // Convert back to appropriate format for date attributes
+                        if ($this->isEncryptedDateAttribute($attribute) && is_string($decryptedValue)) {
+                            try {
+                                // Keep as string for now, let Laravel's casting handle the conversion
+                                $this->attributes[$attribute] = $decryptedValue;
+                            } catch (\Exception $e) {
+                                $this->attributes[$attribute] = $decryptedValue;
+                            }
+                        } else {
+                            $this->attributes[$attribute] = $decryptedValue;
+                        }
                     }
                 } catch (\Exception $e) {
                     // If decryption fails, leave the value as is
@@ -67,7 +100,13 @@ trait EncryptsSensitiveData
      */
     protected function getEncryptedAttributes(): array
     {
-        return property_exists($this, 'encrypted') ? $this->encrypted : [];
+        // Check if the model has an $encrypted property defined
+        if (property_exists($this, 'encrypted') && is_array($this->encrypted)) {
+            return $this->encrypted;
+        }
+        
+        // Fallback to empty array if no encrypted attributes defined
+        return [];
     }
 
     /**
@@ -118,5 +157,14 @@ trait EncryptsSensitiveData
         }
 
         $this->attributes[$attribute] = $this->isEncrypted($value) ? $value : Crypt::encryptString($value);
+    }
+
+    /**
+     * Check if an attribute is an encrypted date attribute that needs special handling.
+     */
+    protected function isEncryptedDateAttribute(string $attribute): bool
+    {
+        $dateAttributes = ['date_of_birth', 'date_of_entry_us'];
+        return in_array($attribute, $dateAttributes);
     }
 }

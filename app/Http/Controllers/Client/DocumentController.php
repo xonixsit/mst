@@ -5,12 +5,17 @@ namespace App\Http\Controllers\Client;
 use App\Http\Controllers\Controller;
 use App\Models\Document;
 use App\Models\Client;
+use App\Services\AdminNotificationService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Inertia\Inertia;
 
 class DocumentController extends Controller
 {
+    public function __construct(
+        private AdminNotificationService $adminNotificationService
+    ) {}
+
     public function index(Request $request)
     {
         // For now, create a mock client or use the authenticated user directly
@@ -79,7 +84,7 @@ class DocumentController extends Controller
         $fileName = time() . '_' . $file->getClientOriginalName();
         $filePath = $file->storeAs('documents/' . $mockClientId, $fileName, 'private');
 
-        Document::create([
+        $document = Document::create([
             'client_id' => $mockClientId,
             'name' => $request->input('name', pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME)),
             'original_name' => $file->getClientOriginalName(),
@@ -91,6 +96,9 @@ class DocumentController extends Controller
             'uploaded_by' => auth()->id(),
             'notes' => $request->notes
         ]);
+
+        // Notify admins about new document upload
+        $this->adminNotificationService->notifyDocumentUploaded($document);
 
         return back()->with('success', 'Document uploaded successfully.');
     }

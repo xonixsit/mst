@@ -1,0 +1,53 @@
+<?php
+
+namespace App\Notifications;
+
+use App\Models\User;
+use Illuminate\Bus\Queueable;
+use Illuminate\Contracts\Queue\ShouldQueue;
+use Illuminate\Notifications\Messages\MailMessage;
+use Illuminate\Notifications\Notification;
+
+class AdminClientRegisteredNotification extends Notification implements ShouldQueue
+{
+    use Queueable;
+
+    public function __construct(
+        public User $user
+    ) {}
+
+    /**
+     * Get the notification's delivery channels.
+     */
+    public function via(object $notifiable): array
+    {
+        return ['mail'];
+    }
+
+    /**
+     * Get the mail representation of the notification.
+     */
+    public function toMail(object $notifiable): MailMessage
+    {
+        return (new MailMessage)
+            ->subject("New Client Registration: {$this->user->name} - MySuperTax")
+            ->view('emails.admin.client-registered', [
+                'user' => $this->user,
+                'subject' => "New Client Registration: {$this->user->name}"
+            ]);
+    }
+
+    /**
+     * Get the array representation of the notification.
+     */
+    public function toArray(object $notifiable): array
+    {
+        return [
+            'type' => 'admin_client_registered',
+            'user_id' => $this->user->id,
+            'client_name' => $this->user->name,
+            'client_email' => $this->user->email,
+            'message' => "New client registered: {$this->user->name} ({$this->user->email})",
+        ];
+    }
+}

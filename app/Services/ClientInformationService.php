@@ -79,6 +79,9 @@ class ClientInformationService
      */
     public function updateClient(int $clientId, array $clientData): Client
     {
+         Log::info('Update client', [
+                'data' => $clientData['employee']
+         ]);
         try {
             return DB::transaction(function () use ($clientId, $clientData) {
                 $client = Client::findOrFail($clientId);
@@ -284,7 +287,7 @@ class ClientInformationService
     private function createRelatedRecords(Client $client, array $data): void
     {
         // Create spouse record if provided and client is married
-        if (!empty($data['spouse']) && $client->marital_status === 'married') {
+        if ($this->hasValidSpouseData($data) && $client->marital_status === 'married') {
             $client->spouse()->create($data['spouse']);
         }
 
@@ -292,7 +295,8 @@ class ClientInformationService
         $employeeData = $data['employee'] ?? $data['employees'] ?? [];
         if (!empty($employeeData) && is_array($employeeData)) {
             foreach ($employeeData as $empData) {
-                $client->employees()->create($empData);
+                $transformedData = $this->transformEmployeeDataForStorage($empData);
+                $client->employees()->create($transformedData);
             }
         }
 
@@ -327,7 +331,7 @@ class ClientInformationService
     private function updateRelatedRecords(Client $client, array $data): void
     {
         // Update or create spouse record
-        if (!empty($data['spouse']) && $client->marital_status === 'married') {
+        if ($this->hasValidSpouseData($data) && $client->marital_status === 'married') {
             $client->spouse()->updateOrCreate(
                 ['client_id' => $client->id],
                 $data['spouse']
@@ -336,11 +340,16 @@ class ClientInformationService
             // Remove spouse record if client is no longer married
             $client->spouse()?->delete();
         }
-
+         Log::info('Created new client record client', $data['employee']);
         // Update employee records (handle both 'employee' and 'employees' keys)
         $employeeData = $data['employee'] ?? $data['employees'] ?? [];
         if (!empty($employeeData)) {
-            $this->updateRelatedCollection($client->employees(), $employeeData);
+            // Delete existing employees first, then create new ones
+            $client->employees()->delete();
+            foreach ($employeeData as $empData) {
+                $transformedData = $this->transformEmployeeDataForStorage($empData);
+                $client->employees()->create($transformedData);
+            }
         }
 
         // Update project records
@@ -1021,5 +1030,81 @@ class ClientInformationService
             ->count();
 
         return $stats;
+    }
+
+    /**
+     * Check if spouse data contains meaningful values.
+     *
+     * @param array $data
+     * @return bool
+     */
+    private function hasValidSpouseData(array $data): bool
+    {
+        if (empty($data['spouse']) || !is_array($data['spouse'])) {
+            return false;
+        }
+
+        $spouseData = $data['spouse'];
+        
+        // Check if at least first_name or last_name is provided
+        return !empty($spouseData['first_name']) || !empty($spouseData['last_name']);
+    }
+
+    /**
+     * Transform employee data from frontend format to database format.
+     *
+     * @param array $employeeData
+     * @return array
+     */
+    private function transformEmployeeDataForStorage(array $employeeData): array
+    {
+        // Log incoming employee data for debugging
+        Log::debug('Transforming employee data', [
+            'incoming_data' => $employeeData,
+            'has_id' => isset($employeeData['id']),
+            'has_employer_name' => isset($employeeData['employerName']),
+            'has_position' => isset($employeeData['position'])
+        ]);
+        
+        $transformed = [];
+        
+        // Map frontend field names to database field names
+        $fieldMapping = [
+            'employerName' => 'employer_name',
+            'position' => 'job_title',
+            'startDate' => 'start_date',
+            'endDate' => 'end_date',
+            'employmentStatus' => 'employment_type',
+            'salary' => 'annual_salary',
+            'payFrequency' => 'pay_frequency',
+            'workLocation' => 'work_location',
+            'notes' => 'work_description',
+            'benefits' => 'benefits',
+        ];
+        
+        // Transform the data
+        foreach ($employeeData as $key => $value) {
+
+            Log::debug('employee data', [
+            'emp' => $employeeData
+            ]);
+            
+            if (isset($fieldMapping[$key])) {
+                $transformed[$fieldMapping[$key]] = $value;
+            } elseif (in_array($key, ['id', 'client_id'])) {
+                // Keep these fields as-is
+                $transformed[$key] = $value;
+            }
+        }
+        
+
+        
+        Log::debug('Transformed employee data', [
+            'transformed_data' => $transformed,
+            'will_update' => isset($transformed['id']),
+            'employer_name' => $transformed['employer_name']
+        ]);
+        
+        return $transformed;
     }
 }

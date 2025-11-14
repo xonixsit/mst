@@ -45,12 +45,15 @@ trait Auditable
             ]);
         });
 
-        static::restored(function ($model) {
-            app(AuditService::class)->log($model, 'restored', null, $model->getAttributes(), [
-                'context' => class_basename($model) . '_management',
-                'action' => class_basename($model) . ' restored'
-            ]);
-        });
+        // Only register restored event if the model uses soft deletes
+        if (in_array('Illuminate\Database\Eloquent\SoftDeletes', class_uses_recursive(static::class))) {
+            static::restored(function ($model) {
+                app(AuditService::class)->log($model, 'restored', null, $model->getAttributes(), [
+                    'context' => class_basename($model) . '_management',
+                    'action' => class_basename($model) . ' restored'
+                ]);
+            });
+        }
     }
 
     /**

@@ -29,6 +29,9 @@ class ClientEmployee extends Model
         'employer_city',
         'employer_state',
         'employer_zip_code',
+        'pay_frequency',
+        'work_location',
+        'benefits',
     ];
 
     /**
@@ -40,6 +43,7 @@ class ClientEmployee extends Model
         'start_date' => 'date',
         'end_date' => 'date',
         'annual_salary' => 'decimal:2',
+        'benefits' => 'array',
         'created_at' => 'datetime',
         'updated_at' => 'datetime',
     ];
@@ -53,18 +57,21 @@ class ClientEmployee extends Model
     {
         return [
             'client_id' => 'required|exists:clients,id',
-            'employer_name' => 'required|string|max:255',
+            'employer_name' => 'nullable|string|max:255',
             'job_title' => 'nullable|string|max:255',
             'employee_id' => 'nullable|string|max:255',
             'start_date' => 'nullable|date',
             'end_date' => 'nullable|date|after_or_equal:start_date',
             'annual_salary' => 'nullable|numeric|min:0|max:9999999999.99',
-            'employment_type' => 'nullable|string|in:full-time,part-time,contract,temporary,intern',
+            'employment_type' => 'nullable|string|in:full-time,part-time,contract,temporary,terminated',
             'work_description' => 'nullable|string|max:1000',
             'employer_address' => 'nullable|string|max:255',
             'employer_city' => 'nullable|string|max:255',
             'employer_state' => 'nullable|string|max:255',
             'employer_zip_code' => 'nullable|string|max:10',
+            'pay_frequency' => 'nullable|string|in:weekly,bi-weekly,semi-monthly,monthly,annually',
+            'work_location' => 'nullable|string|in:office,remote,hybrid,field,multiple',
+            'benefits' => 'nullable|array',
         ];
     }
 

@@ -675,7 +675,7 @@ const saveInformation = () => {
   const backendData = {
     personal: toSnakeCase(form.personal),
     spouse: toSnakeCase(form.spouse),
-    employee: Array.isArray(form.employee) ? form.employee.map(emp => toSnakeCase(emp)) : [],
+    employee: Array.isArray(form.employee) ? form.employee : [], // Don't convert employee field names - backend handles this
     projects: form.projects,
     assets: form.assets,
     expenses: form.expenses
@@ -741,11 +741,11 @@ const loadInitialData = () => {
     
     // Load other sections
     if (props.clientData.employee && Array.isArray(props.clientData.employee)) {
-      // Convert employee data from snake_case to camelCase
-      form.employee = props.clientData.employee.map(emp => toCamelCase(emp))
+      // Employee data is already in camelCase from backend
+      form.employee = props.clientData.employee
     } else if (props.clientData.employee) {
       // Handle single employee object
-      form.employee = [toCamelCase(props.clientData.employee)]
+      form.employee = [props.clientData.employee]
     }
     
     if (props.clientData.projects) {

@@ -9,22 +9,28 @@ use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\Auth\ForgotPasswordController;
 use App\Http\Controllers\Auth\ResetPasswordController;
 
+// Test route
+Route::get('/test', function () {
+    return 'Test route works!';
+});
+
 // Redirect root to admin login
 Route::get('/', function () {
-    return redirect()->route('admin.login');
+    return redirect('/admin/login');
 });
 
 // Global login route
 Route::get('/login', function () {
-    return redirect()->route('admin.login');
+    return redirect('/admin/login');
 });
 
 Route::post('/login', [LoginController::class, 'login'])->name('login');
 
 // Admin Authentication Routes
 Route::prefix('admin')->name('admin.')->group(function () {
+    // Temporarily remove guest middleware to test
+    Route::get('/login', [LoginController::class, 'showLoginForm'])->name('login');
     Route::middleware('guest')->group(function () {
-        Route::get('/login', [LoginController::class, 'showLoginForm'])->name('login');
         Route::post('/login', [LoginController::class, 'login']);
         Route::get('/register', [RegisterController::class, 'showRegistrationForm'])->name('register');
         Route::post('/register', [RegisterController::class, 'register']);
@@ -32,15 +38,21 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::post('/forgot-password', [ForgotPasswordController::class, 'sendResetLinkEmail'])->name('password.email');
         Route::get('/reset-password/{token}', [ResetPasswordController::class, 'showResetForm'])->name('password.reset');
         Route::post('/reset-password', [ResetPasswordController::class, 'reset'])->name('password.update');
+        
+        // Email verification routes
+        Route::get('/email/verify', [App\Http\Controllers\Auth\VerificationController::class, 'show'])->name('verification.notice');
+        Route::get('/email/verify/{id}/{hash}', [App\Http\Controllers\Auth\VerificationController::class, 'verify'])->name('verification.verify');
+        Route::post('/email/verification-notification', [App\Http\Controllers\Auth\VerificationController::class, 'resend'])->name('verification.send');
     });
     
-    Route::post('/logout', [LoginController::class, 'logout'])->middleware('auth')->name('logout');
+    Route::post('/logout', [LoginController::class, 'logout'])->middleware(['auth', 'auth.session'])->name('logout');
 });
 
 // Client Authentication Routes
 Route::prefix('client')->name('client.')->group(function () {
+    // Temporarily remove guest middleware to test
+    Route::get('/login', [LoginController::class, 'showLoginForm'])->name('login');
     Route::middleware('guest')->group(function () {
-        Route::get('/login', [LoginController::class, 'showLoginForm'])->name('login');
         Route::post('/login', [LoginController::class, 'login']);
         Route::get('/register', [RegisterController::class, 'showRegistrationForm'])->name('register');
         Route::post('/register', [RegisterController::class, 'register']);
@@ -48,13 +60,18 @@ Route::prefix('client')->name('client.')->group(function () {
         Route::post('/forgot-password', [ForgotPasswordController::class, 'sendResetLinkEmail'])->name('password.email');
         Route::get('/reset-password/{token}', [ResetPasswordController::class, 'showResetForm'])->name('password.reset');
         Route::post('/reset-password', [ResetPasswordController::class, 'reset'])->name('password.update');
+        
+        // Email verification routes
+        Route::get('/email/verify', [App\Http\Controllers\Auth\VerificationController::class, 'show'])->name('verification.notice');
+        Route::get('/email/verify/{id}/{hash}', [App\Http\Controllers\Auth\VerificationController::class, 'verify'])->name('verification.verify');
+        Route::post('/email/verification-notification', [App\Http\Controllers\Auth\VerificationController::class, 'resend'])->name('verification.send');
     });
     
-    Route::post('/logout', [LoginController::class, 'logout'])->middleware('auth')->name('logout');
+    Route::post('/logout', [LoginController::class, 'logout'])->middleware(['auth', 'auth.session'])->name('logout');
 });
 
 // Admin routes
-Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(function () {
+Route::middleware(['auth', 'auth.session', 'session.timeout', 'admin'])->prefix('admin')->name('admin.')->group(function () {
     // Admin dashboard
     Route::get('/dashboard', function () {
         return inertia('Admin/Dashboard');
@@ -194,7 +211,7 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
 });
 
 // Client routes
-Route::middleware(['auth', 'client'])->prefix('client')->name('client.')->group(function () {
+Route::middleware(['auth', 'auth.session', 'session.timeout', 'client'])->prefix('client')->name('client.')->group(function () {
     Route::get('/dashboard', function () {
         return inertia('Client/Dashboard');
     })->name('dashboard');

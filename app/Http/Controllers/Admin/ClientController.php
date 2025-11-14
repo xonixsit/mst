@@ -305,35 +305,7 @@ class ClientController extends Controller
         ]);
     }
 
-    /**
-     * Get client financial summary
-     */
-    public function financialSummary(int $id)
-    {
-        $client = Client::with(['assets', 'expenses'])->findOrFail($id);
-        
-        $summary = [
-            'total_assets' => $client->assets->count(),
-            'total_asset_value' => $client->assets->sum('cost_of_acquisition'),
-            'total_business_asset_value' => $client->assets->sum(function ($asset) {
-                return ($asset->cost_of_acquisition * $asset->percentage_used_in_business) / 100;
-            }),
-            'total_expenses' => $client->expenses->count(),
-            'total_expense_amount' => $client->expenses->sum('amount'),
-            'expense_categories' => $client->expenses->groupBy('category')->map(function ($expenses, $category) {
-                return [
-                    'category' => $category,
-                    'count' => $expenses->count(),
-                    'total_amount' => $expenses->sum('amount')
-                ];
-            })->values(),
-        ];
 
-        return response()->json([
-            'client' => $client,
-            'financial_summary' => $summary
-        ]);
-    }
 
     /**
      * Handle tax documents view

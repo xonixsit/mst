@@ -46,6 +46,9 @@
                   v-model="profileForm.phone"
                   type="tel"
                   class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
+                  placeholder="(555) 123-4567"
+                  maxlength="14"
+                  @input="handlePhoneInputMask"
                 />
               </div>
               <div>
@@ -155,6 +158,7 @@
 import { ref } from 'vue'
 import { useForm } from '@inertiajs/vue3'
 import AppLayout from '@/Layouts/AppLayout.vue'
+import { handlePhoneInput, getPhoneDisplayFormat } from '@/Utils/PhoneMask.js'
 
 const props = defineProps({
   stats: {
@@ -170,7 +174,7 @@ const props = defineProps({
 const profileForm = useForm({
   name: $page.props.auth.user.name,
   email: $page.props.auth.user.email,
-  phone: $page.props.auth.user.phone || ''
+  phone: getPhoneDisplayFormat($page.props.auth.user.phone || '')
 })
 
 const passwordForm = useForm({
@@ -194,6 +198,12 @@ const updatePassword = () => {
     onSuccess: () => {
       passwordForm.reset()
     }
+  })
+}
+
+const handlePhoneInputMask = (event) => {
+  handlePhoneInput(event, (formattedValue) => {
+    profileForm.phone = formattedValue
   })
 }
 </script>

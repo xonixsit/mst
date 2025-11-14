@@ -101,8 +101,9 @@
                 type="tel"
                 :class="inputClasses('phone')"
                 placeholder="(555) 123-4567"
+                maxlength="14"
                 @blur="validateField('phone')"
-                @input="handleInput('phone', $event.target.value)"
+                @input="handlePhoneInputMask('phone', $event)"
               />
               <p v-if="fieldErrors.phone" class="mt-1 text-sm text-red-600">
                 {{ fieldErrors.phone }}
@@ -339,7 +340,8 @@
                   type="tel"
                   :class="inputClasses('mobileNumber')"
                   placeholder="(555) 123-4567"
-                  @input="handleInput('mobileNumber', $event.target.value)"
+                  maxlength="14"
+                  @input="handlePhoneInputMask('mobileNumber', $event)"
                 />
               </div>
 
@@ -353,7 +355,8 @@
                   type="tel"
                   :class="inputClasses('workNumber')"
                   placeholder="(555) 987-6543"
-                  @input="handleInput('workNumber', $event.target.value)"
+                  maxlength="14"
+                  @input="handlePhoneInputMask('workNumber', $event)"
                 />
               </div>
             </div>
@@ -411,6 +414,7 @@
 <script setup>
 import { ref, reactive, computed, watch, onMounted } from 'vue'
 import HelpTooltip from '@/Components/HelpTooltip.vue'
+import { formatPhoneNumber, handlePhoneInput, isValidPhoneNumber, getPhoneDisplayFormat } from '@/Utils/PhoneMask.js'
 
 // Props
 const props = defineProps({
@@ -550,8 +554,15 @@ const validateField = (fieldName) => {
     case 'phone':
       if (!value) {
         error = 'Phone number is required'
-      } else if (!/^[\+]?[\d\s\-\(\)]{10,}$/.test(value.replace(/\s/g, ''))) {
-        error = 'Please enter a valid phone number'
+      } else if (!isValidPhoneNumber(value)) {
+        error = 'Please enter a valid 10-digit phone number'
+      }
+      break
+
+    case 'mobileNumber':
+    case 'workNumber':
+      if (value && !isValidPhoneNumber(value)) {
+        error = 'Please enter a valid 10-digit phone number'
       }
       break
 
@@ -644,6 +655,13 @@ const handleSSNInput = (event) => {
   handleInput('ssn', value)
 }
 
+const handlePhoneInputMask = (fieldName, event) => {
+  handlePhoneInput(event, (formattedValue) => {
+    localData[fieldName] = formattedValue
+    handleInput(fieldName, formattedValue)
+  })
+}
+
 const handleMaritalStatusChange = (event) => {
   const value = event.target.value
   handleInput('maritalStatus', value)
@@ -673,7 +691,14 @@ const initializeData = () => {
   if (props.modelValue) {
     Object.keys(localData).forEach(key => {
       if (props.modelValue[key] !== undefined) {
-        localData[key] = props.modelValue[key]
+        let value = props.modelValue[key]
+        
+        // Format phone numbers on initialization
+        if (['phone', 'mobileNumber', 'workNumber'].includes(key) && value) {
+          value = getPhoneDisplayFormat(value)
+        }
+        
+        localData[key] = value
       }
     })
   }

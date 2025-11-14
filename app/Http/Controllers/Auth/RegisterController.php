@@ -4,6 +4,8 @@ namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
 use App\Models\User;
+use App\Notifications\ClientWelcomeNotification;
+use App\Services\AdminNotificationService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
@@ -13,6 +15,10 @@ use Inertia\Response;
 
 class RegisterController extends Controller
 {
+    public function __construct(
+        private AdminNotificationService $adminNotificationService
+    ) {}
+
     /**
      * Show the registration form.
      */
@@ -42,11 +48,22 @@ class RegisterController extends Controller
 
         Auth::login($user);
 
-        // Redirect based on user role
+        // Send email verification notification
+        $user->sendEmailVerificationNotification();
+
+        // Send welcome notification for clients
+        if ($user->isClient()) {
+            $user->notify(new ClientWelcomeNotification($user));
+            
+            // Notify admins about new client registration
+            $this->adminNotificationService->notifyClientRegistered($user);
+        }
+
+        // Redirect to email verification notice
         if ($user->isTaxProfessional()) {
-            return redirect('/admin/clients');
+            return redirect()->route('admin.verification.notice');
         } else {
-            return redirect('/client/dashboard');
+            return redirect()->route('client.verification.notice');
         }
     }
 }

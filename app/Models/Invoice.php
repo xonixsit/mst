@@ -67,12 +67,25 @@ class Invoice extends Model
         return 'INV-' . $year . '-' . str_pad($nextNumber, 4, '0', STR_PAD_LEFT);
     }
 
+    /**
+     * Mark invoice as paid and send notifications
+     */
     public function markAsPaid(): void
     {
         $this->update([
             'status' => 'paid',
             'paid_at' => now(),
         ]);
+
+        // Send notifications to client and admins
+        $clientUser = \App\Models\User::where('email', $this->client->email)->first();
+        if ($clientUser) {
+            $clientUser->notify(new \App\Notifications\InvoicePaidNotification($this));
+        }
+
+        // Notify admins
+        $adminService = app(\App\Services\AdminNotificationService::class);
+        $adminService->notifyInvoicePaid($this);
     }
 
     public function markAsSent(): void
