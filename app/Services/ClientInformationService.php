@@ -79,9 +79,7 @@ class ClientInformationService
      */
     public function updateClient(int $clientId, array $clientData): Client
     {
-         Log::info('Update client', [
-                'data' => $clientData['employee']
-         ]);
+
         try {
             return DB::transaction(function () use ($clientId, $clientData) {
                 $client = Client::findOrFail($clientId);
@@ -303,6 +301,25 @@ class ClientInformationService
         // Create project records
         if (!empty($data['projects']) && is_array($data['projects'])) {
             foreach ($data['projects'] as $projectData) {
+                // Skip empty or invalid project data
+                if (empty($projectData) || (empty($projectData['project_name']) && empty($projectData['name']))) {
+                    continue;
+                }
+                
+                // Map frontend field names to database field names
+                if (isset($projectData['name']) && !isset($projectData['project_name'])) {
+                    $projectData['project_name'] = $projectData['name'];
+                    unset($projectData['name']);
+                }
+                if (isset($projectData['description']) && !isset($projectData['project_description'])) {
+                    $projectData['project_description'] = $projectData['description'];
+                    unset($projectData['description']);
+                }
+                if (isset($projectData['type']) && !isset($projectData['project_type'])) {
+                    $projectData['project_type'] = $projectData['type'];
+                    unset($projectData['type']);
+                }
+                
                 $client->projects()->create($projectData);
             }
         }
@@ -310,6 +327,17 @@ class ClientInformationService
         // Create asset records
         if (!empty($data['assets']) && is_array($data['assets'])) {
             foreach ($data['assets'] as $assetData) {
+                // Skip empty or invalid asset data
+                if (empty($assetData) || (empty($assetData['asset_name']) && empty($assetData['name']))) {
+                    continue;
+                }
+                
+                // Map frontend field names to database field names if needed
+                if (isset($assetData['name']) && !isset($assetData['asset_name'])) {
+                    $assetData['asset_name'] = $assetData['name'];
+                    unset($assetData['name']);
+                }
+                
                 $client->assets()->create($assetData);
             }
         }
@@ -340,12 +368,13 @@ class ClientInformationService
             // Remove spouse record if client is no longer married
             $client->spouse()?->delete();
         }
-         Log::info('Created new client record client', $data['employee']);
+        
         // Update employee records (handle both 'employee' and 'employees' keys)
         $employeeData = $data['employee'] ?? $data['employees'] ?? [];
         if (!empty($employeeData)) {
-            // Delete existing employees first, then create new ones
+            // Always delete and recreate for simplicity
             $client->employees()->delete();
+            
             foreach ($employeeData as $empData) {
                 $transformedData = $this->transformEmployeeDataForStorage($empData);
                 $client->employees()->create($transformedData);
@@ -354,17 +383,96 @@ class ClientInformationService
 
         // Update project records
         if (isset($data['projects'])) {
-            $this->updateRelatedCollection($client->projects(), $data['projects']);
+            $normalizedProjects = array_map(function($project) {
+                // Map frontend field names to database field names
+                if (isset($project['name']) && !isset($project['project_name'])) {
+                    $project['project_name'] = $project['name'];
+                    unset($project['name']);
+                }
+                if (isset($project['description']) && !isset($project['project_description'])) {
+                    $project['project_description'] = $project['description'];
+                    unset($project['description']);
+                }
+                if (isset($project['type']) && !isset($project['project_type'])) {
+                    $project['project_type'] = $project['type'];
+                    unset($project['type']);
+                }
+                return $project;
+            }, $data['projects']);
+            
+            $this->updateRelatedCollection($client->projects(), $normalizedProjects);
         }
 
         // Update asset records
         if (isset($data['assets'])) {
-            $this->updateRelatedCollection($client->assets(), $data['assets']);
+            $normalizedAssets = array_map(function($asset) {
+                // Map frontend field names to database field names if needed
+                if (isset($asset['name']) && !isset($asset['asset_name'])) {
+                    $asset['asset_name'] = $asset['name'];
+                    unset($asset['name']);
+                }
+                return $asset;
+            }, $data['assets']);
+            
+            $this->updateRelatedCollection($client->assets(), $normalizedAssets);
         }
 
         // Update expense records
         if (isset($data['expenses'])) {
-            $this->updateRelatedCollection($client->expenses(), $data['expenses']);
+            // Normalize expense field names from frontend format to database format
+            $normalizedExpenses = array_map(function($expense) {
+                // Map frontend field names to database field names
+                if (isset($expense['taxPayer']) && !isset($expense['tax_payer'])) {
+                    $expense['tax_payer'] = $expense['taxPayer'];
+                    unset($expense['taxPayer']);
+                }
+                if (isset($expense['date']) && !isset($expense['expense_date'])) {
+                    $expense['expense_date'] = $expense['date'];
+                    unset($expense['date']);
+                }
+                if (isset($expense['receiptNumber']) && !isset($expense['receipt_number'])) {
+                    $expense['receipt_number'] = $expense['receiptNumber'];
+                    unset($expense['receiptNumber']);
+                }
+                if (isset($expense['deductiblePercentage']) && !isset($expense['deductible_percentage'])) {
+                    $expense['deductible_percentage'] = $expense['deductiblePercentage'];
+                    unset($expense['deductiblePercentage']);
+                }
+                if (isset($expense['deductible']) && !isset($expense['is_deductible'])) {
+                    $expense['is_deductible'] = $expense['deductible'];
+                    unset($expense['deductible']);
+                }
+                // Set is_deductible based on deductible_percentage if not explicitly set
+                if (!isset($expense['is_deductible'])) {
+                    $expense['is_deductible'] = isset($expense['deductible_percentage']) && floatval($expense['deductible_percentage']) > 0;
+                }
+                
+                // Only set default deductible percentage if it's truly not provided (not 0 or empty string)
+                if (!array_key_exists('deductible_percentage', $expense) || $expense['deductible_percentage'] === null) {
+                    $expense['deductible_percentage'] = 100;
+                } else {
+                    // Ensure it's a number (convert empty string to 0)
+                    $expense['deductible_percentage'] = $expense['deductible_percentage'] === '' ? 0 : floatval($expense['deductible_percentage']);
+                }
+                // Set defaults for required database fields if missing
+                if (!isset($expense['particulars']) || empty($expense['particulars'])) {
+                    $expense['particulars'] = 'Expense';
+                }
+                if (!isset($expense['tax_payer']) || empty($expense['tax_payer'])) {
+                    $expense['tax_payer'] = 'Taxpayer';
+                }
+                if (!isset($expense['expense_date']) || empty($expense['expense_date'])) {
+                    $expense['expense_date'] = date('Y-m-d');
+                }
+                return $expense;
+            }, $data['expenses']);
+            
+            Log::info('Processing expenses update', [
+                'client_id' => $client->id,
+                'expense_count' => count($normalizedExpenses),
+                'expenses_data' => $normalizedExpenses
+            ]);
+            $this->updateRelatedCollection($client->expenses(), $normalizedExpenses);
         }
     }
 
@@ -378,21 +486,114 @@ class ClientInformationService
     private function updateRelatedCollection($relation, array $records): void
     {
         $existingIds = [];
+        $modelClass = get_class($relation->getRelated());
 
-        foreach ($records as $recordData) {
-            if (!empty($recordData['id'])) {
-                // Update existing record
-                $relation->where('id', $recordData['id'])->update($recordData);
-                $existingIds[] = $recordData['id'];
+        foreach ($records as $index => $recordData) {
+            // Skip empty or incomplete records
+            $isValid = $this->isValidRecordData($relation, $recordData);
+            
+            Log::info('Processing record in collection', [
+                'model' => $modelClass,
+                'index' => $index,
+                'is_valid' => $isValid,
+                'is_empty' => empty($recordData),
+                'record_data' => $recordData
+            ]);
+            
+            if (empty($recordData) || !$isValid) {
+                Log::warning('Skipping invalid or empty record', [
+                    'model' => $modelClass,
+                    'index' => $index,
+                    'reason' => empty($recordData) ? 'empty' : 'invalid'
+                ]);
+                continue;
+            }
+            
+            // Check if this is an existing database record (numeric ID that exists in DB for this client)
+            $recordId = $recordData['id'] ?? null;
+            $isNumericId = $recordId && is_numeric($recordId);
+            
+            // Check if record exists and belongs to the current client
+            $recordModelClass = get_class($relation->getRelated());
+            $existsInDatabase = $isNumericId ? $recordModelClass::where('id', $recordId)->exists() : false;
+            
+            // If it exists, also verify it belongs to the current client
+            $isExistingRecord = false;
+            if ($existsInDatabase) {
+                $record = $recordModelClass::find($recordId);
+                // Get the parent model (Client) from the relation
+                $parentModel = $relation->getParent();
+                $isExistingRecord = $record && $parentModel && $record->client_id == $parentModel->id;
+            }
+            
+            Log::info('Record ID check', [
+                'model' => $modelClass,
+                'record_id' => $recordId,
+                'is_numeric' => $isNumericId,
+                'exists_in_db' => $existsInDatabase,
+                'is_existing_record' => $isExistingRecord
+            ]);
+            
+            if ($isExistingRecord) {
+                // Update existing record - remove 'id' from update data to avoid errors
+                $updateData = $recordData;
+                unset($updateData['id']);
+                
+                Log::info('Updating existing record', [
+                    'model' => $modelClass,
+                    'id' => $recordId,
+                    'update_data' => $updateData
+                ]);
+                
+                // Use the model directly to avoid relationship constraints
+                $recordModelClass = get_class($relation->getRelated());
+                $updateResult = $recordModelClass::where('id', $recordId)->update($updateData);
+                
+                Log::info('Update operation result', [
+                    'model' => $modelClass,
+                    'id' => $recordId,
+                    'rows_affected' => $updateResult
+                ]);
+                
+                $existingIds[] = $recordId;
             } else {
-                // Create new record
-                $newRecord = $relation->create($recordData);
+                // Create new record (either no ID, or frontend-generated temp ID)
+                $createData = $recordData;
+                // Remove frontend-generated ID if present (non-numeric or doesn't exist in DB)
+                if (isset($createData['id']) && !is_numeric($createData['id'])) {
+                    unset($createData['id']);
+                }
+                
+                Log::info('Creating new record', [
+                    'model' => $modelClass,
+                    'data' => $createData,
+                    'reason' => $recordId ? 'frontend_temp_id' : 'no_id'
+                ]);
+                
+                $newRecord = $relation->create($createData);
                 $existingIds[] = $newRecord->id;
+                
+                Log::info('Created new record successfully', [
+                    'model' => $modelClass,
+                    'new_id' => $newRecord->id
+                ]);
             }
         }
 
         // Delete records that are no longer in the collection
-        $relation->whereNotIn('id', $existingIds)->delete();
+        if (!empty($existingIds)) {
+            Log::info('Deleting removed records', [
+                'model' => $modelClass,
+                'keeping_ids' => $existingIds
+            ]);
+            $relation->whereNotIn('id', $existingIds)->delete();
+        } else {
+            // If no valid records, delete all existing records
+            Log::info('Deleting all records (no valid records in update)', [
+                'model' => $modelClass
+            ]);
+            $relation->delete();
+        }
     }
 
     /**
@@ -563,6 +764,53 @@ class ClientInformationService
             'has_receipt' => $expense->has_receipt,
             'formatted_description' => $expense->formatted_description,
         ];
+    }
+
+    /**
+     * Validate if record data has required fields based on relation type.
+     *
+     * @param \Illuminate\Database\Eloquent\Relations\HasMany $relation
+     * @param array $recordData
+     * @return bool
+     */
+    private function isValidRecordData($relation, array $recordData): bool
+    {
+        $modelClass = get_class($relation->getRelated());
+        
+        // Check required fields based on model type
+        switch ($modelClass) {
+            case ClientProject::class:
+                // For projects, ensure we have at least project_name
+                return !empty($recordData['project_name']) || !empty($recordData['name']);
+            
+            case ClientAsset::class:
+                // For assets, ensure we have at least asset_name
+                return !empty($recordData['asset_name']) || !empty($recordData['name']);
+            
+            case ClientExpense::class:
+                // For expenses, check required fields (only category and amount are truly required)
+                $hasCategory = !empty($recordData['category']);
+                $hasAmount = isset($recordData['amount']) && $recordData['amount'] !== '' && $recordData['amount'] !== null;
+                
+                Log::info('Validating expense record', [
+                    'has_category' => $hasCategory,
+                    'has_amount' => $hasAmount,
+                    'category' => $recordData['category'] ?? null,
+                    'amount' => $recordData['amount'] ?? null,
+                    'particulars' => $recordData['particulars'] ?? null,
+                    'tax_payer' => $recordData['tax_payer'] ?? $recordData['taxPayer'] ?? null,
+                    'full_record' => $recordData
+                ]);
+                
+                // Only require category and amount - other fields can be empty
+                return $hasCategory && $hasAmount;
+            
+            default:
+                // For other types, allow if not completely empty
+                return !empty(array_filter($recordData, function($value) {
+                    return !is_null($value) && $value !== '';
+                }));
+        }
     }
 
     /**
@@ -1058,37 +1306,41 @@ class ClientInformationService
      */
     private function transformEmployeeDataForStorage(array $employeeData): array
     {
-        // Log incoming employee data for debugging
-        Log::debug('Transforming employee data', [
-            'incoming_data' => $employeeData,
-            'has_id' => isset($employeeData['id']),
-            'has_employer_name' => isset($employeeData['employerName']),
-            'has_position' => isset($employeeData['position'])
-        ]);
-        
         $transformed = [];
         
         // Map frontend field names to database field names
         $fieldMapping = [
             'employerName' => 'employer_name',
+            'employer_name' => 'employer_name', // Handle both formats
             'position' => 'job_title',
+            'job_title' => 'job_title', // Handle both formats
             'startDate' => 'start_date',
+            'start_date' => 'start_date', // Handle both formats
             'endDate' => 'end_date',
-            'employmentStatus' => 'employment_type',
+            'end_date' => 'end_date', // Handle both formats
+            'employmentType' => 'employment_type',
+            'employment_type' => 'employment_type', // Handle both formats
             'salary' => 'annual_salary',
+            'annual_salary' => 'annual_salary', // Handle both formats
             'payFrequency' => 'pay_frequency',
+            'pay_frequency' => 'pay_frequency', // Handle both formats
             'workLocation' => 'work_location',
+            'work_location' => 'work_location', // Handle both formats
             'notes' => 'work_description',
+            'work_description' => 'work_description', // Handle both formats
+            'employerAddress' => 'employer_address',
+            'employer_address' => 'employer_address', // Handle both formats
+            'employerCity' => 'employer_city',
+            'employer_city' => 'employer_city', // Handle both formats
+            'employerState' => 'employer_state',
+            'employer_state' => 'employer_state', // Handle both formats
+            'employerZipCode' => 'employer_zip_code',
+            'employer_zip_code' => 'employer_zip_code', // Handle both formats
             'benefits' => 'benefits',
         ];
         
         // Transform the data
         foreach ($employeeData as $key => $value) {
-
-            Log::debug('employee data', [
-            'emp' => $employeeData
-            ]);
-            
             if (isset($fieldMapping[$key])) {
                 $transformed[$fieldMapping[$key]] = $value;
             } elseif (in_array($key, ['id', 'client_id'])) {
@@ -1096,14 +1348,6 @@ class ClientInformationService
                 $transformed[$key] = $value;
             }
         }
-        
-
-        
-        Log::debug('Transformed employee data', [
-            'transformed_data' => $transformed,
-            'will_update' => isset($transformed['id']),
-            'employer_name' => $transformed['employer_name']
-        ]);
         
         return $transformed;
     }

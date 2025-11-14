@@ -344,7 +344,7 @@
                         Which sections would you like reviewed? (Optional - leave blank for all sections)
                       </label>
                       <div class="space-y-2">
-                        <label v-for="section in sections" :key="section.id" class="flex items-center">
+                        <label v-for="section in reviewSections" :key="section.id" class="flex items-center">
                           <input
                             v-model="reviewForm.sections"
                             :value="section.id"
@@ -531,6 +531,16 @@ const sections = computed(() => [
   }
 ])
 
+// Sections for review modal (without icons to avoid cloning issues)
+const reviewSections = [
+  { id: 'personal', name: 'Personal Details' },
+  { id: 'spouse', name: 'Spouse Details' },
+  { id: 'employee', name: 'Employment' },
+  { id: 'projects', name: 'Projects' },
+  { id: 'assets', name: 'Assets' },
+  { id: 'expenses', name: 'Expenses' }
+]
+
 // Computed properties
 
 const autoSaveStatusText = computed(() => {
@@ -683,6 +693,8 @@ const saveInformation = () => {
   
   console.log('Saving client information:', backendData)
   console.log('Personal data being sent:', backendData.personal)
+  console.log('Expenses data being sent:', backendData.expenses)
+  console.log('Expenses count:', backendData.expenses?.length || 0)
   
   form.transform(() => backendData).post('/client/information', {
     onSuccess: () => {
@@ -696,7 +708,12 @@ const exportData = () => {
 }
 
 const submitReviewRequest = () => {
-  reviewForm.post('/client/information/request-review', {
+  // Transform to ensure only serializable data is sent
+  reviewForm.transform((data) => ({
+    sections: data.sections || [],
+    message: data.message || '',
+    priority: data.priority || 'normal'
+  })).post('/client/information/request-review', {
     onSuccess: () => {
       showReviewModal.value = false
       reviewForm.reset()
@@ -704,7 +721,9 @@ const submitReviewRequest = () => {
     },
     onError: (errors) => {
       console.error('Review request failed:', errors)
-    }
+    },
+    preserveState: true,
+    preserveScroll: true
   })
 }
 

@@ -144,11 +144,15 @@ class InformationController extends Controller
                     'position' => $employee->job_title,
                     'startDate' => $employee->start_date?->format('Y-m-d'),
                     'endDate' => $employee->end_date?->format('Y-m-d'),
-                    'employmentStatus' => $employee->employment_type,
+                    'employmentType' => $employee->employment_type,
                     'salary' => $employee->annual_salary,
                     'payFrequency' => $employee->pay_frequency,
                     'workLocation' => $employee->work_location,
                     'notes' => $employee->work_description,
+                    'employerAddress' => $employee->employer_address,
+                    'employerCity' => $employee->employer_city,
+                    'employerState' => $employee->employer_state,
+                    'employerZipCode' => $employee->employer_zip_code,
                     'benefits' => $employee->benefits ?? [
                         'healthInsurance' => false,
                         'retirementPlan' => false,
@@ -369,9 +373,9 @@ class InformationController extends Controller
      */
     private function validateClientInformation(Request $request): array
     {
-         Log::debug('employee data', [
-            'request' => $request
-            ]);
+        //  Log::debug('employee data', [
+        //     'request' => $request
+        //     ]);
         return $request->validate([
             // Personal information validation
             'personal.first_name' => 'required|string|max:50',
@@ -411,7 +415,7 @@ class InformationController extends Controller
             'employee.*.position' => 'nullable|string|max:100',
             'employee.*.startDate' => 'nullable|date',
             'employee.*.endDate' => 'nullable|date|after_or_equal:employee.*.startDate',
-            'employee.*.employmentStatus' => 'nullable|in:full-time,part-time,contract,temporary,terminated',
+            'employee.*.employmentType' => 'nullable|in:full-time,part-time,contract,temporary,terminated',
             'employee.*.salary' => 'nullable|numeric|min:0',
             'employee.*.payFrequency' => 'nullable|in:weekly,bi-weekly,semi-monthly,monthly,annually',
             'employee.*.workLocation' => 'nullable|in:office,remote,hybrid,field,multiple',
@@ -434,11 +438,20 @@ class InformationController extends Controller
             
             // Expenses validation
             'expenses' => 'nullable|array',
-            'expenses.*.category' => 'nullable|in:miscellaneous,residency',
+            'expenses.*.category' => 'nullable|in:miscellaneous,residency,business,medical,education,charitable,travel,office,professional,other',
             'expenses.*.particulars' => 'nullable|string|max:200',
             'expenses.*.tax_payer' => 'nullable|string|max:100',
+            'expenses.*.taxPayer' => 'nullable|string|max:100',
             'expenses.*.spouse' => 'nullable|string|max:100',
             'expenses.*.amount' => 'nullable|numeric|min:0',
+            'expenses.*.date' => 'nullable|date',
+            'expenses.*.expense_date' => 'nullable|date',
+            'expenses.*.deductible' => 'nullable|boolean',
+            'expenses.*.is_deductible' => 'nullable|boolean',
+            'expenses.*.deductible_percentage' => 'nullable|numeric|min:0|max:100',
+            'expenses.*.deductiblePercentage' => 'nullable|numeric|min:0|max:100',
+            'expenses.*.receipt_number' => 'nullable|string|max:255',
+            'expenses.*.receiptNumber' => 'nullable|string|max:255',
             'expenses.*.remarks' => 'nullable|string|max:500',
         ]);
     }
@@ -762,27 +775,32 @@ class InformationController extends Controller
      */
     private function createReviewNotification(Client $client, array $requestData): void
     {
-        // In a real implementation, this would create a notification record
-        // and potentially send an email to the assigned tax professional
+        // Find the assigned tax professional or default admin
+        $taxProfessional = $client->user ?? User::where('email', 'admin@mysupertax.com')->first();
         
-        $notificationData = [
-            'type' => 'client_review_request',
-            'client_id' => $client->id,
-            'client_name' => trim($client->first_name . ' ' . $client->last_name),
-            'client_email' => $client->email,
-            'sections_requested' => $requestData['sections'] ?? ['all'],
-            'message' => $requestData['message'] ?? null,
-            'priority' => $requestData['priority'] ?? 'normal',
-            'requested_at' => now()->toISOString()
-        ];
-        
-        // Log notification creation for now
-        Log::info('Review notification created', $notificationData);
-        
-        // TODO: Implement actual notification system
-        // - Create database notification record
-        // - Send email to assigned tax professional
-        // - Create in-app notification
+        if ($taxProfessional) {
+            // Send notification
+            $taxProfessional->notify(new \App\Notifications\ClientReviewRequestNotification(
+                $client,
+                $requestData['sections'] ?? [],
+                $requestData['message'] ?? null,
+                $requestData['priority'] ?? 'normal'
+            ));
+            
+            Log::info('Review notification sent', [
+                'client_id' => $client->id,
+                'client_name' => $client->full_name,
+                'tax_professional_id' => $taxProfessional->id,
+                'tax_professional_email' => $taxProfessional->email,
+                'sections' => $requestData['sections'] ?? [],
+                'priority' => $requestData['priority'] ?? 'normal'
+            ]);
+        } else {
+            Log::warning('No tax professional found for review notification', [
+                'client_id' => $client->id,
+                'client_name' => $client->full_name
+            ]);
+        }
     }
 
     /**
@@ -911,9 +929,9 @@ class InformationController extends Controller
             // Validate auto-save data (less strict than full save)
             $data = $this->validateAutoSaveData($request);
 
-             Log::debug('Auto-save data validated', [
-                   $data['employee']
-                ]);
+            //  Log::debug('Auto-save data validated', [
+            //        $data['employee']
+            //     ]);
             
             if (!empty($data)) {
                 DB::transaction(function () use ($client, $data) {
@@ -1001,21 +1019,34 @@ class InformationController extends Controller
             'spouse.occupation' => 'nullable|string|max:100',
             
             'employee' => 'nullable|array',
+            'employee.*.id' => 'nullable|integer',
             'employee.*.employer_name' => 'nullable|string|max:100',
             'employee.*.position' => 'nullable|string|max:100',
-            'employee.*.startDate' => 'nullable|date|date_format:Y-m-d',
-            'employee.*.endDate' => 'nullable|date|date_format:Y-m-d',
-            'employee.*.employmentStatus' => 'nullable|in:full-time,part-time,contract,temporary,terminated',
+            'employee.*.start_date' => 'nullable|date|date_format:Y-m-d',
+            'employee.*.end_date' => 'nullable|date|date_format:Y-m-d',
+            'employee.*.employment_type' => 'nullable|in:full-time,part-time,contract,temporary,terminated',
             'employee.*.salary' => 'nullable|numeric|min:0',
-            'employee.*.payFrequency' => 'nullable|in:weekly,bi-weekly,semi-monthly,monthly,annually',
+            'employee.*.pay_frequency' => 'nullable|in:weekly,bi-weekly,semi-monthly,monthly,annually',
+            'employee.*.work_location' => 'nullable|in:office,remote,hybrid,field,multiple',
+            'employee.*.notes' => 'nullable|string|max:1000',
+            'employee.*.employer_address' => 'nullable|string|max:255',
+            'employee.*.employer_city' => 'nullable|string|max:100',
+            'employee.*.employer_state' => 'nullable|string|max:2',
+            'employee.*.employer_zip_code' => 'nullable|string|max:10',
+            'employee.*.benefits' => 'nullable|array',
             'employee.*.workLocation' => 'nullable|in:office,remote,hybrid,field,multiple',
             'employee.*.notes' => 'nullable|string|max:1000',
             'employee.*.benefits' => 'nullable|array',
             
             'projects' => 'nullable|array',
+            'projects.*.id' => 'nullable|integer',
             'projects.*.name' => 'nullable|string|max:200',
+            'projects.*.project_name' => 'nullable|string|max:200',
             'projects.*.description' => 'nullable|string|max:1000',
+            'projects.*.project_description' => 'nullable|string|max:1000',
             'projects.*.status' => 'nullable|string|max:50',
+            'projects.*.type' => 'nullable|string|max:50',
+            'projects.*.project_type' => 'nullable|string|max:50',
             
             'assets' => 'nullable|array',
             'assets.*.asset_name' => 'nullable|string|max:200',

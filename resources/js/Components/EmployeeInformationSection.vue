@@ -89,15 +89,15 @@
             </div>
 
             <div>
-              <label for="employmentStatus" class="block text-sm font-medium text-gray-700 mb-1">
+              <label for="employmentType" class="block text-sm font-medium text-gray-700 mb-1">
                 Employment Status
               </label>
               <select
-                id="employmentStatus"
-                v-model="localData.employmentStatus"
-                :class="inputClasses('employmentStatus')"
+                id="employmentType"
+                v-model="localData.employmentType"
+                :class="inputClasses('employmentType')"
                 :disabled="readonly"
-                @change="handleInput('employmentStatus', $event.target.value)"
+                @change="handleInput('employmentType', $event.target.value)"
               >
                 <option value="">Select status</option>
                 <option value="full-time">Full-time</option>
@@ -229,6 +229,74 @@
             </div>
           </div>
 
+          <!-- Employer Address Information -->
+          <div class="border-t border-gray-200 pt-6">
+            <h3 class="text-md font-medium text-gray-900 mb-4">Employer Address</h3>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div class="md:col-span-2">
+                <label for="employerAddress" class="block text-sm font-medium text-gray-700 mb-1">
+                  Street Address
+                </label>
+                <input
+                  id="employerAddress"
+                  v-model="localData.employerAddress"
+                  type="text"
+                  :class="inputClasses('employerAddress')"
+                  placeholder="Enter employer street address"
+                  :disabled="readonly"
+                  @input="handleInput('employerAddress', $event.target.value)"
+                />
+              </div>
+
+              <div>
+                <label for="employerCity" class="block text-sm font-medium text-gray-700 mb-1">
+                  City
+                </label>
+                <input
+                  id="employerCity"
+                  v-model="localData.employerCity"
+                  type="text"
+                  :class="inputClasses('employerCity')"
+                  placeholder="Enter city"
+                  :disabled="readonly"
+                  @input="handleInput('employerCity', $event.target.value)"
+                />
+              </div>
+
+              <div>
+                <label for="employerState" class="block text-sm font-medium text-gray-700 mb-1">
+                  State
+                </label>
+                <input
+                  id="employerState"
+                  v-model="localData.employerState"
+                  type="text"
+                  :class="inputClasses('employerState')"
+                  placeholder="Enter state"
+                  maxlength="2"
+                  :disabled="readonly"
+                  @input="handleInput('employerState', $event.target.value)"
+                />
+              </div>
+
+              <div>
+                <label for="employerZipCode" class="block text-sm font-medium text-gray-700 mb-1">
+                  ZIP Code
+                </label>
+                <input
+                  id="employerZipCode"
+                  v-model="localData.employerZipCode"
+                  type="text"
+                  :class="inputClasses('employerZipCode')"
+                  placeholder="Enter ZIP code"
+                  :disabled="readonly"
+                  @input="handleInput('employerZipCode', $event.target.value)"
+                />
+              </div>
+            </div>
+          </div>
+
           <!-- Additional Information -->
           <div class="border-t border-gray-200 pt-6">
             <h3 class="text-md font-medium text-gray-900 mb-4">Additional Information</h3>
@@ -303,11 +371,15 @@ const localData = reactive({
   position: '',
   startDate: '',
   endDate: '',
-  employmentStatus: '',
+  employmentType: '',
   salary: '',
   payFrequency: '',
   workLocation: '',
   notes: '',
+  employerAddress: '',
+  employerCity: '',
+  employerState: '',
+  employerZipCode: '',
   benefits: {
     healthInsurance: false,
     retirementPlan: false,

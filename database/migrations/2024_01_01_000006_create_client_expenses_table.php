@@ -16,7 +16,7 @@ return new class extends Migration
             $table->foreignId('client_id')->constrained()->onDelete('cascade');
             
             // Expense Information
-            $table->enum('category', ['miscellaneous', 'residency', 'business', 'medical', 'education', 'other']);
+            $table->enum('category', ['miscellaneous', 'residency', 'business', 'medical', 'education', 'charitable', 'travel', 'office', 'professional', 'other']);
             $table->string('particulars'); // Description of the expense
             $table->string('tax_payer'); // Who incurred the expense
             $table->string('spouse')->nullable(); // Spouse involvement if applicable

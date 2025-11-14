@@ -237,8 +237,9 @@ const defaultExpenseData = {
   spouse: '',
   amount: 0,
   date: '',
-  remarks: '',
-  deductible: true
+  receiptNumber: '',
+  deductiblePercentage: 100,
+  remarks: ''
 }
 
 // Expense table columns configuration
@@ -304,13 +305,23 @@ const expenseColumns = [
     maxLength: 100
   },
   {
-    key: 'deductible',
-    label: 'Deductible',
-    type: 'select',
-    options: [
-      { value: true, label: 'Yes' },
-      { value: false, label: 'No' }
-    ]
+    key: 'receiptNumber',
+    label: 'Receipt Number',
+    type: 'text',
+    placeholder: 'Receipt/Invoice number',
+    maxLength: 255
+  },
+  {
+    key: 'deductiblePercentage',
+    label: 'Deductible %',
+    type: 'percentage',
+    placeholder: '0-100',
+    validate: (value) => {
+      if (value && (isNaN(value) || parseFloat(value) < 0 || parseFloat(value) > 100)) {
+        return 'Percentage must be between 0 and 100'
+      }
+      return null
+    }
   },
   {
     key: 'remarks',

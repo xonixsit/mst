@@ -285,7 +285,7 @@ class ClientController extends Controller
         // Get audit logs related to this client
         $auditLogs = $this->auditService->getLogsForModel($client, 50);
         
-        // Format the interaction history
+        // Format the interaction history with properly formatted changes
         $history = $auditLogs->map(function ($log) {
             return [
                 'id' => $log->id,
@@ -293,7 +293,7 @@ class ClientController extends Controller
                 'event' => $log->event,
                 'description' => $log->description,
                 'user' => $log->user ? $log->user->name : 'System',
-                'changes' => $log->changes,
+                'changes' => $log->changes, // This uses the getChangesAttribute accessor
                 'metadata' => $log->metadata,
                 'created_at' => $log->created_at,
             ];

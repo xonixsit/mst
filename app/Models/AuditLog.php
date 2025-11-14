@@ -30,6 +30,13 @@ class AuditLog extends Model
         'new_values' => 'array',
         'metadata' => 'array',
     ];
+    
+    /**
+     * The accessors to append to the model's array form.
+     *
+     * @var array
+     */
+    protected $appends = ['changes', 'description'];
 
     /**
      * Get the auditable model.
@@ -54,20 +61,82 @@ class AuditLog extends Model
     {
         $changes = [];
         
+        // List of encrypted fields that should be masked in audit logs
+        $encryptedFields = ['ssn', 'date_of_birth', 'date_of_entry_us', 'mobile_number', 'work_number'];
+        
+        // List of fields that should be hidden entirely
+        $hiddenFields = [];
+        
         if ($this->old_values && $this->new_values) {
             foreach ($this->new_values as $key => $newValue) {
                 $oldValue = $this->old_values[$key] ?? null;
                 
                 if ($oldValue !== $newValue) {
-                    $changes[$key] = [
-                        'old' => $oldValue,
-                        'new' => $newValue,
-                    ];
+                    // Check if this is an encrypted field
+                    if (in_array($key, $encryptedFields)) {
+                        // Detect if values are encrypted JSON strings
+                        $isOldEncrypted = $this->isEncryptedValue($oldValue);
+                        $isNewEncrypted = $this->isEncryptedValue($newValue);
+                        
+                        $changes[$key] = [
+                            'old' => $isOldEncrypted ? '[Encrypted]' : ($oldValue ?? 'null'),
+                            'new' => $isNewEncrypted ? '[Encrypted]' : ($newValue ?? 'null'),
+                        ];
+                    } elseif (!in_array($key, $hiddenFields)) {
+                        // Format other fields normally
+                        $changes[$key] = [
+                            'old' => $this->formatValue($oldValue),
+                            'new' => $this->formatValue($newValue),
+                        ];
+                    }
                 }
             }
         }
         
         return $changes;
+    }
+    
+    /**
+     * Check if a value is encrypted.
+     */
+    private function isEncryptedValue($value): bool
+    {
+        if (!is_string($value) || empty($value)) {
+            return false;
+        }
+        
+        // First try to decode as base64
+        $decoded = base64_decode($value, true);
+        if ($decoded === false) {
+            // If base64 decode fails, try direct JSON decode
+            $decoded = json_decode($value, true);
+        } else {
+            // If base64 decode succeeds, try to parse as JSON
+            $decoded = json_decode($decoded, true);
+        }
+        
+        // Check if it looks like an encrypted payload (JSON with iv, value, mac)
+        return is_array($decoded) && isset($decoded['iv']) && isset($decoded['value']) && isset($decoded['mac']);
+    }
+    
+    /**
+     * Format a value for display.
+     */
+    private function formatValue($value)
+    {
+        if ($value === null) {
+            return 'null';
+        }
+        
+        if (is_bool($value)) {
+            return $value ? 'true' : 'false';
+        }
+        
+        if (is_array($value)) {
+            return json_encode($value);
+        }
+        
+        return (string) $value;
     }
 
     /**

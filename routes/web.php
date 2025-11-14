@@ -296,5 +296,15 @@ Route::middleware(['auth', 'auth.session', 'session.timeout', 'client'])->prefix
     Route::patch('/communication-preferences', [App\Http\Controllers\Client\CommunicationController::class, 'updatePreferences'])->name('communication.update-preferences');
     Route::get('/communication-preferences', [App\Http\Controllers\Client\CommunicationController::class, 'getPreferences'])->name('communication.get-preferences');
     Route::get('/communication-history', [App\Http\Controllers\Client\CommunicationController::class, 'getHistory'])->name('communication.history');
+    
+    // Tax returns routes
+    Route::get('/tax-returns', function () {
+        return inertia('Client/TaxReturns');
+    })->name('tax-returns');
+    
+    // Invoice routes
+    Route::get('/invoices', [App\Http\Controllers\Client\InvoiceController::class, 'index'])->name('invoices');
+    Route::get('/invoices/{invoice}', [App\Http\Controllers\Client\InvoiceController::class, 'show'])->name('invoices.show');
+    Route::get('/invoices/{invoice}/download', [App\Http\Controllers\Client\InvoiceController::class, 'download'])->name('invoices.download');
 
 });
