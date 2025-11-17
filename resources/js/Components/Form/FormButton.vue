@@ -69,7 +69,7 @@ const props = defineProps({
     default: false
   },
   icon: {
-    type: Object,
+    type: [Object, Function],
     default: null
   }
 })

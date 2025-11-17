@@ -307,18 +307,7 @@ class ClientInformationService
                 }
                 
                 // Map frontend field names to database field names
-                if (isset($projectData['name']) && !isset($projectData['project_name'])) {
-                    $projectData['project_name'] = $projectData['name'];
-                    unset($projectData['name']);
-                }
-                if (isset($projectData['description']) && !isset($projectData['project_description'])) {
-                    $projectData['project_description'] = $projectData['description'];
-                    unset($projectData['description']);
-                }
-                if (isset($projectData['type']) && !isset($projectData['project_type'])) {
-                    $projectData['project_type'] = $projectData['type'];
-                    unset($projectData['type']);
-                }
+                $projectData = $this->normalizeProjectFieldNames($projectData);
                 
                 $client->projects()->create($projectData);
             }
@@ -332,13 +321,10 @@ class ClientInformationService
                     continue;
                 }
                 
-                // Map frontend field names to database field names if needed
-                if (isset($assetData['name']) && !isset($assetData['asset_name'])) {
-                    $assetData['asset_name'] = $assetData['name'];
-                    unset($assetData['name']);
-                }
+                // Normalize asset field names from frontend format to database format
+                $normalizedAssetData = $this->normalizeAssetFieldNames($assetData);
                 
-                $client->assets()->create($assetData);
+                $client->assets()->create($normalizedAssetData);
             }
         }
 
@@ -384,20 +370,7 @@ class ClientInformationService
         // Update project records
         if (isset($data['projects'])) {
             $normalizedProjects = array_map(function($project) {
-                // Map frontend field names to database field names
-                if (isset($project['name']) && !isset($project['project_name'])) {
-                    $project['project_name'] = $project['name'];
-                    unset($project['name']);
-                }
-                if (isset($project['description']) && !isset($project['project_description'])) {
-                    $project['project_description'] = $project['description'];
-                    unset($project['description']);
-                }
-                if (isset($project['type']) && !isset($project['project_type'])) {
-                    $project['project_type'] = $project['type'];
-                    unset($project['type']);
-                }
-                return $project;
+                return $this->normalizeProjectFieldNames($project);
             }, $data['projects']);
             
             $this->updateRelatedCollection($client->projects(), $normalizedProjects);
@@ -406,12 +379,7 @@ class ClientInformationService
         // Update asset records
         if (isset($data['assets'])) {
             $normalizedAssets = array_map(function($asset) {
-                // Map frontend field names to database field names if needed
-                if (isset($asset['name']) && !isset($asset['asset_name'])) {
-                    $asset['asset_name'] = $asset['name'];
-                    unset($asset['name']);
-                }
-                return $asset;
+                return $this->normalizeAssetFieldNames($asset);
             }, $data['assets']);
             
             $this->updateRelatedCollection($client->assets(), $normalizedAssets);
@@ -421,23 +389,22 @@ class ClientInformationService
         if (isset($data['expenses'])) {
             // Normalize expense field names from frontend format to database format
             $normalizedExpenses = array_map(function($expense) {
-                // Map frontend field names to database field names
-                if (isset($expense['taxPayer']) && !isset($expense['tax_payer'])) {
+                // Map frontend field names to database field names, but only if the frontend field has a value
+                if (isset($expense['taxPayer']) && !empty($expense['taxPayer']) && (empty($expense['tax_payer']) || !isset($expense['tax_payer']))) {
                     $expense['tax_payer'] = $expense['taxPayer'];
-                    unset($expense['taxPayer']);
                 }
-                if (isset($expense['date']) && !isset($expense['expense_date'])) {
+                if (isset($expense['date']) && !empty($expense['date']) && (empty($expense['expense_date']) || !isset($expense['expense_date']))) {
                     $expense['expense_date'] = $expense['date'];
-                    unset($expense['date']);
                 }
-                if (isset($expense['receiptNumber']) && !isset($expense['receipt_number'])) {
+                if (isset($expense['receiptNumber']) && !empty($expense['receiptNumber']) && (empty($expense['receipt_number']) || !isset($expense['receipt_number']))) {
                     $expense['receipt_number'] = $expense['receiptNumber'];
-                    unset($expense['receiptNumber']);
                 }
-                if (isset($expense['deductiblePercentage']) && !isset($expense['deductible_percentage'])) {
+                if (isset($expense['deductiblePercentage']) && $expense['deductiblePercentage'] !== '' && (empty($expense['deductible_percentage']) || !isset($expense['deductible_percentage']))) {
                     $expense['deductible_percentage'] = $expense['deductiblePercentage'];
-                    unset($expense['deductiblePercentage']);
                 }
+                
+                // Clean up frontend field names to avoid confusion
+                unset($expense['taxPayer'], $expense['date'], $expense['receiptNumber'], $expense['deductiblePercentage']);
                 if (isset($expense['deductible']) && !isset($expense['is_deductible'])) {
                     $expense['is_deductible'] = $expense['deductible'];
                     unset($expense['deductible']);
@@ -539,6 +506,11 @@ class ClientInformationService
                 $updateData = $recordData;
                 unset($updateData['id']);
                 
+                // Apply field name normalization for projects
+                if ($modelClass === 'App\Models\ClientProject') {
+                    $updateData = $this->normalizeProjectFieldNames($updateData);
+                }
+                
                 Log::info('Updating existing record', [
                     'model' => $modelClass,
                     'id' => $recordId,
@@ -559,9 +531,14 @@ class ClientInformationService
             } else {
                 // Create new record (either no ID, or frontend-generated temp ID)
                 $createData = $recordData;
-                // Remove frontend-generated ID if present (non-numeric or doesn't exist in DB)
-                if (isset($createData['id']) && !is_numeric($createData['id'])) {
+                // Remove frontend-generated ID if present (either non-numeric or doesn't exist in DB)
+                if (isset($createData['id']) && (!is_numeric($createData['id']) || !$existsInDatabase)) {
                     unset($createData['id']);
+                }
+                
+                // Apply field name normalization for projects
+                if ($modelClass === 'App\Models\ClientProject') {
+                    $createData = $this->normalizeProjectFieldNames($createData);
                 }
                 
                 Log::info('Creating new record', [
@@ -751,14 +728,21 @@ class ClientInformationService
             'id' => $expense->id,
             'category' => $expense->category,
             'particulars' => $expense->particulars,
+            // Backend field names (snake_case)
             'tax_payer' => $expense->tax_payer,
+            'expense_date' => $expense->expense_date->format('Y-m-d'),
+            'receipt_number' => $expense->receipt_number,
+            'deductible_percentage' => $expense->deductible_percentage,
+            // Frontend field names (camelCase) for compatibility
+            'taxPayer' => $expense->tax_payer,
+            'date' => $expense->expense_date->format('Y-m-d'),
+            'receiptNumber' => $expense->receipt_number,
+            'deductiblePercentage' => $expense->deductible_percentage,
+            // Common fields
             'spouse' => $expense->spouse,
             'amount' => $expense->amount,
-            'expense_date' => $expense->expense_date->format('Y-m-d'),
             'remarks' => $expense->remarks,
-            'receipt_number' => $expense->receipt_number,
             'is_deductible' => $expense->is_deductible,
-            'deductible_percentage' => $expense->deductible_percentage,
             'deductible_amount' => $expense->deductible_amount,
             'non_deductible_amount' => $expense->non_deductible_amount,
             'has_receipt' => $expense->has_receipt,
@@ -1350,5 +1334,91 @@ class ClientInformationService
         }
         
         return $transformed;
+    }
+
+    /**
+     * Normalize project field names from camelCase to snake_case for database storage.
+     *
+     * @param array $projectData
+     * @return array
+     */
+    private function normalizeProjectFieldNames(array $projectData): array
+    {
+        // Map frontend field names to database field names
+        if (isset($projectData['name']) && !isset($projectData['project_name'])) {
+            $projectData['project_name'] = $projectData['name'];
+            unset($projectData['name']);
+        }
+        if (isset($projectData['description']) && !isset($projectData['project_description'])) {
+            $projectData['project_description'] = $projectData['description'];
+            unset($projectData['description']);
+        }
+        if (isset($projectData['type']) && !isset($projectData['project_type'])) {
+            $projectData['project_type'] = $projectData['type'];
+            unset($projectData['type']);
+        }
+        if (isset($projectData['startDate']) && !isset($projectData['start_date'])) {
+            $projectData['start_date'] = $projectData['startDate'];
+            unset($projectData['startDate']);
+        }
+        if (isset($projectData['dueDate']) && !isset($projectData['due_date'])) {
+            $projectData['due_date'] = $projectData['dueDate'];
+            unset($projectData['dueDate']);
+        }
+        if (isset($projectData['completionDate']) && !isset($projectData['completion_date'])) {
+            $projectData['completion_date'] = $projectData['completionDate'];
+            unset($projectData['completionDate']);
+        }
+        if (isset($projectData['estimatedHours']) && !isset($projectData['estimated_hours'])) {
+            $projectData['estimated_hours'] = $projectData['estimatedHours'];
+            unset($projectData['estimatedHours']);
+        }
+        if (isset($projectData['actualHours']) && !isset($projectData['actual_hours'])) {
+            $projectData['actual_hours'] = $projectData['actualHours'];
+            unset($projectData['actualHours']);
+        }
+
+        return $projectData;
+    }
+
+    /**
+     * Normalize asset field names from frontend format to database format.
+     *
+     * @param array $assetData
+     * @return array
+     */
+    private function normalizeAssetFieldNames(array $assetData): array
+    {
+        // Map frontend field names to database field names if needed
+        if (isset($assetData['name']) && !isset($assetData['asset_name'])) {
+            $assetData['asset_name'] = $assetData['name'];
+            unset($assetData['name']);
+        }
+        
+        // Ensure all required fields have default values if missing
+        $assetData['asset_type'] = $assetData['asset_type'] ?? 'other';
+        $assetData['description'] = $assetData['description'] ?? '';
+        $assetData['current_value'] = $assetData['current_value'] ?? null;
+        $assetData['depreciation_rate'] = $assetData['depreciation_rate'] ?? null;
+        $assetData['any_reimbursement'] = $assetData['any_reimbursement'] ?? 0;
+        
+        // Ensure numeric fields are properly formatted
+        if (isset($assetData['percentage_used_in_business'])) {
+            $assetData['percentage_used_in_business'] = (float) $assetData['percentage_used_in_business'];
+        }
+        if (isset($assetData['cost_of_acquisition'])) {
+            $assetData['cost_of_acquisition'] = (float) $assetData['cost_of_acquisition'];
+        }
+        if (isset($assetData['any_reimbursement'])) {
+            $assetData['any_reimbursement'] = (float) $assetData['any_reimbursement'];
+        }
+        if (isset($assetData['current_value']) && $assetData['current_value'] !== null) {
+            $assetData['current_value'] = (float) $assetData['current_value'];
+        }
+        if (isset($assetData['depreciation_rate']) && $assetData['depreciation_rate'] !== null) {
+            $assetData['depreciation_rate'] = (float) $assetData['depreciation_rate'];
+        }
+        
+        return $assetData;
     }
 }

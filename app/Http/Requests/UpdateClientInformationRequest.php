@@ -139,7 +139,7 @@ class UpdateClientInformationRequest extends FormRequest
             // Expense Information
             'expenses' => 'nullable|array',
             'expenses.*.id' => 'nullable|exists:client_expenses,id',
-            'expenses.*.category' => 'required|in:miscellaneous,residency,business,medical,education,other',
+            'expenses.*.category' => 'required|string|max:50',
             'expenses.*.particulars' => 'required|string|max:255',
             'expenses.*.tax_payer' => 'required|string|max:255',
             'expenses.*.spouse' => 'nullable|string|max:255',

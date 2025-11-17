@@ -46,7 +46,22 @@ class LoginController extends Controller
                 }
             }
             
-            // Redirect based on user role
+            // Redirect based on current URL context or user role
+            $intendedUrl = $request->session()->get('url.intended');
+            
+            if ($intendedUrl) {
+                return redirect($intendedUrl);
+            }
+            
+            // Check referer to determine context
+            $referer = $request->headers->get('referer');
+            if ($referer && str_contains($referer, '/admin/')) {
+                return redirect()->route('admin.dashboard');
+            } elseif ($referer && str_contains($referer, '/client/')) {
+                return redirect()->route('client.dashboard');
+            }
+            
+            // Default redirect based on user role
             if ($user->isAdmin() || $user->isTaxProfessional()) {
                 return redirect()->route('admin.dashboard');
             } else {

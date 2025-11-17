@@ -27,25 +27,27 @@
 
     <div class="max-w-7xl mx-auto">
       <!-- Navigation Tabs -->
-      <div class="bg-white border-b border-gray-200 mb-6">
-        <nav class="flex space-x-8" aria-label="Tabs">
+      <div class="bg-gradient-to-r from-gray-50 to-gray-100 border-b border-gray-200 mb-6 p-2 rounded-t-lg">
+        <nav class="flex space-x-2" aria-label="Tabs">
           <button
             v-for="section in sections"
             :key="section.id"
             @click="activeSection = section.id"
             :class="[
-              'py-4 px-1 border-b-2 font-medium text-sm whitespace-nowrap',
-              activeSection === section.id
-                ? 'border-blue-500 text-blue-600'
-                : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+              'py-3 px-4 font-medium text-sm whitespace-nowrap transition-all duration-200 rounded-lg flex-1 min-w-0',
+              getSectionTabClasses(section.id)
             ]"
           >
-            <div class="flex items-center space-x-2">
-              <component :is="section.icon" class="w-4 h-4" />
-              <span>{{ section.name }}</span>
+            <div class="flex items-center justify-center space-x-2">
+              <component :is="section.icon" :class="getTabIconClasses(section.id)" class="w-4 h-4" />
+              <span class="font-medium">{{ section.name }}</span>
               <div 
-                v-if="section.completed"
-                class="w-2 h-2 bg-green-500 rounded-full"
+                v-if="getSectionProgress(section.id) === 100"
+                class="w-2 h-2 bg-green-400 rounded-full animate-pulse"
+              ></div>
+              <div 
+                v-else-if="getSectionProgress(section.id) === null"
+                :class="`w-2 h-2 rounded-full ${getTabStatusDotClasses(section.id)}`"
               ></div>
             </div>
           </button>
@@ -56,7 +58,7 @@
       <div class="grid grid-cols-1 lg:grid-cols-4 gap-6">
         <!-- Main Content -->
         <div class="lg:col-span-3">
-          <div class="bg-white shadow rounded-lg">
+          <div class="shadow rounded-lg overflow-hidden" :class="getSectionBackgroundClasses(activeSection)">
             <div class="p-6">
               <!-- Personal Details Section -->
               <PersonalDetailsSection
@@ -92,7 +94,7 @@
               />
 
               <!-- Assets Management Section -->
-              <AssetsManagementSection
+              <AssetDetailsSection
                 v-if="activeSection === 'assets'"
                 v-model="form.assets"
                 :errors="form.errors"
@@ -123,7 +125,7 @@
               </div>
               <div class="w-full bg-gray-200 rounded-full h-2">
                 <div 
-                  class="bg-blue-600 h-2 rounded-full transition-all duration-300"
+                  class="bg-gradient-to-r from-blue-500 to-emerald-500 h-2 rounded-full transition-all duration-300"
                   :style="{ width: `${overallProgress}%` }"
                 ></div>
               </div>
@@ -134,12 +136,15 @@
               <div 
                 v-for="section in sections"
                 :key="section.id"
-                class="flex items-center justify-between p-3 bg-gray-50 rounded-lg cursor-pointer hover:bg-gray-100 transition-colors"
+                :class="[
+                  'flex items-center justify-between p-3 rounded-lg cursor-pointer transition-all duration-200',
+                  getSidebarSectionClasses(section.id)
+                ]"
                 @click="activeSection = section.id"
               >
                 <div class="flex items-center space-x-3">
-                  <component :is="section.icon" class="w-4 h-4 text-gray-500" />
-                  <span class="text-sm font-medium text-gray-900">{{ section.name }}</span>
+                  <component :is="section.icon" :class="getSectionIconClasses(section.id)" class="w-4 h-4" />
+                  <span class="text-sm font-medium" :class="getSectionTextClasses(section.id)">{{ section.name }}</span>
                 </div>
                 <div class="flex items-center space-x-2">
                   <!-- Progress indicator -->
@@ -147,17 +152,21 @@
                     <div 
                       class="h-2 rounded-full transition-all duration-300"
                       :class="getSectionProgressColor(section.id)"
-                      :style="{ width: `${getSectionProgress(section.id)}%` }"
+                      :style="{ width: getSectionProgress(section.id) !== null ? `${getSectionProgress(section.id)}%` : '100%' }"
                     ></div>
                   </div>
                   <!-- Completion status -->
                   <div 
-                    v-if="getSectionProgress(section.id) === 100"
+                    v-if="getSectionProgress(section.id) === null"
+                    :class="`w-2 h-2 rounded-full ${getSectionThemeColor(section.id)}`"
+                  ></div>
+                  <div 
+                    v-else-if="getSectionProgress(section.id) === 100"
                     class="w-2 h-2 bg-green-500 rounded-full"
                   ></div>
                   <div 
                     v-else-if="getSectionProgress(section.id) > 0"
-                    class="w-2 h-2 bg-yellow-500 rounded-full"
+                    class="w-2 h-2 bg-amber-500 rounded-full"
                   ></div>
                   <div 
                     v-else
@@ -352,7 +361,8 @@
                             class="rounded border-gray-300 text-green-600 shadow-sm focus:border-green-300 focus:ring focus:ring-green-200 focus:ring-opacity-50"
                           />
                           <span class="ml-2 text-sm text-gray-700">{{ section.name }}</span>
-                          <span v-if="getSectionProgress(section.id) === 100" class="ml-2 text-xs text-green-600">(Complete)</span>
+                          <span v-if="getSectionProgress(section.id) === null" class="ml-2 text-xs text-blue-600">(Optional)</span>
+                          <span v-else-if="getSectionProgress(section.id) === 100" class="ml-2 text-xs text-green-600">(Complete)</span>
                           <span v-else-if="getSectionProgress(section.id) > 0" class="ml-2 text-xs text-yellow-600">(In Progress)</span>
                         </label>
                       </div>
@@ -422,7 +432,7 @@ import PersonalDetailsSection from '@/Components/PersonalDetailsSection.vue'
 import SpouseDetailsSection from '@/Components/SpouseDetailsSection.vue'
 import EmployeeInformationSection from '@/Components/EmployeeInformationSection.vue'
 import ProjectDetailsSection from '@/Components/ProjectDetailsSection.vue'
-import AssetsManagementSection from '@/Components/AssetsManagementSection.vue'
+import AssetDetailsSection from '@/Components/AssetDetailsSection.vue'
 import ExpensesManagementSection from '@/Components/ExpensesManagementSection.vue'
 
 // Icons
@@ -554,9 +564,9 @@ const autoSaveStatusText = computed(() => {
 
 // Progress tracking computed properties
 const overallProgress = computed(() => {
-  const sectionProgresses = sections.value.map(section => getSectionProgress(section.id))
+  const sectionProgresses = sections.value.map(section => getSectionProgress(section.id)).filter(progress => progress !== null)
   const totalProgress = sectionProgresses.reduce((sum, progress) => sum + progress, 0)
-  return totalProgress / sections.value.length
+  return sectionProgresses.length > 0 ? totalProgress / sectionProgresses.length : 0
 })
 
 const getSectionProgress = (sectionId) => {
@@ -568,11 +578,11 @@ const getSectionProgress = (sectionId) => {
     case 'employee':
       return calculateEmployeeProgress()
     case 'projects':
-      return calculateProjectsProgress()
+      return null // No progress calculation for projects
     case 'assets':
-      return calculateAssetsProgress()
+      return null // No progress calculation for assets
     case 'expenses':
-      return calculateExpensesProgress()
+      return null // No progress calculation for expenses
     default:
       return 0
   }
@@ -580,9 +590,152 @@ const getSectionProgress = (sectionId) => {
 
 const getSectionProgressColor = (sectionId) => {
   const progress = getSectionProgress(sectionId)
+  if (progress === null) return getSectionThemeColor(sectionId)
   if (progress === 100) return 'bg-green-500'
-  if (progress > 0) return 'bg-yellow-500'
+  if (progress > 0) return 'bg-amber-500'
   return 'bg-gray-300'
+}
+
+// Color psychology for tax consulting platform
+const getSectionThemeColor = (sectionId) => {
+  const colors = {
+    personal: 'bg-blue-500',      // Trust, reliability, professionalism
+    spouse: 'bg-rose-500',        // Love, relationships, warmth
+    employee: 'bg-indigo-500',    // Corporate, professional, stability
+    projects: 'bg-purple-500',    // Creativity, planning, innovation
+    assets: 'bg-emerald-500',     // Money, growth, prosperity
+    expenses: 'bg-orange-500'     // Energy, attention, caution
+  }
+  return colors[sectionId] || 'bg-gray-500'
+}
+
+const getSectionTabClasses = (sectionId) => {
+  const isActive = activeSection.value === sectionId
+  
+  const colorMap = {
+    personal: {
+      active: 'bg-blue-500 text-white shadow-lg transform scale-105 border-2 border-blue-600',
+      inactive: 'bg-blue-100 text-blue-700 hover:bg-blue-200 hover:shadow-md hover:transform hover:scale-102 border border-blue-200'
+    },
+    spouse: {
+      active: 'bg-rose-500 text-white shadow-lg transform scale-105 border-2 border-rose-600',
+      inactive: 'bg-rose-100 text-rose-700 hover:bg-rose-200 hover:shadow-md hover:transform hover:scale-102 border border-rose-200'
+    },
+    employee: {
+      active: 'bg-indigo-500 text-white shadow-lg transform scale-105 border-2 border-indigo-600',
+      inactive: 'bg-indigo-100 text-indigo-700 hover:bg-indigo-200 hover:shadow-md hover:transform hover:scale-102 border border-indigo-200'
+    },
+    projects: {
+      active: 'bg-purple-500 text-white shadow-lg transform scale-105 border-2 border-purple-600',
+      inactive: 'bg-purple-100 text-purple-700 hover:bg-purple-200 hover:shadow-md hover:transform hover:scale-102 border border-purple-200'
+    },
+    assets: {
+      active: 'bg-emerald-500 text-white shadow-lg transform scale-105 border-2 border-emerald-600',
+      inactive: 'bg-emerald-100 text-emerald-700 hover:bg-emerald-200 hover:shadow-md hover:transform hover:scale-102 border border-emerald-200'
+    },
+    expenses: {
+      active: 'bg-orange-500 text-white shadow-lg transform scale-105 border-2 border-orange-600',
+      inactive: 'bg-orange-100 text-orange-700 hover:bg-orange-200 hover:shadow-md hover:transform hover:scale-102 border border-orange-200'
+    }
+  }
+  
+  return isActive ? colorMap[sectionId]?.active : colorMap[sectionId]?.inactive
+}
+
+const getSectionBackgroundClasses = (sectionId) => {
+  const backgroundMap = {
+    personal: 'bg-gradient-to-br from-blue-50 to-white',
+    spouse: 'bg-gradient-to-br from-rose-50 to-white',
+    employee: 'bg-gradient-to-br from-indigo-50 to-white',
+    projects: 'bg-gradient-to-br from-purple-50 to-white',
+    assets: 'bg-gradient-to-br from-emerald-50 to-white',
+    expenses: 'bg-gradient-to-br from-orange-50 to-white'
+  }
+  
+  return backgroundMap[sectionId] || 'bg-white'
+}
+
+const getSidebarSectionClasses = (sectionId) => {
+  const isActive = activeSection.value === sectionId
+  
+  const colorMap = {
+    personal: isActive ? 'bg-blue-100 border border-blue-200' : 'bg-gray-50 hover:bg-blue-50',
+    spouse: isActive ? 'bg-rose-100 border border-rose-200' : 'bg-gray-50 hover:bg-rose-50',
+    employee: isActive ? 'bg-indigo-100 border border-indigo-200' : 'bg-gray-50 hover:bg-indigo-50',
+    projects: isActive ? 'bg-purple-100 border border-purple-200' : 'bg-gray-50 hover:bg-purple-50',
+    assets: isActive ? 'bg-emerald-100 border border-emerald-200' : 'bg-gray-50 hover:bg-emerald-50',
+    expenses: isActive ? 'bg-orange-100 border border-orange-200' : 'bg-gray-50 hover:bg-orange-50'
+  }
+  
+  return colorMap[sectionId] || 'bg-gray-50 hover:bg-gray-100'
+}
+
+const getSectionIconClasses = (sectionId) => {
+  const isActive = activeSection.value === sectionId
+  
+  const colorMap = {
+    personal: isActive ? 'text-blue-600' : 'text-gray-500',
+    spouse: isActive ? 'text-rose-600' : 'text-gray-500',
+    employee: isActive ? 'text-indigo-600' : 'text-gray-500',
+    projects: isActive ? 'text-purple-600' : 'text-gray-500',
+    assets: isActive ? 'text-emerald-600' : 'text-gray-500',
+    expenses: isActive ? 'text-orange-600' : 'text-gray-500'
+  }
+  
+  return colorMap[sectionId] || 'text-gray-500'
+}
+
+const getSectionTextClasses = (sectionId) => {
+  const isActive = activeSection.value === sectionId
+  
+  const colorMap = {
+    personal: isActive ? 'text-blue-900' : 'text-gray-900',
+    spouse: isActive ? 'text-rose-900' : 'text-gray-900',
+    employee: isActive ? 'text-indigo-900' : 'text-gray-900',
+    projects: isActive ? 'text-purple-900' : 'text-gray-900',
+    assets: isActive ? 'text-emerald-900' : 'text-gray-900',
+    expenses: isActive ? 'text-orange-900' : 'text-gray-900'
+  }
+  
+  return colorMap[sectionId] || 'text-gray-900'
+}
+
+const getTabIconClasses = (sectionId) => {
+  const isActive = activeSection.value === sectionId
+  
+  if (isActive) {
+    return 'text-white'
+  }
+  
+  const colorMap = {
+    personal: 'text-blue-600',
+    spouse: 'text-rose-600',
+    employee: 'text-indigo-600',
+    projects: 'text-purple-600',
+    assets: 'text-emerald-600',
+    expenses: 'text-orange-600'
+  }
+  
+  return colorMap[sectionId] || 'text-gray-600'
+}
+
+const getTabStatusDotClasses = (sectionId) => {
+  const isActive = activeSection.value === sectionId
+  
+  if (isActive) {
+    return 'bg-white bg-opacity-80'
+  }
+  
+  const colorMap = {
+    personal: 'bg-blue-400',
+    spouse: 'bg-rose-400',
+    employee: 'bg-indigo-400',
+    projects: 'bg-purple-400',
+    assets: 'bg-emerald-400',
+    expenses: 'bg-orange-400'
+  }
+  
+  return colorMap[sectionId] || 'bg-gray-400'
 }
 
 const getSectionHelp = (sectionId) => {
@@ -596,10 +749,6 @@ const getSectionHelp = (sectionId) => {
   }
   return helpTexts[sectionId] || ''
 }
-
-
-
-
 
 // Methods
 const handleSectionUpdate = () => {
@@ -633,7 +782,7 @@ const scheduleAutoSave = () => {
 const autoSave = async () => {
   try {
     autoSaveStatus.value = 'saving'
-    
+    console.log('form projects', form.assets);
     const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content')
     
     if (!csrfToken) {
@@ -655,13 +804,22 @@ const autoSave = async () => {
         spouse: toSnakeCase(form.spouse),
         employee: Array.isArray(form.employee) ? form.employee.map(emp => toSnakeCase(emp)) : [],
         projects: form.projects,
-        assets: form.assets,
+        assets: Array.isArray(form.assets) ? form.assets.map((asset, index) => {
+          const snakeCaseAsset = toSnakeCase(asset)
+          // Ensure date is properly formatted
+          if (snakeCaseAsset.date_of_purchase) {
+            const originalDate = snakeCaseAsset.date_of_purchase
+            snakeCaseAsset.date_of_purchase = formatDateForBackend(snakeCaseAsset.date_of_purchase)
+            console.log(`Asset ${index} date formatting:`, originalDate, '->', snakeCaseAsset.date_of_purchase)
+          }
+          return snakeCaseAsset
+        }) : [],
         expenses: form.expenses
       })
     })
     
     const result = await response.json()
-    
+    console.log('result', result);
     if (response.ok && result.success) {
       autoSaveStatus.value = 'saved'
       setTimeout(() => {
@@ -687,7 +845,14 @@ const saveInformation = () => {
     spouse: toSnakeCase(form.spouse),
     employee: Array.isArray(form.employee) ? form.employee : [], // Don't convert employee field names - backend handles this
     projects: form.projects,
-    assets: form.assets,
+    assets: Array.isArray(form.assets) ? form.assets.map(asset => {
+      const processedAsset = { ...asset }
+      // Ensure date is properly formatted
+      if (processedAsset.date_of_purchase) {
+        processedAsset.date_of_purchase = formatDateForBackend(processedAsset.date_of_purchase)
+      }
+      return processedAsset
+    }) : [],
     expenses: form.expenses
   }
   
@@ -737,6 +902,43 @@ const toCamelCase = (obj) => {
   return result
 }
 
+const formatDateForBackend = (date) => {
+  if (!date) return null
+  
+  try {
+    let dateObj
+    
+    // Handle different date formats
+    if (typeof date === 'string') {
+      // If it's already in YYYY-MM-DD format, return as is
+      if (/^\d{4}-\d{2}-\d{2}$/.test(date)) {
+        return date
+      }
+      dateObj = new Date(date)
+    } else if (date instanceof Date) {
+      dateObj = date
+    } else {
+      return null
+    }
+    
+    // Check if the date is valid
+    if (isNaN(dateObj.getTime())) {
+      console.warn('Invalid date provided:', date)
+      return null
+    }
+    
+    // Return in YYYY-MM-DD format for backend validation
+    const year = dateObj.getFullYear()
+    const month = String(dateObj.getMonth() + 1).padStart(2, '0')
+    const day = String(dateObj.getDate()).padStart(2, '0')
+    
+    return `${year}-${month}-${day}`
+  } catch (error) {
+    console.error('Error formatting date for backend:', error, date)
+    return null
+  }
+}
+
 const toSnakeCase = (obj) => {
   const result = {}
   for (const [key, value] of Object.entries(obj)) {
@@ -768,10 +970,12 @@ const loadInitialData = () => {
     }
     
     if (props.clientData.projects) {
+      console.log(props.clientData.projects)
       form.projects = props.clientData.projects
     }
     
     if (props.clientData.assets) {
+      console.log(props.clientData.assets)
       form.assets = props.clientData.assets
     }
     
@@ -822,38 +1026,9 @@ const calculateEmployeeProgress = () => {
   return (filledFields.length / requiredFields.length) * 100
 }
 
-const calculateProjectsProgress = () => {
-  // Projects are optional, so if none exist, consider it complete
-  if (!form.projects || form.projects.length === 0) return 100
-  
-  // If projects exist, check if they have basic information
-  const validProjects = form.projects.filter(project => 
-    project.name && project.name.trim().length > 0
-  )
-  return form.projects.length > 0 ? (validProjects.length / form.projects.length) * 100 : 100
-}
 
-const calculateAssetsProgress = () => {
-  // Assets are optional, so if none exist, consider it complete
-  if (!form.assets || form.assets.length === 0) return 100
-  
-  // If assets exist, check if they have required information
-  const validAssets = form.assets.filter(asset => 
-    asset.assetName && asset.dateOfPurchase && asset.costOfAcquisition
-  )
-  return form.assets.length > 0 ? (validAssets.length / form.assets.length) * 100 : 100
-}
 
-const calculateExpensesProgress = () => {
-  // Expenses are optional, so if none exist, consider it complete
-  if (!form.expenses || form.expenses.length === 0) return 100
-  
-  // If expenses exist, check if they have required information
-  const validExpenses = form.expenses.filter(expense => 
-    expense.particulars && expense.amount && expense.taxPayer
-  )
-  return form.expenses.length > 0 ? (validExpenses.length / form.expenses.length) * 100 : 100
-}
+
 
 // Watch form changes to trigger completion recalculation
 watch(() => form.data(), () => {

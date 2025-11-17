@@ -106,7 +106,7 @@
             />
 
             <!-- Assets Management Section -->
-            <AssetsManagementSection
+            <AssetDetailsSection
               v-if="activeSection === 'assets'"
               v-model="formData.assets"
               :errors="errors.assets"
@@ -200,7 +200,7 @@ const PersonalDetailsSection = defineAsyncComponent(() => import('./PersonalDeta
 const SpouseDetailsSection = defineAsyncComponent(() => import('./SpouseDetailsSection.vue'))
 const EmployeeInformationSection = defineAsyncComponent(() => import('./EmployeeInformationSection.vue'))
 const ProjectDetailsSection = defineAsyncComponent(() => import('./ProjectDetailsSection.vue'))
-const AssetsManagementSection = defineAsyncComponent(() => import('./AssetsManagementSection.vue'))
+const AssetDetailsSection = defineAsyncComponent(() => import('./AssetDetailsSection.vue'))
 const ExpensesManagementSection = defineAsyncComponent(() => import('./ExpensesManagementSection.vue'))
 
 // Icons (using heroicons or similar)
@@ -724,7 +724,7 @@ watch(activeSection, (newSection) => {
         import('./ProjectDetailsSection.vue')
         break
       case 'assets':
-        import('./AssetsManagementSection.vue')
+        import('./AssetDetailsSection.vue')
         break
       case 'expenses':
         import('./ExpensesManagementSection.vue')

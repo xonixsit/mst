@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Asset Components Test</title>
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 p-8">
+    <div id="app">
+        <h1 class="text-2xl font-bold mb-6">Asset Components Test</h1>
+        
+        <!-- Test data display -->
+        <div class="mb-6 p-4 bg-white rounded-lg shadow">
+            <h2 class="text-lg font-semibold mb-2">Current Assets Data:</h2>
+            <pre class="text-sm bg-gray-100 p-2 rounded">{{ JSON.stringify(assets, null, 2) }}</pre>
+        </div>
+        
+        <!-- Asset Details Section would go here -->
+        <div class="bg-white rounded-lg shadow p-6">
+            <h2 class="text-lg font-semibold mb-4">Asset Management Interface</h2>
+            <p class="text-gray-600">The AssetDetailsSection component would be rendered here with modal and accordion functionality.</p>
+            
+            <!-- Sample asset display -->
+            <div v-if="assets.length > 0" class="mt-4 space-y-2">
+                <div v-for="asset in assets" :key="asset.id" class="border rounded p-3">
+                    <div class="flex justify-between items-center">
+                        <div>
+                            <h3 class="font-medium">{{ asset.asset_name }}</h3>
+                            <p class="text-sm text-gray-600">{{ formatCurrency(asset.cost_of_acquisition) }} • {{ asset.percentage_used_in_business }}% business use</p>
+                        </div>
+                        <div class="flex space-x-2">
+                            <button @click="editAsset(asset)" class="text-blue-600 hover:text-blue-800">Edit</button>
+                            <button @click="removeAsset(asset)" class="text-red-600 hover:text-red-800">Remove</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <button @click="addSampleAsset" class="mt-4 bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">
+                Add Sample Asset
+            </button>
+        </div>
+    </div>
+
+    <script>
+        const { createApp, ref, reactive } = Vue;
+        
+        createApp({
+            setup() {
+                const assets = ref([]);
+                
+                const formatCurrency = (amount) => {
+                    return new Intl.NumberFormat('en-US', {
+                        style: 'currency',
+                        currency: 'USD'
+                    }).format(amount || 0);
+                };
+                
+                const addSampleAsset = () => {
+                    const sampleAssets = [
+                        {
+                            id: Date.now(),
+                            asset_name: 'Office Computer',
+                            asset_type: 'computer',
+                            date_of_purchase: '2024-01-15',
+                            percentage_used_in_business: 80,
+                            cost_of_acquisition: 1500.00,
+                            any_reimbursement: 0,
+                            current_value: 1200.00,
+                            depreciation_rate: 20,
+                            description: 'Dell desktop computer for office work'
+                        },
+                        {
+                            id: Date.now() + 1,
+                            asset_name: 'Office Desk',
+                            asset_type: 'furniture',
+                            date_of_purchase: '2024-02-01',
+                            percentage_used_in_business: 100,
+                            cost_of_acquisition: 800.00,
+                            any_reimbursement: 100.00,
+                            current_value: 700.00,
+                            depreciation_rate: 10,
+                            description: 'Standing desk for home office'
+                        }
+                    ];
+                    
+                    const randomAsset = sampleAssets[Math.floor(Math.random() * sampleAssets.length)];
+                    assets.value.push({ ...randomAsset, id: Date.now() });
+                };
+                
+                const editAsset = (asset) => {
+                    alert(`Edit asset: ${asset.asset_name}`);
+                };
+                
+                const removeAsset = (asset) => {
+                    const index = assets.value.findIndex(a => a.id === asset.id);
+                    if (index > -1) {
+                        assets.value.splice(index, 1);
+                    }
+                };
+                
+                return {
+                    assets,
+                    formatCurrency,
+                    addSampleAsset,
+                    editAsset,
+                    removeAsset
+                };
+            }
+        }).mount('#app');
+    </script>
+</body>
+</html>

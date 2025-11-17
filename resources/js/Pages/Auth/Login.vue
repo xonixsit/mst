@@ -111,9 +111,15 @@ const registerLink = computed(() => {
 })
 
 const handleSubmit = () => {
-  form.post('/login', {
+  const loginUrl = window.location.pathname.includes('/admin/') ? '/admin/login' : 
+                   window.location.pathname.includes('/client/') ? '/client/login' : '/login'
+  
+  form.post(loginUrl, {
+    onSuccess: () => {
+      const dashboardUrl = window.location.pathname.includes('/admin/') ? '/admin/dashboard' : '/client/dashboard'
+      window.location.href = dashboardUrl
+    },
     onError: () => {
-      // Clear password on error for security
       form.password = ''
     }
   })

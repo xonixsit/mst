@@ -10,11 +10,6 @@ class ClientExpense extends Model
 {
     use HasFactory;
 
-    /**
-     * The attributes that are mass assignable.
-     *
-     * @var array<int, string>
-     */
     protected $fillable = [
         'client_id',
         'category',
@@ -29,44 +24,15 @@ class ClientExpense extends Model
         'deductible_percentage',
     ];
 
-    /**
-     * The attributes that should be cast.
-     *
-     * @var array<string, string>
-     */
     protected $casts = [
         'amount' => 'decimal:2',
+        'deductible_percentage' => 'decimal:2',
         'expense_date' => 'date',
         'is_deductible' => 'boolean',
-        'deductible_percentage' => 'decimal:2',
-        'created_at' => 'datetime',
-        'updated_at' => 'datetime',
     ];
 
     /**
-     * Validation rules for expense data.
-     *
-     * @return array<string, string>
-     */
-    public static function validationRules(): array
-    {
-        return [
-            'client_id' => 'required|exists:clients,id',
-            'category' => 'required|in:miscellaneous,residency,business,medical,education,other',
-            'particulars' => 'required|string|max:255',
-            'tax_payer' => 'required|string|max:255',
-            'spouse' => 'nullable|string|max:255',
-            'amount' => 'required|numeric|min:0|max:9999999999.99',
-            'expense_date' => 'required|date',
-            'remarks' => 'nullable|string|max:1000',
-            'receipt_number' => 'nullable|string|max:255',
-            'is_deductible' => 'boolean',
-            'deductible_percentage' => 'required|numeric|min:0|max:100',
-        ];
-    }
-
-    /**
-     * Get the client that owns this expense.
+     * Get the client that owns the expense.
      */
     public function client(): BelongsTo
     {
@@ -74,7 +40,7 @@ class ClientExpense extends Model
     }
 
     /**
-     * Get the deductible amount.
+     * Get the deductible amount for this expense.
      */
     public function getDeductibleAmountAttribute(): float
     {
@@ -86,60 +52,15 @@ class ClientExpense extends Model
     }
 
     /**
-     * Get the non-deductible amount.
+     * Scope to filter by category.
      */
-    public function getNonDeductibleAmountAttribute(): float
-    {
-        return $this->amount - $this->deductible_amount;
-    }
-
-    /**
-     * Check if expense has receipt documentation.
-     */
-    public function getHasReceiptAttribute(): bool
-    {
-        return !empty($this->receipt_number);
-    }
-
-    /**
-     * Get formatted expense description.
-     */
-    public function getFormattedDescriptionAttribute(): string
-    {
-        $description = $this->particulars;
-        if ($this->remarks) {
-            $description .= ' - ' . $this->remarks;
-        }
-        return $description;
-    }
-
-    /**
-     * Scope a query to only include deductible expenses.
-     */
-    public function scopeDeductible($query)
-    {
-        return $query->where('is_deductible', true)
-                    ->where('deductible_percentage', '>', 0);
-    }
-
-    /**
-     * Scope a query by category.
-     */
-    public function scopeOfCategory($query, $category)
+    public function scopeByCategory($query, $category)
     {
         return $query->where('category', $category);
     }
 
     /**
-     * Scope a query to expenses in a specific year.
-     */
-    public function scopeInYear($query, $year)
-    {
-        return $query->whereYear('expense_date', $year);
-    }
-
-    /**
-     * Scope a query to expenses by tax payer.
+     * Scope to filter by tax payer.
      */
     public function scopeByTaxPayer($query, $taxPayer)
     {
@@ -147,11 +68,34 @@ class ClientExpense extends Model
     }
 
     /**
-     * Scope a query to expenses with receipts.
+     * Scope to filter deductible expenses only.
      */
-    public function scopeWithReceipts($query)
+    public function scopeDeductible($query)
     {
-        return $query->whereNotNull('receipt_number')
-                    ->where('receipt_number', '!=', '');
+        return $query->where('is_deductible', true);
+    }
+
+    /**
+     * Scope to filter by date range.
+     */
+    public function scopeByDateRange($query, $startDate, $endDate)
+    {
+        return $query->whereBetween('expense_date', [$startDate, $endDate]);
+    }
+
+    /**
+     * Get formatted amount.
+     */
+    public function getFormattedAmountAttribute(): string
+    {
+        return '$' . number_format($this->amount, 2);
+    }
+
+    /**
+     * Get formatted deductible amount.
+     */
+    public function getFormattedDeductibleAmountAttribute(): string
+    {
+        return '$' . number_format($this->deductible_amount, 2);
     }
 }

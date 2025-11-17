@@ -297,6 +297,8 @@
             </div>
           </div>
 
+
+
           <!-- Additional Information -->
           <div class="border-t border-gray-200 pt-6">
             <h3 class="text-md font-medium text-gray-900 mb-4">Additional Information</h3>
@@ -339,11 +341,31 @@
         </form>
       </div>
     </div>
+
+    <!-- Expense Modal -->
+    <ExpenseModal
+      :show="showExpenseModal"
+      :expense="selectedExpense"
+      :errors="expenseErrors"
+      @close="closeExpenseModal"
+      @save="saveExpense"
+    />
+
+    <!-- Expense View Modal -->
+    <ExpenseViewModal
+      :show="showExpenseViewModal"
+      :expense="selectedExpense"
+      @close="closeExpenseViewModal"
+      @edit="editFromView"
+    />
   </div>
 </template>
 
 <script setup>
 import { ref, reactive, computed, watch, onMounted } from 'vue'
+import ExpenseTable from './ExpenseTable.vue'
+import ExpenseModal from './ExpenseModal.vue'
+import ExpenseViewModal from './ExpenseViewModal.vue'
 
 // Props
 const props = defineProps({
@@ -385,8 +407,15 @@ const localData = reactive({
     retirementPlan: false,
     dentalInsurance: false,
     visionInsurance: false
-  }
+  },
+  expenses: []
 })
+
+// Expense modal state
+const showExpenseModal = ref(false)
+const showExpenseViewModal = ref(false)
+const selectedExpense = ref(null)
+const expenseErrors = ref({})
 
 // Field validation errors
 const fieldErrors = reactive({})
@@ -511,6 +540,8 @@ const initializeData = () => {
       if (props.modelValue[key] !== undefined) {
         if (key === 'benefits' && typeof props.modelValue[key] === 'object') {
           localData[key] = { ...localData[key], ...props.modelValue[key] }
+        } else if (key === 'expenses' && Array.isArray(props.modelValue[key])) {
+          localData[key] = [...props.modelValue[key]]
         } else {
           localData[key] = props.modelValue[key]
         }
@@ -527,6 +558,105 @@ watch(() => props.errors, (newErrors) => {
 
 // Watch for prop changes
 watch(() => props.modelValue, initializeData, { deep: true })
+
+// Expense management methods
+const openExpenseModal = (expense = null) => {
+  selectedExpense.value = expense
+  expenseErrors.value = {}
+  showExpenseModal.value = true
+}
+
+const closeExpenseModal = () => {
+  showExpenseModal.value = false
+  selectedExpense.value = null
+  expenseErrors.value = {}
+}
+
+const openExpenseViewModal = (expense) => {
+  selectedExpense.value = expense
+  showExpenseViewModal.value = true
+}
+
+const closeExpenseViewModal = () => {
+  showExpenseViewModal.value = false
+  selectedExpense.value = null
+}
+
+const editFromView = (expense) => {
+  closeExpenseViewModal()
+  openExpenseModal(expense)
+}
+
+const saveExpense = (expenseData) => {
+  // Validate expense data
+  const errors = validateExpense(expenseData)
+  
+  if (Object.keys(errors).length > 0) {
+    expenseErrors.value = errors
+    return
+  }
+
+  if (!localData.expenses) {
+    localData.expenses = []
+  }
+
+  if (expenseData.id) {
+    // Update existing expense
+    const index = localData.expenses.findIndex(exp => exp.id === expenseData.id)
+    if (index !== -1) {
+      localData.expenses[index] = { ...expenseData }
+    }
+  } else {
+    // Add new expense
+    const newExpense = {
+      ...expenseData,
+      id: Date.now() // Temporary ID for frontend
+    }
+    localData.expenses.push(newExpense)
+  }
+
+  // Emit update
+  emit('update:modelValue', { ...localData })
+  emit('update', { ...localData })
+  
+  closeExpenseModal()
+}
+
+const deleteExpense = (expense, index) => {
+  if (localData.expenses) {
+    localData.expenses.splice(index, 1)
+    
+    // Emit update
+    emit('update:modelValue', { ...localData })
+    emit('update', { ...localData })
+  }
+}
+
+const validateExpense = (expenseData) => {
+  const errors = {}
+
+  if (!expenseData.category) {
+    errors.category = 'Category is required'
+  }
+
+  if (!expenseData.particulars || expenseData.particulars.trim().length === 0) {
+    errors.particulars = 'Description is required'
+  }
+
+  if (!expenseData.expense_date) {
+    errors.expense_date = 'Date is required'
+  }
+
+  if (!expenseData.amount || parseFloat(expenseData.amount) <= 0) {
+    errors.amount = 'Amount must be greater than 0'
+  }
+
+  if (!expenseData.tax_payer) {
+    errors.tax_payer = 'Tax payer is required'
+  }
+
+  return errors
+}
 
 // Initialize on mount
 onMounted(() => {

@@ -115,7 +115,7 @@ class StoreClientInformationRequest extends FormRequest
 
             // Expense Information
             'expenses' => 'nullable|array',
-            'expenses.*.category' => 'required|in:miscellaneous,residency,business,medical,education,other',
+            'expenses.*.category' => 'required|string|max:50',
             'expenses.*.particulars' => 'required|string|max:255',
             'expenses.*.tax_payer' => 'required|string|max:255',
             'expenses.*.spouse' => 'nullable|string|max:255',
