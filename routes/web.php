@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use Illuminate\Http\Request;
 use App\Http\Controllers\Admin\ClientController;
 use App\Http\Controllers\Admin\InvoiceController;
 use App\Http\Controllers\Admin\DocumentController;
@@ -19,53 +20,49 @@ Route::get('/', function () {
     return redirect('/admin/login');
 });
 
-// Global login route
+// Global login routes
 Route::get('/login', function () {
+    return redirect('/admin/login');
+})->name('login');
+
+Route::post('/login', function () {
     return redirect('/admin/login');
 });
 
-Route::post('/login', [LoginController::class, 'login'])->name('login');
-
 // Admin Authentication Routes
 Route::prefix('admin')->name('admin.')->group(function () {
-    // Temporarily remove guest middleware to test
     Route::get('/login', [LoginController::class, 'showLoginForm'])->name('login');
-    Route::middleware('guest')->group(function () {
-        Route::post('/login', [LoginController::class, 'login']);
-        Route::get('/register', [RegisterController::class, 'showRegistrationForm'])->name('register');
-        Route::post('/register', [RegisterController::class, 'register']);
-        Route::get('/forgot-password', [ForgotPasswordController::class, 'showLinkRequestForm'])->name('password.request');
-        Route::post('/forgot-password', [ForgotPasswordController::class, 'sendResetLinkEmail'])->name('password.email');
-        Route::get('/reset-password/{token}', [ResetPasswordController::class, 'showResetForm'])->name('password.reset');
-        Route::post('/reset-password', [ResetPasswordController::class, 'reset'])->name('password.update');
-        
-        // Email verification routes
-        Route::get('/email/verify', [App\Http\Controllers\Auth\VerificationController::class, 'show'])->name('verification.notice');
-        Route::get('/email/verify/{id}/{hash}', [App\Http\Controllers\Auth\VerificationController::class, 'verify'])->name('verification.verify');
-        Route::post('/email/verification-notification', [App\Http\Controllers\Auth\VerificationController::class, 'resend'])->name('verification.send');
-    });
+    Route::post('/login', [LoginController::class, 'login']);
+    Route::get('/register', [RegisterController::class, 'showRegistrationForm'])->name('register');
+    Route::post('/register', [RegisterController::class, 'register']);
+    Route::get('/forgot-password', [ForgotPasswordController::class, 'showLinkRequestForm'])->name('password.request');
+    Route::post('/forgot-password', [ForgotPasswordController::class, 'sendResetLinkEmail'])->name('password.email');
+    Route::get('/reset-password/{token}', [ResetPasswordController::class, 'showResetForm'])->name('password.reset');
+    Route::post('/reset-password', [ResetPasswordController::class, 'reset'])->name('password.update');
+    
+    // Email verification routes
+    Route::get('/email/verify', [App\Http\Controllers\Auth\VerificationController::class, 'show'])->name('verification.notice');
+    Route::get('/email/verify/{id}/{hash}', [App\Http\Controllers\Auth\VerificationController::class, 'verify'])->name('verification.verify');
+    Route::post('/email/verification-notification', [App\Http\Controllers\Auth\VerificationController::class, 'resend'])->name('verification.send');
     
     Route::post('/logout', [LoginController::class, 'logout'])->middleware(['auth', 'auth.session'])->name('logout');
 });
 
 // Client Authentication Routes
 Route::prefix('client')->name('client.')->group(function () {
-    // Temporarily remove guest middleware to test
     Route::get('/login', [LoginController::class, 'showLoginForm'])->name('login');
-    Route::middleware('guest')->group(function () {
-        Route::post('/login', [LoginController::class, 'login']);
-        Route::get('/register', [RegisterController::class, 'showRegistrationForm'])->name('register');
-        Route::post('/register', [RegisterController::class, 'register']);
-        Route::get('/forgot-password', [ForgotPasswordController::class, 'showLinkRequestForm'])->name('password.request');
-        Route::post('/forgot-password', [ForgotPasswordController::class, 'sendResetLinkEmail'])->name('password.email');
-        Route::get('/reset-password/{token}', [ResetPasswordController::class, 'showResetForm'])->name('password.reset');
-        Route::post('/reset-password', [ResetPasswordController::class, 'reset'])->name('password.update');
-        
-        // Email verification routes
-        Route::get('/email/verify', [App\Http\Controllers\Auth\VerificationController::class, 'show'])->name('verification.notice');
-        Route::get('/email/verify/{id}/{hash}', [App\Http\Controllers\Auth\VerificationController::class, 'verify'])->name('verification.verify');
-        Route::post('/email/verification-notification', [App\Http\Controllers\Auth\VerificationController::class, 'resend'])->name('verification.send');
-    });
+    Route::post('/login', [LoginController::class, 'login']);
+    Route::get('/register', [RegisterController::class, 'showRegistrationForm'])->name('register');
+    Route::post('/register', [RegisterController::class, 'register']);
+    Route::get('/forgot-password', [ForgotPasswordController::class, 'showLinkRequestForm'])->name('password.request');
+    Route::post('/forgot-password', [ForgotPasswordController::class, 'sendResetLinkEmail'])->name('password.email');
+    Route::get('/reset-password/{token}', [ResetPasswordController::class, 'showResetForm'])->name('password.reset');
+    Route::post('/reset-password', [ResetPasswordController::class, 'reset'])->name('password.update');
+    
+    // Email verification routes
+    Route::get('/email/verify', [App\Http\Controllers\Auth\VerificationController::class, 'show'])->name('verification.notice');
+    Route::get('/email/verify/{id}/{hash}', [App\Http\Controllers\Auth\VerificationController::class, 'verify'])->name('verification.verify');
+    Route::post('/email/verification-notification', [App\Http\Controllers\Auth\VerificationController::class, 'resend'])->name('verification.send');
     
     Route::post('/logout', [LoginController::class, 'logout'])->middleware(['auth', 'auth.session'])->name('logout');
 });
@@ -192,6 +189,15 @@ Route::middleware(['auth', 'auth.session', 'session.timeout', 'admin'])->prefix(
     Route::post('invoices/{invoice}/mark-paid', [InvoiceController::class, 'markAsPaid'])->name('invoices.mark-paid');
     Route::post('invoices/{invoice}/send-email', [InvoiceController::class, 'sendEmail'])->name('invoices.send-email');
     
+    // Admin message management routes
+    Route::get('messages', [App\Http\Controllers\Admin\MessageController::class, 'index'])->name('messages.index');
+    Route::get('messages/{message}', [App\Http\Controllers\Admin\MessageController::class, 'show'])->name('messages.show');
+    Route::post('messages', [App\Http\Controllers\Admin\MessageController::class, 'store'])->name('messages.store');
+    Route::post('messages/{message}/reply', [App\Http\Controllers\Admin\MessageController::class, 'reply'])->name('messages.reply');
+    Route::post('messages/{message}/mark-read', [App\Http\Controllers\Admin\MessageController::class, 'markAsRead'])->name('messages.mark-read');
+    Route::post('messages/bulk-action', [App\Http\Controllers\Admin\MessageController::class, 'bulkAction'])->name('messages.bulk-action');
+    Route::delete('messages/{message}', [App\Http\Controllers\Admin\MessageController::class, 'destroy'])->name('messages.destroy');
+    
     // Admin audit management routes
     Route::get('audit', [App\Http\Controllers\Admin\AuditController::class, 'index'])->name('audit.index');
     Route::get('audit/{auditLog}', [App\Http\Controllers\Admin\AuditController::class, 'show'])->name('audit.show');
@@ -242,20 +248,57 @@ Route::middleware(['auth', 'auth.session', 'session.timeout', 'client'])->prefix
     });
     
     Route::get('/profile', function () {
-        return inertia('Client/Profile');
-    })->name('profile');
-    
-    Route::patch('/profile', function () {
-        $validated = request()->validate([
-            'name' => 'required|string|max:255',
-            'email' => 'required|email|max:255|unique:users,email,' . auth()->id(),
-            'phone' => 'nullable|string|max:20'
+        $user = auth()->user();
+        $client = $user->client;
+        
+        return inertia('Client/Profile', [
+            'clientData' => $client ? [
+                'first_name' => $user->first_name,
+                'middle_name' => $user->middle_name,
+                'last_name' => $user->last_name,
+                'email' => $user->email,
+                'phone' => $client->phone,
+            ] : [
+                'first_name' => $user->first_name,
+                'middle_name' => $user->middle_name,
+                'last_name' => $user->last_name,
+                'email' => $user->email,
+                'phone' => null,
+            ],
+            'communicationPreferences' => $client ? [
+                'email_notifications_enabled' => $client->email_notifications_enabled ?? true,
+                'sms_notifications_enabled' => $client->sms_notifications_enabled ?? false,
+                'preferred_communication_method' => $client->preferred_communication_method ?? 'email',
+                'communication_preferences' => $client->communication_preferences ?? [
+                    'email_notifications' => true,
+                    'document_notifications' => true,
+                    'invoice_notifications' => true,
+                    'reminder_notifications' => true,
+                    'notification_frequency' => 'immediate'
+                ]
+            ] : []
         ]);
+    })->name('profile');
+
+    Route::put('/profile', function (Request $request) {
+        $user = auth()->user();
         
-        auth()->user()->update($validated);
-        
-        return back()->with('success', 'Profile updated successfully.');
-    });
+        $request->validate([
+            'first_name' => 'required|string|max:255',
+            'middle_name' => 'nullable|string|max:255',
+            'last_name' => 'required|string|max:255',
+        ]);
+
+        // Update user name fields
+        $user->update([
+            'first_name' => $request->first_name,
+            'middle_name' => $request->middle_name,
+            'last_name' => $request->last_name,
+        ]);
+
+        return back()->with('success', 'Profile updated successfully!');
+    })->name('profile.update');
+
     
     Route::put('/password', function () {
         $validated = request()->validate([
@@ -295,6 +338,13 @@ Route::middleware(['auth', 'auth.session', 'session.timeout', 'client'])->prefix
     // Communication preferences routes
     Route::patch('/communication-preferences', [App\Http\Controllers\Client\CommunicationController::class, 'updatePreferences'])->name('communication.update-preferences');
     Route::get('/communication-preferences', [App\Http\Controllers\Client\CommunicationController::class, 'getPreferences'])->name('communication.get-preferences');
+    
+    // Notification management routes
+    Route::get('/notifications', [App\Http\Controllers\Client\NotificationController::class, 'index'])->name('notifications.index');
+    Route::post('/notifications/{notification}/mark-read', [App\Http\Controllers\Client\NotificationController::class, 'markAsRead'])->name('notifications.mark-read');
+    Route::post('/notifications/mark-all-read', [App\Http\Controllers\Client\NotificationController::class, 'markAllAsRead'])->name('notifications.mark-all-read');
+    Route::delete('/notifications/{notification}', [App\Http\Controllers\Client\NotificationController::class, 'destroy'])->name('notifications.destroy');
+    Route::delete('/notifications', [App\Http\Controllers\Client\NotificationController::class, 'destroyAll'])->name('notifications.destroy-all');
     Route::get('/communication-history', [App\Http\Controllers\Client\CommunicationController::class, 'getHistory'])->name('communication.history');
     
     // Tax returns routes

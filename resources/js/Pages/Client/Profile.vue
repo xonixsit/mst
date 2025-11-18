@@ -14,49 +14,77 @@
       <div class="bg-white shadow rounded-lg">
         <div class="px-6 py-4 border-b border-gray-200">
           <h2 class="text-lg font-medium text-gray-900">Profile Information</h2>
-          <p class="mt-1 text-sm text-gray-600">Update your account's profile information and email address.</p>
+          <p class="mt-1 text-sm text-gray-600">
+            Update your basic account information. For detailed tax information, visit 
+            <a href="/client/information" class="text-blue-600 hover:text-blue-800 underline">My Information</a> page.
+          </p>
         </div>
         <div class="px-6 py-4">
           <form @submit.prevent="updateProfile" class="space-y-6">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+              <div>
+                <label for="first_name" class="block text-sm font-medium text-gray-700">First Name</label>
+                <input
+                  id="first_name"
+                  v-model="profileForm.first_name"
+                  type="text"
+                  class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
+                  required
+                />
+                <div v-if="profileForm.errors.first_name" class="mt-1 text-sm text-red-600">
+                  {{ profileForm.errors.first_name }}
+                </div>
+              </div>
+              <div>
+                <label for="middle_name" class="block text-sm font-medium text-gray-700">Middle Name</label>
+                <input
+                  id="middle_name"
+                  v-model="profileForm.middle_name"
+                  type="text"
+                  class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
+                />
+                <div v-if="profileForm.errors.middle_name" class="mt-1 text-sm text-red-600">
+                  {{ profileForm.errors.middle_name }}
+                </div>
+              </div>
+              <div>
+                <label for="last_name" class="block text-sm font-medium text-gray-700">Last Name</label>
+                <input
+                  id="last_name"
+                  v-model="profileForm.last_name"
+                  type="text"
+                  class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
+                  required
+                />
+                <div v-if="profileForm.errors.last_name" class="mt-1 text-sm text-red-600">
+                  {{ profileForm.errors.last_name }}
+                </div>
+              </div>
+            </div>
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
-                <label for="name" class="block text-sm font-medium text-gray-700">Full Name</label>
-                <input
-                  id="name"
-                  v-model="profileForm.name"
-                  type="text"
-                  class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
-                  required
-                />
+                <label class="block text-sm font-medium text-gray-700">
+                  Email Address
+                  <span class="text-xs text-gray-500 ml-1">(Contact admin to change)</span>
+                </label>
+                <div class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm bg-gray-50 text-gray-900">
+                  {{ clientData?.email }}
+                </div>
+                <p class="mt-1 text-xs text-gray-500">
+                  Your email address is used for account login and cannot be changed here. Contact your tax professional to update this information.
+                </p>
               </div>
               <div>
-                <label for="email" class="block text-sm font-medium text-gray-700">Email Address</label>
-                <input
-                  id="email"
-                  v-model="profileForm.email"
-                  type="email"
-                  class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
-                  required
-                />
-              </div>
-              <div>
-                <label for="phone" class="block text-sm font-medium text-gray-700">Phone Number</label>
-                <input
-                  id="phone"
-                  v-model="profileForm.phone"
-                  type="tel"
-                  class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
-                />
-              </div>
-              <div>
-                <label for="role" class="block text-sm font-medium text-gray-700">Account Type</label>
-                <input
-                  id="role"
-                  value="Client"
-                  type="text"
-                  class="mt-1 block w-full border-gray-300 rounded-md shadow-sm bg-gray-50"
-                  disabled
-                />
+                <label class="block text-sm font-medium text-gray-700">
+                  Phone Number
+                  <span class="text-xs text-gray-500 ml-1">(Update in Information tab)</span>
+                </label>
+                <div class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm bg-gray-50 text-gray-900">
+                  {{ clientData?.phone || 'Not provided' }}
+                </div>
+                <p class="mt-1 text-xs text-gray-500">
+                  Phone number can be updated in the <a href="/client/information" class="text-blue-600 hover:text-blue-800 underline">My Information</a> section.
+                </p>
               </div>
             </div>
             <div class="flex justify-end">
@@ -65,7 +93,7 @@
                 class="bg-indigo-600 text-white px-4 py-2 rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500"
                 :disabled="profileForm.processing"
               >
-                {{ profileForm.processing ? 'Saving...' : 'Save Changes' }}
+                {{ profileForm.processing ? 'Updating...' : 'Update Profile' }}
               </button>
             </div>
           </form>
@@ -126,7 +154,7 @@
       </div>
 
       <!-- Communication Preferences -->
-      <CommunicationPreferences :client="clientData" />
+      <CommunicationPreferences :client="communicationPreferences" />
 
       <!-- Account Information -->
       <div class="bg-white shadow rounded-lg">
@@ -169,6 +197,10 @@ import CommunicationPreferences from '@/Components/CommunicationPreferences.vue'
 const props = defineProps({
   clientData: {
     type: Object,
+    default: () => ({})
+  },
+  communicationPreferences: {
+    type: Object,
     default: () => ({
       email_notifications_enabled: true,
       sms_notifications_enabled: false,
@@ -188,9 +220,9 @@ const page = usePage()
 const assignedProfessional = ref('John Smith, CPA') // This would come from props in real app
 
 const profileForm = useForm({
-  name: page.props.auth.user.name,
-  email: page.props.auth.user.email,
-  phone: page.props.auth.user.phone || ''
+  first_name: props.clientData?.first_name || '',
+  middle_name: props.clientData?.middle_name || '',
+  last_name: props.clientData?.last_name || ''
 })
 
 const passwordForm = useForm({
@@ -200,7 +232,7 @@ const passwordForm = useForm({
 })
 
 const updateProfile = () => {
-  profileForm.patch('/client/profile', {
+  profileForm.put('/client/profile', {
     preserveScroll: true,
     onSuccess: () => {
       // Profile updated successfully

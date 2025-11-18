@@ -14,9 +14,17 @@ class LoginController extends Controller
     /**
      * Show the login form.
      */
-    public function showLoginForm(): Response
+    public function showLoginForm(Request $request): Response
     {
-        return Inertia::render('Auth/Login');
+        // Determine login type based on current route
+        $loginType = 'admin'; // default
+        if ($request->is('client/*')) {
+            $loginType = 'client';
+        }
+        
+        return Inertia::render('Auth/Login', [
+            'loginType' => $loginType
+        ]);
     }
 
     /**
@@ -46,22 +54,15 @@ class LoginController extends Controller
                 }
             }
             
-            // Redirect based on current URL context or user role
-            $intendedUrl = $request->session()->get('url.intended');
-            
-            if ($intendedUrl) {
-                return redirect($intendedUrl);
-            }
-            
-            // Check referer to determine context
-            $referer = $request->headers->get('referer');
-            if ($referer && str_contains($referer, '/admin/')) {
-                return redirect()->route('admin.dashboard');
-            } elseif ($referer && str_contains($referer, '/client/')) {
+            // Determine redirect based on the current request URL
+            $currentUrl = $request->url();
+            if (str_contains($currentUrl, '/client/login')) {
                 return redirect()->route('client.dashboard');
+            } elseif (str_contains($currentUrl, '/admin/login')) {
+                return redirect()->route('admin.dashboard');
             }
             
-            // Default redirect based on user role
+            // Fallback: redirect based on user role
             if ($user->isAdmin() || $user->isTaxProfessional()) {
                 return redirect()->route('admin.dashboard');
             } else {

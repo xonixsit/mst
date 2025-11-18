@@ -65,6 +65,7 @@
                 v-if="activeSection === 'personal'"
                 v-model="form.personal"
                 :errors="form.errors"
+                :visa-status-options="visaStatusOptions"
                 @update="handleSectionUpdate"
               />
 
@@ -452,6 +453,10 @@ const props = defineProps({
   clientData: {
     type: Object,
     default: () => ({})
+  },
+  visaStatusOptions: {
+    type: Array,
+    default: () => []
   }
 })
 
@@ -489,7 +494,7 @@ const form = useForm({
     mobileNumber: '',
     workNumber: '',
     visaStatus: '',
-    dateOfEntryUS: ''
+    date_of_entry_us: ''
   },
   spouse: {
     firstName: '',

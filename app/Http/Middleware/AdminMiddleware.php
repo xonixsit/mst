@@ -21,10 +21,9 @@ class AdminMiddleware
 
         $user = auth()->user();
         
-        // For now, allow all authenticated users to access admin routes
-        // In a real implementation, you would check user roles/permissions
-        if (!$user) {
-            abort(403, 'Access denied.');
+        // Check if user has admin or tax professional role
+        if (!$user->isAdmin() && !$user->isTaxProfessional()) {
+            abort(403, 'Access denied. Admin privileges required.');
         }
 
         return $next($request);

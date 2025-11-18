@@ -34,7 +34,7 @@
 
                 <div class="mt-4 text-center">
                     <Link
-                        :href="route('admin.logout')"
+                        href="/admin/logout"
                         method="post"
                         as="button"
                         class="text-sm text-gray-600 hover:text-gray-900 underline"
@@ -49,7 +49,7 @@
 
 <script setup>
 import { ref } from 'vue'
-import { useForm, Link } from '@inertiajs/vue3'
+import { useForm, Link, router } from '@inertiajs/vue3'
 
 defineProps({
     status: String,
@@ -60,10 +60,12 @@ const processing = ref(false)
 const resendVerification = () => {
     processing.value = true
     
-    useForm({}).post(route('admin.verification.send'), {
+    useForm({}).post('/admin/email/verification-notification', {
         onFinish: () => {
             processing.value = false
         }
     })
 }
+
+
 </script>

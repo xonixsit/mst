@@ -21,10 +21,9 @@ class ClientMiddleware
 
         $user = auth()->user();
         
-        // For now, allow all authenticated users to access client routes
-        // In production, you would check if user has client role
-        if (!$user) {
-            abort(403, 'Access denied.');
+        // Check if user has client role
+        if (!$user->isClient()) {
+            abort(403, 'Access denied. Client privileges required.');
         }
 
         return $next($request);

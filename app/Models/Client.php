@@ -12,6 +12,7 @@ use App\Services\AuditService;
 use App\Models\AuditLog;
 use App\Traits\Auditable;
 use App\Traits\EncryptsSensitiveData;
+use App\Enums\VisaStatus;
 
 class Client extends Model
 {
@@ -24,10 +25,6 @@ class Client extends Model
      */
     protected $fillable = [
         'user_id',
-        'first_name',
-        'middle_name',
-        'last_name',
-        'email',
         'phone',
         'ssn',
         'date_of_birth',
@@ -67,6 +64,7 @@ class Client extends Model
     protected $casts = [
         // Note: date_of_birth and date_of_entry_us are handled by custom accessors/mutators due to encryption
         'insurance_covered' => 'boolean',
+        'visa_status' => VisaStatus::class,
         'review_requested_at' => 'datetime',
         'review_sections' => 'array',
         'section_completion_status' => 'array',
@@ -109,10 +107,6 @@ class Client extends Model
     public static function validationRules(): array
     {
         return [
-            'first_name' => 'required|string|max:255',
-            'middle_name' => 'nullable|string|max:255',
-            'last_name' => 'required|string|max:255',
-            'email' => 'required|email|unique:clients,email',
             'phone' => 'nullable|string|regex:/^[\+]?[1-9][\d]{0,15}$/',
             'ssn' => 'nullable|string|regex:/^\d{3}-\d{2}-\d{4}$/',
             'date_of_birth' => 'nullable|date|before:today',
@@ -127,7 +121,7 @@ class Client extends Model
             'country' => 'nullable|string|max:255',
             'mobile_number' => 'nullable|string|regex:/^[\+]?[1-9][\d]{0,15}$/',
             'work_number' => 'nullable|string|regex:/^[\+]?[1-9][\d]{0,15}$/',
-            'visa_status' => 'nullable|string|max:255',
+            'visa_status' => 'nullable|in:citizen,permanent_resident,h1b,f1,j1,l1,other',
             'date_of_entry_us' => 'nullable|date',
             'status' => 'required|in:active,inactive,archived',
         ];
@@ -206,17 +200,53 @@ class Client extends Model
     }
 
     /**
-     * Get the client's full name.
+     * Get the client's full name from user.
      */
     public function getFullNameAttribute(): string
     {
-        $name = $this->first_name;
-        if ($this->middle_name) {
-            $name .= ' ' . $this->middle_name;
+        if (!$this->user) {
+            return 'Unknown';
         }
-        $name .= ' ' . $this->last_name;
-        
-        return $name;
+
+        $nameParts = array_filter([
+            $this->user->first_name,
+            $this->user->middle_name,
+            $this->user->last_name
+        ]);
+
+        return implode(' ', $nameParts) ?: 'Unknown';
+    }
+
+    /**
+     * Get the client's email from user.
+     */
+    public function getEmailAttribute(): ?string
+    {
+        return $this->user ? $this->user->email : null;
+    }
+
+    /**
+     * Get the client's first name from user.
+     */
+    public function getFirstNameAttribute(): ?string
+    {
+        return $this->user ? $this->user->first_name : null;
+    }
+
+    /**
+     * Get the client's last name from user.
+     */
+    public function getLastNameAttribute(): ?string
+    {
+        return $this->user ? $this->user->last_name : null;
+    }
+
+    /**
+     * Get the client's middle name from user.
+     */
+    public function getMiddleNameAttribute(): ?string
+    {
+        return $this->user ? $this->user->middle_name : null;
     }
 
     /**
@@ -249,12 +279,10 @@ class Client extends Model
      */
     public function scopeSearch($query, $search)
     {
-        return $query->where(function ($q) use ($search) {
-            $q->where('first_name', 'like', "%{$search}%")
-              ->orWhere('last_name', 'like', "%{$search}%")
-              ->orWhere('email', 'like', "%{$search}%")
-              ->orWhereRaw("CONCAT(first_name, ' ', last_name) like ?", ["%{$search}%"]);
-        });
+        return $query->whereHas('user', function ($userQuery) use ($search) {
+            $userQuery->where('name', 'like', "%{$search}%")
+                     ->orWhere('email', 'like', "%{$search}%");
+        })->orWhere('phone', 'like', "%{$search}%");
     }
 
     /**

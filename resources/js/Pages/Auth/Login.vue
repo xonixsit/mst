@@ -98,10 +98,19 @@ import AuthLayout from '../../Layouts/AuthLayout.vue'
 import FormInput from '../../Components/Form/FormInput.vue'
 import FormButton from '../../Components/Form/FormButton.vue'
 
+// Get props from the controller
+const props = defineProps({
+  loginType: {
+    type: String,
+    default: 'admin'
+  }
+})
+
 const form = useForm({
   email: '',
   password: '',
-  remember: false
+  remember: false,
+  login_type: props.loginType
 })
 
 // Determine the correct registration link based on current URL
@@ -111,14 +120,9 @@ const registerLink = computed(() => {
 })
 
 const handleSubmit = () => {
-  const loginUrl = window.location.pathname.includes('/admin/') ? '/admin/login' : 
-                   window.location.pathname.includes('/client/') ? '/client/login' : '/login'
+  const loginUrl = props.loginType === 'client' ? '/client/login' : '/admin/login'
   
   form.post(loginUrl, {
-    onSuccess: () => {
-      const dashboardUrl = window.location.pathname.includes('/admin/') ? '/admin/dashboard' : '/client/dashboard'
-      window.location.href = dashboardUrl
-    },
     onError: () => {
       form.password = ''
     }

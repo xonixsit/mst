@@ -267,6 +267,13 @@ const navigation = computed(() => {
         current: currentPath.startsWith('/admin/documents')
       },
       { 
+        name: 'Messages', 
+        href: '/admin/messages', 
+        icon: ChatBubbleLeftRightIcon, 
+        current: currentPath.startsWith('/admin/messages'),
+        badge: page.props.navigationCounts?.unread_messages > 0 ? page.props.navigationCounts.unread_messages.toString() : null
+      },
+      { 
         name: 'Reports', 
         href: '/admin/reports', 
         icon: ChartBarIcon, 
@@ -329,7 +336,14 @@ const navigation = computed(() => {
         href: '/client/messages', 
         icon: ChatBubbleLeftRightIcon, 
         current: currentPath.startsWith('/client/messages'),
-        badge: '3' // Example unread messages
+        badge: (page.props.navigationCounts?.unread_messages || 0) > 0 ? (page.props.navigationCounts.unread_messages || 0).toString() : null
+      },
+      { 
+        name: 'Notifications', 
+        href: '/client/notifications', 
+        icon: BellIcon, 
+        current: currentPath.startsWith('/client/notifications'),
+        badge: (page.props.navigationCounts?.unread_notifications || 0) > 0 ? (page.props.navigationCounts.unread_notifications || 0).toString() : null
       },
       { 
         name: 'Tax Returns', 

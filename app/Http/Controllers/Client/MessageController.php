@@ -25,7 +25,7 @@ class MessageController extends Controller
                 $q->where('sender_id', auth()->id())
                   ->orWhere('recipient_id', auth()->id());
             })
-            ->with(['sender:id,name', 'recipient:id,name']);
+            ->with(['sender', 'recipient']);
 
         // Filter by read status
         if ($request->filled('status')) {
@@ -46,7 +46,7 @@ class MessageController extends Controller
         // Get tax professionals for new message
         $taxProfessionals = User::where('role', 'admin')
             ->orWhere('role', 'tax_professional')
-            ->select('id', 'name', 'email')
+            ->select('id', 'first_name', 'last_name', 'middle_name', 'email')
             ->get();
 
         // Get unread count
@@ -94,58 +94,83 @@ class MessageController extends Controller
     {
         $client = Client::where('user_id', auth()->id())->first();
         
-        if (!$client || $message->client_id !== $client->id) {
-            abort(403, 'Unauthorized access to message.');
+        if (!$client) {
+            abort(403, 'Client profile not found.');
         }
 
-        // Check if user is sender or recipient
-        if ($message->sender_id !== auth()->id() && $message->recipient_id !== auth()->id()) {
+        // Check if user is sender or recipient AND the message belongs to this client
+        if (($message->sender_id != auth()->id() && $message->recipient_id != auth()->id()) 
+            || $message->client_id != $client->id) {
             abort(403, 'Unauthorized access to message.');
         }
 
         // Mark as read if user is recipient
-        if ($message->recipient_id === auth()->id() && !$message->is_read) {
+        if ($message->recipient_id == auth()->id() && !$message->is_read) {
             $message->markAsRead();
         }
 
-        $message->load(['sender:id,name', 'recipient:id,name']);
+        $message->load(['sender', 'recipient']);
+
+        // Get the conversation history between the same participants for this client
+        $conversation = Message::where('client_id', $client->id)
+            ->where(function ($query) use ($message) {
+                // Get messages with the same participants (both directions)
+                $query->where(function ($q) use ($message) {
+                    $q->where('sender_id', $message->sender_id)
+                      ->where('recipient_id', $message->recipient_id);
+                })->orWhere(function ($q) use ($message) {
+                    $q->where('sender_id', $message->recipient_id)
+                      ->where('recipient_id', $message->sender_id);
+                });
+            })
+            ->with(['sender', 'recipient'])
+            ->orderBy('created_at', 'asc')
+            ->get();
 
         return Inertia::render('Client/MessageDetail', [
-            'message' => $message
+            'message' => $message,
+            'conversation' => $conversation
         ]);
     }
 
     public function reply(Request $request, Message $originalMessage)
     {
-        $client = Client::where('user_id', auth()->id())->first();
-        
-        if (!$client || $originalMessage->client_id !== $client->id) {
-            abort(403, 'Unauthorized access to message.');
-        }
-
         $request->validate([
             'body' => 'required|string|max:2000'
         ]);
 
-        Message::create([
-            'client_id' => $client->id,
-            'sender_id' => auth()->id(),
-            'recipient_id' => $originalMessage->sender_id === auth()->id() 
-                ? $originalMessage->recipient_id 
-                : $originalMessage->sender_id,
+        // Simple reply logic - reply to the other person
+        $currentUserId = auth()->id();
+        
+        if ($originalMessage->sender_id == $currentUserId) {
+            // Current user was sender, reply to recipient
+            $replyRecipientId = $originalMessage->recipient_id;
+        } else {
+            // Current user was recipient, reply to sender
+            $replyRecipientId = $originalMessage->sender_id;
+        }
+
+        // Get client_id - use original or find any client as fallback
+        $clientId = $originalMessage->client_id ?: \App\Models\Client::first()->id;
+
+        $replyMessage = Message::create([
+            'client_id' => $clientId,
+            'sender_id' => $currentUserId,
+            'recipient_id' => $replyRecipientId,
             'subject' => 'Re: ' . $originalMessage->subject,
             'body' => $request->body,
             'priority' => $originalMessage->priority
         ]);
 
-        return back()->with('success', 'Reply sent successfully.');
+        return redirect()->route('client.messages.show', $originalMessage->id)
+            ->with('success', 'Reply sent successfully.');
     }
 
     public function markAsRead(Message $message)
     {
         $client = Client::where('user_id', auth()->id())->first();
         
-        if (!$client || $message->client_id !== $client->id || $message->recipient_id !== auth()->id()) {
+        if (!$client || $message->client_id != $client->id || $message->recipient_id != auth()->id()) {
             abort(403, 'Unauthorized access to message.');
         }
 

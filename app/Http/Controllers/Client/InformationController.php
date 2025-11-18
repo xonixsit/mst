@@ -13,6 +13,8 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Validation\ValidationException;
+use Illuminate\Validation\Rule;
+use App\Enums\VisaStatus;
 use Inertia\Inertia;
 
 class InformationController extends Controller
@@ -62,6 +64,7 @@ class InformationController extends Controller
             'client' => $client->only(['id', 'status', 'created_at', 'updated_at']),
             'completionStatus' => $completionStatus,
             'lastSyncTimestamp' => $lastSyncTimestamp,
+            'visaStatusOptions' => VisaStatus::options(),
             'permissions' => [
                 'canEdit' => Gate::allows('update', $client),
                 'canExport' => Gate::allows('export', $client),
@@ -75,16 +78,13 @@ class InformationController extends Controller
      */
     private function findOrCreateClientRecord(User $user): Client
     {
-        $client = Client::where('email', $user->email)->first();
+        $client = $user->client;
         
         if (!$client) {
             // Create a basic client record with minimal required fields
             $client = DB::transaction(function () use ($user) {
                 return Client::create([
                     'user_id' => $user->id,
-                    'first_name' => $user->name ? explode(' ', $user->name)[0] : '',
-                    'last_name' => $user->name ? (explode(' ', $user->name)[1] ?? '') : '',
-                    'email' => $user->email,
                     'status' => 'active'
                 ]);
             });
@@ -106,10 +106,10 @@ class InformationController extends Controller
     {
         return [
             'personal' => [
-                'first_name' => $client->first_name ?? '',
-                'middle_name' => $client->middle_name ?? '',
-                'last_name' => $client->last_name ?? '',
-                'email' => $client->email ?? '',
+                'first_name' => $client->user->first_name ?? '',
+                'middle_name' => $client->user->middle_name ?? '',
+                'last_name' => $client->user->last_name ?? '',
+                'email' => $client->user->email ?? '',
                 'phone' => $client->phone ?? '',
                 'ssn' => $client->ssn ?? '',
                 'date_of_birth' => $client->date_of_birth?->format('Y-m-d') ?? '',
@@ -332,7 +332,7 @@ class InformationController extends Controller
             abort(403, 'Access denied. Client role required.');
         }
         
-        $client = Client::where('email', $user->email)->first();
+        $client = $user->client;
 
         if (!$client) {
             return redirect()->back()->withErrors(['error' => 'Client record not found.']);
@@ -411,7 +411,7 @@ class InformationController extends Controller
             'personal.country' => 'required|string|max:100',
             'personal.mobile_number' => 'nullable|string|max:20',
             'personal.work_number' => 'nullable|string|max:20',
-            'personal.visa_status' => 'nullable|string|max:50',
+            'personal.visa_status' => ['nullable', Rule::enum(VisaStatus::class)],
             'personal.date_of_entry_us' => 'nullable|date',
             
             // Spouse information validation (conditional)
@@ -506,7 +506,7 @@ class InformationController extends Controller
             abort(403, 'Access denied. Client role required.');
         }
         
-        $client = Client::where('email', $user->email)->first();
+        $client = $user->client;
 
         if (!$client) {
             return redirect()->back()->withErrors(['error' => 'Client record not found.']);
@@ -547,6 +547,9 @@ class InformationController extends Controller
      */
     private function exportToPdf(Client $client)
     {
+        // Update last export timestamp
+        $client->update(['last_export_at' => now()]);
+        
         // Prepare data for PDF generation
         $data = $this->prepareExportData($client);
         
@@ -743,7 +746,7 @@ class InformationController extends Controller
             abort(403, 'Access denied. Client role required.');
         }
         
-        $client = Client::where('email', $user->email)->first();
+        $client = $user->client;
 
         if (!$client) {
             return redirect()->back()->withErrors(['error' => 'Client record not found.']);
@@ -850,7 +853,7 @@ class InformationController extends Controller
             abort(403, 'Access denied. Client role required.');
         }
         
-        $client = Client::where('email', $user->email)->first();
+        $client = $user->client;
 
         if (!$client) {
             return response()->json(['error' => 'Client record not found.'], 404);
@@ -907,7 +910,7 @@ class InformationController extends Controller
             abort(403, 'Access denied. Client role required.');
         }
         
-        $client = Client::where('email', $user->email)->first();
+        $client = $user->client;
 
         if (!$client) {
             return response()->json(['error' => 'Client record not found.'], 404);
@@ -941,7 +944,7 @@ class InformationController extends Controller
             return response()->json(['error' => 'Access denied. Client role required.'], 403);
         }
         
-        $client = Client::where('email', $user->email)->first();
+        $client = $user->client;
 
         if (!$client) {
             return response()->json(['error' => 'Client record not found.'], 404);
@@ -1041,7 +1044,7 @@ class InformationController extends Controller
             'personal.country' => 'nullable|string|max:100',
             'personal.mobile_number' => 'nullable|string|max:20',
             'personal.work_number' => 'nullable|string|max:20',
-            'personal.visa_status' => 'nullable|string|max:50',
+            'personal.visa_status' => ['nullable', Rule::enum(VisaStatus::class)],
             'personal.date_of_entry_us' => 'nullable|date|date_format:Y-m-d',
             
             'spouse' => 'nullable|array',

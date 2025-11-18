@@ -22,6 +22,9 @@ class User extends Authenticatable implements MustVerifyEmail
      */
     protected $fillable = [
         'name',
+        'first_name',
+        'middle_name', 
+        'last_name',
         'email',
         'password',
         'role',
@@ -93,6 +96,20 @@ class User extends Authenticatable implements MustVerifyEmail
     public function client()
     {
         return $this->hasOne(Client::class);
+    }
+
+    /**
+     * Get the user's full name.
+     */
+    public function getNameAttribute(): string
+    {
+        $nameParts = array_filter([
+            $this->first_name,
+            $this->middle_name,
+            $this->last_name
+        ]);
+
+        return implode(' ', $nameParts) ?: 'Unknown User';
     }
 
     /**

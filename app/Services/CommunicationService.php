@@ -29,7 +29,7 @@ class CommunicationService
             $this->sendInternalMessage($client, $subject, $body, 'normal');
             
             // Send email if enabled
-            if ($preferences['email_enabled']) {
+            if ($preferences['email_enabled'] && $client->email) {
                 $this->sendEmail($client->email, $subject, $body);
             }
             
@@ -62,7 +62,7 @@ class CommunicationService
             $this->sendInternalMessage($client, $subject, $body, 'normal');
             
             // Send email if enabled
-            if ($preferences['email_enabled']) {
+            if ($preferences['email_enabled'] && $client->email) {
                 $this->sendEmail($client->email, $subject, $body);
             }
             
@@ -96,7 +96,7 @@ class CommunicationService
             $this->sendInternalMessage($client, $subject, $body, 'high');
             
             // Send email if enabled
-            if ($preferences['email_enabled']) {
+            if ($preferences['email_enabled'] && $client->email) {
                 $this->sendEmail($client->email, $subject, $body);
             }
             
@@ -130,7 +130,7 @@ class CommunicationService
             $this->sendInternalMessage($client, $subject, $body, 'normal');
             
             // Send email if enabled
-            if ($preferences['email_enabled']) {
+            if ($preferences['email_enabled'] && $client->email) {
                 $this->sendEmail($client->email, $subject, $body);
             }
             
@@ -192,7 +192,7 @@ class CommunicationService
     public function getCommunicationHistory(Client $client): array
     {
         $messages = Message::where('client_id', $client->id)
-            ->with(['sender:id,name', 'recipient:id,name'])
+            ->with(['sender', 'recipient'])
             ->orderBy('created_at', 'desc')
             ->get();
 
@@ -246,7 +246,8 @@ class CommunicationService
      */
     private function generateUpdateNotificationBody(Client $client, array $changes): string
     {
-        $body = "Dear {$client->first_name} {$client->last_name},\n\n";
+        $clientName = $client->full_name;
+        $body = "Dear {$clientName},\n\n";
         $body .= "Your client information has been updated. The following changes were made:\n\n";
         
         foreach ($changes as $field => $change) {
@@ -264,7 +265,8 @@ class CommunicationService
      */
     private function generateDocumentStatusNotificationBody(Client $client, string $documentName, string $status): string
     {
-        $body = "Dear {$client->first_name} {$client->last_name},\n\n";
+        $clientName = $client->full_name;
+        $body = "Dear {$clientName},\n\n";
         $body .= "The status of your document '{$documentName}' has been updated to: " . ucfirst($status) . "\n\n";
         
         if ($status === 'approved') {
@@ -286,7 +288,8 @@ class CommunicationService
      */
     private function generateInvoiceNotificationBody(Client $client, $invoice): string
     {
-        $body = "Dear {$client->first_name} {$client->last_name},\n\n";
+        $clientName = $client->full_name;
+        $body = "Dear {$clientName},\n\n";
         $body .= "A new invoice has been generated for your account:\n\n";
         $body .= "Invoice Number: {$invoice->invoice_number}\n";
         $body .= "Title: {$invoice->title}\n";
@@ -303,7 +306,8 @@ class CommunicationService
      */
     private function generateMissingDocumentReminderBody(Client $client, array $missingDocuments): string
     {
-        $body = "Dear {$client->first_name} {$client->last_name},\n\n";
+        $clientName = $client->full_name;
+        $body = "Dear {$clientName},\n\n";
         $body .= "We noticed that some required documents are still missing from your profile:\n\n";
         
         foreach ($missingDocuments as $document) {
@@ -323,12 +327,30 @@ class CommunicationService
     private function buildCommunicationTimeline($messages): array
     {
         return $messages->map(function ($message) {
+            $senderName = 'Unknown';
+            if ($message->sender) {
+                $senderName = trim(implode(' ', array_filter([
+                    $message->sender->first_name,
+                    $message->sender->middle_name,
+                    $message->sender->last_name
+                ]))) ?: 'Unknown';
+            }
+
+            $recipientName = 'Unknown';
+            if ($message->recipient) {
+                $recipientName = trim(implode(' ', array_filter([
+                    $message->recipient->first_name,
+                    $message->recipient->middle_name,
+                    $message->recipient->last_name
+                ]))) ?: 'Unknown';
+            }
+
             return [
                 'id' => $message->id,
                 'type' => 'message',
                 'subject' => $message->subject,
-                'sender' => $message->sender->name,
-                'recipient' => $message->recipient->name,
+                'sender' => $senderName,
+                'recipient' => $recipientName,
                 'priority' => $message->priority,
                 'is_read' => $message->is_read,
                 'created_at' => $message->created_at,

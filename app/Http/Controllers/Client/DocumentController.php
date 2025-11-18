@@ -25,7 +25,7 @@ class DocumentController extends Controller
         $mockClientId = $user->id;
 
         $query = Document::where('client_id', $mockClientId)
-            ->with('uploader:id,name');
+            ->with('uploader');
 
         // Filter by document type
         if ($request->filled('type')) {

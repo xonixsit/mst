@@ -14,60 +14,53 @@
           <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div>
               <label for="firstName" class="flex items-center text-sm font-medium text-gray-700 mb-1">
-                First Name <span class="text-red-500">*</span>
-                <HelpTooltip 
-                  text="Enter your legal first name as it appears on your Social Security card and tax documents"
-                  class="ml-1"
-                />
+                First Name
+                <span class="text-xs text-gray-500 ml-1">(Update in Profile)</span>
               </label>
               <input
                 id="firstName"
                 v-model="localData.firstName"
                 type="text"
-                :class="inputClasses('firstName')"
+                class="mt-1 block w-full border-gray-300 rounded-md shadow-sm bg-gray-50 cursor-not-allowed"
                 placeholder="Enter first name"
-                @blur="validateField('firstName')"
-                @input="handleInput('firstName', $event.target.value)"
+                readonly
+                disabled
               />
-              <p v-if="fieldErrors.firstName" class="mt-1 text-sm text-red-600">
-                {{ fieldErrors.firstName }}
+              <p class="mt-1 text-xs text-gray-500">
+                Name fields can be updated in your <a href="/client/profile" class="text-blue-600 hover:text-blue-800 underline">Profile</a> section.
               </p>
             </div>
 
             <div>
               <label for="middleName" class="block text-sm font-medium text-gray-700 mb-1">
                 Middle Name
+                <span class="text-xs text-gray-500 ml-1">(Update in Profile)</span>
               </label>
               <input
                 id="middleName"
                 v-model="localData.middleName"
                 type="text"
-                :class="inputClasses('middleName')"
+                class="mt-1 block w-full border-gray-300 rounded-md shadow-sm bg-gray-50 cursor-not-allowed"
                 placeholder="Enter middle name"
-                @input="handleInput('middleName', $event.target.value)"
+                readonly
+                disabled
               />
             </div>
 
             <div>
               <label for="lastName" class="flex items-center text-sm font-medium text-gray-700 mb-1">
-                Last Name <span class="text-red-500">*</span>
-                <HelpTooltip 
-                  text="Enter your legal last name as it appears on your Social Security card and tax documents"
-                  class="ml-1"
-                />
+                Last Name
+                <span class="text-xs text-gray-500 ml-1">(Update in Profile)</span>
               </label>
               <input
                 id="lastName"
                 v-model="localData.lastName"
                 type="text"
-                :class="inputClasses('lastName')"
+                class="mt-1 block w-full border-gray-300 rounded-md shadow-sm bg-gray-50 cursor-not-allowed"
                 placeholder="Enter last name"
-                @blur="validateField('lastName')"
-                @input="handleInput('lastName', $event.target.value)"
+                readonly
+                disabled
               />
-              <p v-if="fieldErrors.lastName" class="mt-1 text-sm text-red-600">
-                {{ fieldErrors.lastName }}
-              </p>
             </div>
           </div>
 
@@ -76,18 +69,19 @@
             <div>
               <label for="email" class="block text-sm font-medium text-gray-700 mb-1">
                 Email Address <span class="text-red-500">*</span>
+                <span class="text-xs text-gray-500 ml-1">(Contact admin to change)</span>
               </label>
               <input
                 id="email"
                 v-model="localData.email"
                 type="email"
-                :class="inputClasses('email')"
+                :class="inputClasses('email') + ' bg-gray-50 cursor-not-allowed'"
                 placeholder="Enter email address"
-                @blur="validateField('email')"
-                @input="handleInput('email', $event.target.value)"
+                readonly
+                disabled
               />
-              <p v-if="fieldErrors.email" class="mt-1 text-sm text-red-600">
-                {{ fieldErrors.email }}
+              <p class="mt-1 text-xs text-gray-500">
+                Your email address is used for account login and cannot be changed here. Contact your tax professional to update this information.
               </p>
             </div>
 
@@ -381,27 +375,32 @@
                   @change="handleInput('visaStatus', $event.target.value)"
                 >
                   <option value="">Select visa status</option>
-                  <option value="citizen">US Citizen</option>
-                  <option value="permanent_resident">Permanent Resident</option>
-                  <option value="h1b">H-1B</option>
-                  <option value="f1">F-1 Student</option>
-                  <option value="j1">J-1 Exchange</option>
-                  <option value="l1">L-1 Intracompany</option>
-                  <option value="other">Other</option>
+                  <option 
+                    v-for="option in visaStatusOptions" 
+                    :key="option.value" 
+                    :value="option.value"
+                  >
+                    {{ option.label }}
+                  </option>
                 </select>
               </div>
 
-              <div v-if="localData.visaStatus && localData.visaStatus !== 'citizen'">
-                <label for="dateOfEntryUS" class="block text-sm font-medium text-gray-700 mb-1">
+              <div>
+                <label for="date_of_entry_us" class="block text-sm font-medium text-gray-700 mb-1">
                   Date of Entry to US
+                  <span v-if="localData.visaStatus === 'citizen'" class="text-xs text-gray-500 ml-1">(Not applicable for US Citizens)</span>
                 </label>
                 <input
-                  id="dateOfEntryUS"
-                  v-model="localData.dateOfEntryUS"
+                  id="date_of_entry_us"
+                  v-model="localData.date_of_entry_us"
                   type="date"
-                  :class="inputClasses('dateOfEntryUS')"
-                  @input="handleInput('dateOfEntryUS', $event.target.value)"
+                  :class="inputClasses('date_of_entry_us')"
+                  :disabled="localData.visaStatus === 'citizen'"
+                  @input="handleInput('date_of_entry_us', $event.target.value)"
                 />
+                <p v-if="localData.visaStatus === 'citizen'" class="mt-1 text-xs text-gray-500">
+                  This field is not required for US Citizens
+                </p>
               </div>
             </div>
           </div>
@@ -429,6 +428,19 @@ const props = defineProps({
   readonly: {
     type: Boolean,
     default: false
+  },
+  visaStatusOptions: {
+    type: Array,
+    default: () => ([
+      { value: '', label: 'Select visa status' },
+      { value: 'citizen', label: 'US Citizen' },
+      { value: 'permanent_resident', label: 'Permanent Resident' },
+      { value: 'h1b', label: 'H-1B' },
+      { value: 'f1', label: 'F-1 Student' },
+      { value: 'j1', label: 'J-1 Exchange' },
+      { value: 'l1', label: 'L-1 Intracompany' },
+      { value: 'other', label: 'Other' }
+    ])
   }
 })
 
@@ -456,7 +468,7 @@ const localData = reactive({
   mobileNumber: '',
   workNumber: '',
   visaStatus: '',
-  dateOfEntryUS: ''
+  date_of_entry_us: ''
 })
 
 // Field validation errors
@@ -518,7 +530,8 @@ const usStates = [
 
 // Computed properties
 const showImmigrationFields = computed(() => {
-  return localData.country === 'United States' || localData.visaStatus
+  // Always show immigration fields for tax consulting purposes
+  return true
 })
 
 const inputClasses = (fieldName) => {

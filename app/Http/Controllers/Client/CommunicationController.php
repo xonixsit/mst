@@ -28,7 +28,7 @@ class CommunicationController extends Controller
             abort(403, 'Access denied. Client role required.');
         }
         
-        $client = Client::where('email', $user->email)->first();
+        $client = $user->client;
 
         if (!$client) {
             return response()->json(['error' => 'Client record not found.'], 404);
@@ -97,7 +97,7 @@ class CommunicationController extends Controller
             abort(403, 'Access denied. Client role required.');
         }
         
-        $client = Client::where('email', $user->email)->first();
+        $client = $user->client;
 
         if (!$client) {
             return response()->json(['error' => 'Client record not found.'], 404);
@@ -125,7 +125,7 @@ class CommunicationController extends Controller
             abort(403, 'Access denied. Client role required.');
         }
         
-        $client = Client::where('email', $user->email)->first();
+        $client = $user->client;
 
         if (!$client) {
             return response()->json(['error' => 'Client record not found.'], 404);

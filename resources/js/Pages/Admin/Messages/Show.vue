@@ -4,7 +4,7 @@
       <div class="flex items-center justify-between">
         <div class="flex items-center space-x-4">
           <button
-            @click="$inertia.visit('/client/messages')"
+            @click="$inertia.visit('/admin/messages')"
             class="text-gray-500 hover:text-gray-700"
           >
             <ArrowLeftIcon class="w-5 h-5" />
@@ -14,6 +14,9 @@
             <p class="mt-1 text-sm text-gray-600">
               {{ message.sender_id === page.props.auth.user.id ? 'To' : 'From' }}: 
               {{ message.sender_id === page.props.auth.user.id ? getUserName(message.recipient) : getUserName(message.sender) }}
+            </p>
+            <p class="text-sm text-gray-500">
+              Client: {{ message.client?.user ? getUserName(message.client.user) : 'Unknown' }}
             </p>
           </div>
         </div>
@@ -136,7 +139,9 @@
                 class="w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
                 maxlength="2000"
                 required
+                placeholder="Type your reply here..."
               ></textarea>
+
             </div>
 
             <div class="flex justify-end space-x-3 pt-4">
@@ -182,25 +187,22 @@ const replyForm = ref({
 })
 
 const sendReply = () => {
+  if (!replyForm.value.body || !replyForm.value.body.trim()) {
+    alert('Please enter a reply message')
+    return
+  }
+  
   replying.value = true
   
-  // Debug logging
-  console.log('Sending reply:', {
-    url: `/client/messages/${props.message.id}/reply`,
-    data: replyForm.value,
-    messageId: props.message.id,
-    currentUser: page.props.auth.user
-  })
-  
-  router.post(`/client/messages/${props.message.id}/reply`, replyForm.value, {
-    onSuccess: (page) => {
-      console.log('Reply successful')
+  router.post(`/admin/messages/${props.message.id}/reply`, {
+    body: replyForm.value.body.trim()
+  }, {
+    onSuccess: () => {
       closeReplyModal()
-      // Refresh the current page to show the new reply
       router.reload()
     },
     onError: (errors) => {
-      console.log('Reply errors:', errors)
+      alert('Error sending reply: ' + (errors.error || 'Unknown error'))
     },
     onFinish: () => {
       replying.value = false
@@ -214,18 +216,13 @@ const closeReplyModal = () => {
 }
 
 const getReplyRecipientName = () => {
-  // If the current user is the sender, reply to the recipient
-  // If the current user is the recipient, reply to the sender
   if (props.message.sender_id === props.message.recipient_id) {
-    // Edge case: message to self
     return getUserName(props.message.sender)
   }
   
   if (props.message.sender_id === page.props.auth.user.id) {
-    // Current user sent this message, so reply to the recipient
     return getUserName(props.message.recipient)
   } else {
-    // Current user received this message, so reply to the sender
     return getUserName(props.message.sender)
   }
 }
@@ -233,13 +230,8 @@ const getReplyRecipientName = () => {
 const getUserName = (user) => {
   if (!user) return 'Unknown'
   
-  // Debug: log what we're getting
-  console.log('User data:', user)
-  
-  // Try multiple approaches to get the name
   if (user.name) return user.name
   
-  // Construct from individual fields
   const nameParts = []
   if (user.first_name) nameParts.push(user.first_name)
   if (user.middle_name) nameParts.push(user.middle_name)
@@ -249,7 +241,6 @@ const getUserName = (user) => {
     return nameParts.join(' ')
   }
   
-  // Fallback to email or ID
   return user.email || `User ${user.id}` || 'Unknown'
 }
 

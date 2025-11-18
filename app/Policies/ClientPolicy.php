@@ -29,7 +29,7 @@ class ClientPolicy
         
         // Clients can only view their own information
         if ($user->isClient()) {
-            return $user->email === $client->email;
+            return $user->id === $client->user_id;
         }
         
         return false;
@@ -57,7 +57,7 @@ class ClientPolicy
         
         // Clients can only update their own information
         if ($user->isClient()) {
-            return $user->email === $client->email;
+            return $user->id === $client->user_id;
         }
         
         return false;
@@ -102,7 +102,7 @@ class ClientPolicy
         
         // Clients can export their own data
         if ($user->isClient()) {
-            return $user->email === $client->email;
+            return $user->id === $client->user_id;
         }
         
         return false;
@@ -115,7 +115,7 @@ class ClientPolicy
     {
         // Only clients can request review of their own information
         if ($user->isClient()) {
-            return $user->email === $client->email;
+            return $user->id === $client->user_id;
         }
         
         return false;
