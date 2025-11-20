@@ -41,7 +41,7 @@ class MessageController extends Controller
             $query->byPriority($request->priority);
         }
 
-        $messages = $query->orderBy('created_at', 'desc')->paginate(10);
+        $messages = $query->latest()->paginate(10);
 
         // Get tax professionals for new message
         $taxProfessionals = User::where('role', 'admin')
@@ -124,7 +124,7 @@ class MessageController extends Controller
                 });
             })
             ->with(['sender', 'recipient'])
-            ->orderBy('created_at', 'asc')
+            ->latest()
             ->get();
 
         return Inertia::render('Client/MessageDetail', [
@@ -139,31 +139,27 @@ class MessageController extends Controller
             'body' => 'required|string|max:2000'
         ]);
 
-        // Simple reply logic - reply to the other person
+        // For client replies, always send to admin users
         $currentUserId = auth()->id();
         
-        if ($originalMessage->sender_id == $currentUserId) {
-            // Current user was sender, reply to recipient
-            $replyRecipientId = $originalMessage->recipient_id;
-        } else {
-            // Current user was recipient, reply to sender
-            $replyRecipientId = $originalMessage->sender_id;
-        }
-
-        // Get client_id - use original or find any client as fallback
-        $clientId = $originalMessage->client_id ?: \App\Models\Client::first()->id;
+        // Get the first admin user as recipient
+        $adminUser = \App\Models\User::where('role', 'admin')->first();
+        $replyRecipientId = $adminUser->id;
+        
+        // Get client_id from current user
+        $client = \App\Models\Client::where('user_id', $currentUserId)->first();
+        $clientId = $client->id;
 
         $replyMessage = Message::create([
             'client_id' => $clientId,
             'sender_id' => $currentUserId,
             'recipient_id' => $replyRecipientId,
-            'subject' => 'Re: ' . $originalMessage->subject,
+            'subject' => 'Re: ' . ($originalMessage->subject ?: 'Message'),
             'body' => $request->body,
-            'priority' => $originalMessage->priority
+            'priority' => $originalMessage->priority ?: 'normal'
         ]);
 
-        return redirect()->route('client.messages.show', $originalMessage->id)
-            ->with('success', 'Reply sent successfully.');
+        return back()->with('success', 'Reply sent successfully.');
     }
 
     public function markAsRead(Message $message)

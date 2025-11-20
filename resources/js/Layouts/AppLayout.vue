@@ -1,11 +1,11 @@
 <template>
-  <div class="min-h-screen bg-gray-50 flex">
+  <div class="h-screen bg-gray-50 flex overflow-hidden">
     <!-- Sidebar -->
     <div class="hidden lg:flex lg:flex-shrink-0">
-      <div class="flex flex-col w-64">
+      <div class="flex flex-col w-64 h-screen">
         <div class="flex flex-col flex-grow bg-white border-r border-gray-200 pt-5 pb-4 overflow-y-auto">
           <!-- Logo -->
-          <div class="flex items-center flex-shrink-0 px-4">
+          <div class="flex items-center flex-shrink-0 px-4 mb-8">
             <div class="flex items-center space-x-2">
               <div class="w-8 h-8 bg-indigo-600 rounded-lg flex items-center justify-center">
                 <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -17,7 +17,7 @@
           </div>
 
           <!-- Navigation -->
-          <nav class="mt-8 flex-1 px-2 space-y-1">
+          <nav class="flex-1 px-2 space-y-1">
             <a
               v-for="item in navigation"
               :key="item.name"
@@ -26,7 +26,7 @@
                 item.current
                   ? 'bg-indigo-50 border-r-4 border-indigo-500 text-indigo-700'
                   : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900',
-                'group flex items-center px-2 py-2 text-sm font-medium rounded-l-md transition-colors duration-200'
+                'group flex items-center px-3 py-2 text-sm font-medium rounded-l-md transition-colors duration-200'
               ]"
             >
               <component
@@ -45,8 +45,6 @@
               </span>
             </a>
           </nav>
-
-
         </div>
       </div>
     </div>
@@ -54,9 +52,9 @@
 
 
     <!-- Main content area -->
-    <div class="flex-1 flex flex-col overflow-hidden">
+    <div class="flex-1 flex flex-col min-h-0">
       <!-- Top Header Bar -->
-      <div class="bg-white border-b border-gray-200 px-4 sm:px-6 lg:px-8 py-3">
+      <div class="bg-white border-b border-gray-200 px-4 sm:px-6 lg:px-8 py-3 flex-shrink-0">
         <div class="flex items-center justify-between">
           <!-- Mobile menu button (left side) -->
           <div class="lg:hidden">
@@ -105,7 +103,7 @@
       </div>
 
       <!-- Mobile navigation menu -->
-      <div v-if="showMobileMenu" class="lg:hidden">
+      <div v-if="showMobileMenu" class="lg:hidden flex-shrink-0">
         <div class="bg-white border-b border-gray-200">
           <nav class="px-2 py-2 space-y-1">
             <a
@@ -140,7 +138,7 @@
       </div>
 
       <!-- Page Header -->
-      <header v-if="$slots.header" class="bg-white shadow-sm border-b border-gray-200">
+      <header v-if="$slots.header" class="bg-white shadow-sm border-b border-gray-200 flex-shrink-0">
         <div class="px-4 sm:px-6 lg:px-8 py-6">
           <slot name="header" />
         </div>
@@ -148,34 +146,36 @@
 
       <!-- Main Content -->
       <main class="flex-1 overflow-y-auto">
-        <!-- Flash Messages -->
-        <div v-if="page.props.flash?.success" class="m-4">
-          <div class="bg-green-50 border border-green-200 rounded-md p-4">
-            <div class="flex">
-              <svg class="w-5 h-5 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-              </svg>
-              <p class="ml-3 text-sm text-green-700">{{ page.props.flash.success }}</p>
+          <!-- Flash Messages -->
+          <div v-if="page.props.flash?.success" class="m-4">
+            <div class="bg-green-50 border border-green-200 rounded-md p-4">
+              <div class="flex">
+                <svg class="w-5 h-5 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                </svg>
+                <p class="ml-3 text-sm text-green-700">{{ page.props.flash.success }}</p>
+              </div>
             </div>
           </div>
-        </div>
 
-        <div v-if="page.props.flash?.error" class="m-4">
-          <div class="bg-red-50 border border-red-200 rounded-md p-4">
-            <div class="flex">
-              <svg class="w-5 h-5 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-              </svg>
-              <p class="ml-3 text-sm text-red-700">{{ page.props.flash.error }}</p>
+          <div v-if="page.props.flash?.error" class="m-4">
+            <div class="bg-red-50 border border-red-200 rounded-md p-4">
+              <div class="flex">
+                <svg class="w-5 h-5 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                </svg>
+                <p class="ml-3 text-sm text-red-700">{{ page.props.flash.error }}</p>
+              </div>
             </div>
           </div>
-        </div>
 
-        <!-- Page Content -->
-        <div class="p-4 sm:p-6 lg:p-8">
-          <slot />
-        </div>
-      </main>
+          <!-- Page Content -->
+          <div class="p-4 sm:p-6 lg:p-8">
+            <slot />
+          </div>
+          
+          <!-- Footer -->
+        </main>
     </div>
 
     <!-- User Menu Dropdown -->
@@ -227,6 +227,7 @@ import {
   ChatBubbleLeftRightIcon,
   ArchiveBoxIcon
 } from '@heroicons/vue/24/outline'
+import Footer from '@/Components/Footer.vue'
 
 const page = usePage()
 
@@ -258,7 +259,7 @@ const navigation = computed(() => {
         href: '/admin/clients', 
         icon: UsersIcon, 
         current: currentPath.startsWith('/admin/clients'),
-        badge: '12' // Example badge
+        badge: '' // Example badge
       },
       { 
         name: 'Documents', 
@@ -338,13 +339,13 @@ const navigation = computed(() => {
         current: currentPath.startsWith('/client/messages'),
         badge: (page.props.navigationCounts?.unread_messages || 0) > 0 ? (page.props.navigationCounts.unread_messages || 0).toString() : null
       },
-      { 
-        name: 'Notifications', 
-        href: '/client/notifications', 
-        icon: BellIcon, 
-        current: currentPath.startsWith('/client/notifications'),
-        badge: (page.props.navigationCounts?.unread_notifications || 0) > 0 ? (page.props.navigationCounts.unread_notifications || 0).toString() : null
-      },
+      // { 
+      //   name: 'Notifications', 
+      //   href: '/client/notifications', 
+      //   icon: BellIcon, 
+      //   current: currentPath.startsWith('/client/notifications'),
+      //   badge: (page.props.navigationCounts?.unread_notifications || 0) > 0 ? (page.props.navigationCounts.unread_notifications || 0).toString() : null
+      // },
       { 
         name: 'Tax Returns', 
         href: '/client/tax-returns', 

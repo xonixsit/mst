@@ -115,7 +115,7 @@
         <div class="footer">
             <p>
                 <strong>MySuperTax</strong><br>
-                Professional Tax Consulting Platform<br>
+                Professional My Super Tax<br>
                 <a href="mailto:support@mst.xonixs.com">support@mst.xonixs.com</a>
             </p>
             <div class="divider"></div>

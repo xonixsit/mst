@@ -202,6 +202,9 @@ import { ref } from 'vue'
 import { Link, router } from '@inertiajs/vue3'
 import AppLayout from '@/Layouts/AppLayout.vue'
 
+// Use the global route function
+const route = window.route
+
 const props = defineProps({
   invoices: Object,
   stats: Object,

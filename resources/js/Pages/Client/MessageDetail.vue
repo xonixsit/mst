@@ -12,7 +12,6 @@
           <div>
             <h1 class="text-2xl font-bold text-gray-900">{{ message.subject }}</h1>
             <p class="mt-1 text-sm text-gray-600">
-              {{ message.sender_id === page.props.auth.user.id ? 'To' : 'From' }}: 
               {{ message.sender_id === page.props.auth.user.id ? getUserName(message.recipient) : getUserName(message.sender) }}
             </p>
           </div>
@@ -231,26 +230,24 @@ const getReplyRecipientName = () => {
 }
 
 const getUserName = (user) => {
-  if (!user) return 'Unknown'
+  if (!user) return 'Unknown User'
   
-  // Debug: log what we're getting
-  console.log('User data:', user)
-  
-  // Try multiple approaches to get the name
+  // Use the name field from users table
   if (user.name) return user.name
   
-  // Construct from individual fields
+  // Try to construct name from first/last name fields
   const nameParts = []
   if (user.first_name) nameParts.push(user.first_name)
-  if (user.middle_name) nameParts.push(user.middle_name)
   if (user.last_name) nameParts.push(user.last_name)
   
   if (nameParts.length > 0) {
     return nameParts.join(' ')
   }
   
-  // Fallback to email or ID
-  return user.email || `User ${user.id}` || 'Unknown'
+  // Fallback to email
+  if (user.email) return user.email
+  
+  return 'Unknown User'
 }
 
 const formatDate = (dateString) => {

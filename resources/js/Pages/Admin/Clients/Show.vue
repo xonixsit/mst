@@ -3,7 +3,9 @@
     <template #header>
       <div class="flex items-center justify-between">
         <div>
-          <h1 class="text-2xl font-bold text-gray-900">{{ client.first_name }} {{ client.last_name }}</h1>
+          <h1 class="text-2xl font-bold text-gray-900">{{ client.user?.first_name && client.user?.last_name 
+              ? `${client.user.first_name} ${client.user.last_name}`.trim() 
+              : 'Unknown Client' }}</h1>
           <p class="mt-1 text-sm text-gray-600">Client ID: {{ client.id }} • Registered: {{ formatDate(client.created_at) }}</p>
         </div>
         <div class="flex space-x-2">
@@ -130,11 +132,13 @@
           <dl class="grid grid-cols-1 gap-4">
             <div>
               <dt class="text-sm font-medium text-gray-500">Full Name</dt>
-              <dd class="mt-1 text-sm text-gray-900">{{ client.first_name }} {{ client.middle_name }} {{ client.last_name }}</dd>
+              <dd class="mt-1 text-sm text-gray-900">{{ client.user?.first_name && client.user?.last_name 
+                  ? `${client.user.first_name} ${client.user.middle_name || ''} ${client.user.last_name}`.replace(/\s+/g, ' ').trim() 
+                  : 'Unknown Client' }}</dd>
             </div>
             <div>
               <dt class="text-sm font-medium text-gray-500">Email</dt>
-              <dd class="mt-1 text-sm text-gray-900">{{ client.email }}</dd>
+              <dd class="mt-1 text-sm text-gray-900">{{ client.user?.email || 'No email' }}</dd>
             </div>
             <div>
               <dt class="text-sm font-medium text-gray-500">Phone</dt>
@@ -621,7 +625,9 @@
           <h3 class="text-lg font-medium text-gray-900 mt-2">Delete Client</h3>
           <div class="mt-2 px-7 py-3">
             <p class="text-sm text-gray-500">
-              Are you sure you want to delete {{ client.first_name }} {{ client.last_name }}? 
+              Are you sure you want to delete {{ client.user?.first_name && client.user?.last_name 
+                  ? `${client.user.first_name} ${client.user.last_name}`.trim() 
+                  : 'this client' }}? 
               This action cannot be undone and will permanently remove all client data, documents, and history.
             </p>
           </div>
@@ -779,11 +785,11 @@ export default {
     }
 
     const viewDocuments = () => {
-      router.get('/admin/documents', { client_id: props.client.id })
+      router.visit(`/admin/clients/${props.client.user_id}/documents`)
     }
 
     const viewInvoices = () => {
-      router.get(`/admin/clients/${props.client.id}/invoices`)
+      router.visit(`/admin/clients/${props.client.user_id}/invoices`)
     }
 
     const deleteClient = () => {

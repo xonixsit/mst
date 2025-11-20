@@ -114,6 +114,47 @@
             </div>
           </div>
 
+          <!-- Contact Information -->
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label for="spouseEmail" class="block text-sm font-medium text-gray-700 mb-1">
+                Email Address
+              </label>
+              <input
+                id="spouseEmail"
+                v-model="localData.email"
+                type="email"
+                :class="inputClasses('email')"
+                placeholder="spouse@example.com"
+                :disabled="readonly"
+                @blur="validateField('email')"
+                @input="handleInput('email', $event.target.value)"
+              />
+              <p v-if="fieldErrors.email" class="mt-1 text-sm text-red-600">
+                {{ fieldErrors.email }}
+              </p>
+            </div>
+
+            <div>
+              <label for="spousePhone" class="block text-sm font-medium text-gray-700 mb-1">
+                Phone Number
+              </label>
+              <input
+                id="spousePhone"
+                v-model="localData.phone"
+                type="tel"
+                :class="inputClasses('phone')"
+                placeholder="(555) 123-4567"
+                :disabled="readonly"
+                @blur="validateField('phone')"
+                @input="handlePhoneInput"
+              />
+              <p v-if="fieldErrors.phone" class="mt-1 text-sm text-red-600">
+                {{ fieldErrors.phone }}
+              </p>
+            </div>
+          </div>
+
           <!-- Employment Information -->
           <div>
             <label for="spouseOccupation" class="block text-sm font-medium text-gray-700 mb-1">
@@ -171,6 +212,8 @@ const localData = reactive({
   lastName: '',
   ssn: '',
   dateOfBirth: '',
+  email: '',
+  phone: '',
   occupation: ''
 })
 
@@ -224,6 +267,18 @@ const validateField = (fieldName) => {
         }
       }
       break
+
+    case 'email':
+      if (value && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)) {
+        error = 'Please enter a valid email address'
+      }
+      break
+
+    case 'phone':
+      if (value && !/^[\+]?[1-9][\d]{0,15}$/.test(value.replace(/\D/g, ''))) {
+        error = 'Please enter a valid phone number'
+      }
+      break
   }
 
   if (error) {
@@ -266,6 +321,24 @@ const handleSSNInput = (event) => {
   event.target.value = value
   
   handleInput('ssn', value)
+}
+
+const handlePhoneInput = (event) => {
+  let value = event.target.value.replace(/\D/g, '')
+  
+  // Format phone as user types (US format)
+  if (value.length >= 7) {
+    value = `(${value.slice(0, 3)}) ${value.slice(3, 6)}-${value.slice(6, 10)}`
+  } else if (value.length >= 4) {
+    value = `(${value.slice(0, 3)}) ${value.slice(3)}`
+  } else if (value.length >= 1) {
+    value = `(${value}`
+  }
+  
+  localData.phone = value
+  event.target.value = value
+  
+  handleInput('phone', value)
 }
 
 const handleSubmit = () => {

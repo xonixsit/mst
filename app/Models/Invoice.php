@@ -78,7 +78,7 @@ class Invoice extends Model
         ]);
 
         // Send notifications to client and admins
-        $clientUser = \App\Models\User::where('email', $this->client->email)->first();
+        $clientUser = $this->client->user;
         if ($clientUser) {
             $clientUser->notify(new \App\Notifications\InvoicePaidNotification($this));
         }

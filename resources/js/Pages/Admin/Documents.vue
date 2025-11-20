@@ -139,9 +139,9 @@
                 </td>
                 <td class="px-6 py-4 whitespace-nowrap">
                   <div class="text-sm text-gray-900">
-                    {{ document.client?.first_name }} {{ document.client?.last_name }}
+                    {{ document.client?.user?.first_name }} {{ document.client?.user?.last_name }}
                   </div>
-                  <div class="text-sm text-gray-500">{{ document.client?.email }}</div>
+                  <div class="text-sm text-gray-500">{{ document.client?.user?.email }}</div>
                 </td>
                 <td class="px-6 py-4 whitespace-nowrap">
                   <span class="text-sm text-gray-900">{{ documentTypes[document.document_type] }}</span>
@@ -269,7 +269,7 @@
 </template>
 
 <script setup>
-import { ref, computed } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import { router } from '@inertiajs/vue3'
 import { DocumentTextIcon } from '@heroicons/vue/24/outline'
 import AppLayout from '@/Layouts/AppLayout.vue'
@@ -343,7 +343,12 @@ const deleteDocument = (document) => {
 }
 
 const applyFilters = () => {
-  router.get('/admin/documents', filters.value, {
+  // Clean up empty filters
+  const cleanFilters = Object.fromEntries(
+    Object.entries(filters.value).filter(([key, value]) => value !== '' && value !== null)
+  )
+  
+  router.get('/admin/documents', cleanFilters, {
     preserveState: true,
     replace: true
   })
@@ -368,4 +373,15 @@ const formatDate = (dateString) => {
     day: 'numeric'
   })
 }
+
+// Handle initial URL parameters
+onMounted(() => {
+  const urlParams = new URLSearchParams(window.location.search)
+  const clientId = urlParams.get('client_id')
+  
+  if (clientId && !filters.value.client_id) {
+    filters.value.client_id = clientId
+    applyFilters()
+  }
+})
 </script>

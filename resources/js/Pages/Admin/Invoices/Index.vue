@@ -55,7 +55,7 @@
                 >
                   <option value="">All Clients</option>
                   <option v-for="client in clients" :key="client.id" :value="client.id">
-                    {{ client.first_name }} {{ client.last_name }}
+                    {{ client.name }}
                   </option>
                 </select>
               </div>
@@ -128,7 +128,9 @@
                     {{ invoice.invoice_number }}
                   </td>
                   <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                    {{ invoice.client.first_name }} {{ invoice.client.last_name }}
+                    {{ invoice.client?.user?.first_name && invoice.client?.user?.last_name 
+                        ? `${invoice.client.user.first_name} ${invoice.client.user.last_name}`.trim() 
+                        : 'Unknown Client' }}
                   </td>
                   <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                     {{ invoice.title }}

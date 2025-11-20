@@ -41,8 +41,10 @@ class AuditController extends Controller
                 $q->where('auditable_type', 'like', "%{$filters['search']}%")
                   ->orWhere('event', 'like', "%{$filters['search']}%")
                   ->orWhereHas('user', function ($userQuery) use ($filters) {
-                      $userQuery->where('name', 'like', "%{$filters['search']}%")
-                               ->orWhere('email', 'like', "%{$filters['search']}%");
+                      $userQuery->where('first_name', 'like', "%{$filters['search']}%")
+                               ->orWhere('last_name', 'like', "%{$filters['search']}%")
+                               ->orWhere('email', 'like', "%{$filters['search']}%")
+                               ->orWhereRaw("CONCAT(first_name, ' ', last_name) like ?", ["%{$filters['search']}%"]);
                   });
             });
         }
@@ -71,7 +73,16 @@ class AuditController extends Controller
         $auditLogs = $query->paginate($perPage)->withQueryString();
 
         // Get filter options
-        $users = User::select('id', 'name', 'email')->orderBy('name')->get();
+        $users = User::select('id', 'first_name', 'last_name', 'email')
+            ->orderBy('first_name')
+            ->get()
+            ->map(function ($user) {
+                return [
+                    'id' => $user->id,
+                    'name' => trim($user->first_name . ' ' . $user->last_name),
+                    'email' => $user->email
+                ];
+            });
         $modelTypes = AuditLog::select('auditable_type')
             ->distinct()
             ->orderBy('auditable_type')

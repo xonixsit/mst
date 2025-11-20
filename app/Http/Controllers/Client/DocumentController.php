@@ -18,13 +18,12 @@ class DocumentController extends Controller
 
     public function index(Request $request)
     {
-        // For now, create a mock client or use the authenticated user directly
         $user = auth()->user();
         
-        // Create a mock client ID based on user ID for testing
-        $mockClientId = $user->id;
+        // Use user ID as client_id for documents
+        $clientId = $user->id;
 
-        $query = Document::where('client_id', $mockClientId)
+        $query = Document::where('client_id', $clientId)
             ->with('uploader');
 
         // Filter by document type
@@ -45,7 +44,7 @@ class DocumentController extends Controller
         $documents = $query->orderBy('created_at', 'desc')->paginate(10);
 
         // Get available tax years
-        $taxYears = Document::where('client_id', $mockClientId)
+        $taxYears = Document::where('client_id', $clientId)
             ->whereNotNull('tax_year')
             ->distinct()
             ->pluck('tax_year')
@@ -71,7 +70,9 @@ class DocumentController extends Controller
     public function store(Request $request)
     {
         $user = auth()->user();
-        $mockClientId = $user->id;
+        
+        // Use user ID as client_id for documents
+        $clientId = $user->id;
 
         $request->validate([
             'file' => 'required|file|max:10240|mimes:pdf,jpg,jpeg,png,doc,docx,xls,xlsx',
@@ -82,10 +83,10 @@ class DocumentController extends Controller
 
         $file = $request->file('file');
         $fileName = time() . '_' . $file->getClientOriginalName();
-        $filePath = $file->storeAs('documents/' . $mockClientId, $fileName, 'private');
+        $filePath = $file->storeAs('documents/' . $clientId, $fileName, 'private');
 
         $document = Document::create([
-            'client_id' => $mockClientId,
+            'client_id' => $clientId,
             'name' => $request->input('name', pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME)),
             'original_name' => $file->getClientOriginalName(),
             'file_path' => $filePath,
@@ -106,9 +107,9 @@ class DocumentController extends Controller
     public function download(Document $document)
     {
         $user = auth()->user();
-        $mockClientId = $user->id;
         
-        if ($document->client_id !== $mockClientId) {
+        // Use user ID as client_id for documents
+        if ($document->client_id !== $user->id) {
             abort(403, 'Unauthorized access to document.');
         }
 
@@ -125,9 +126,9 @@ class DocumentController extends Controller
     public function destroy(Document $document)
     {
         $user = auth()->user();
-        $mockClientId = $user->id;
         
-        if ($document->client_id !== $mockClientId) {
+        // Use user ID as client_id for documents
+        if ($document->client_id !== $user->id) {
             abort(403, 'Unauthorized access to document.');
         }
 

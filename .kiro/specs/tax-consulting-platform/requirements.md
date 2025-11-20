@@ -2,7 +2,7 @@
 
 ## Introduction
 
-A comprehensive tax consulting platform consisting of an Admin Dashboard for tax professionals to manage services, invoices, clients, and tax documents, and a Client Panel for clients to manage their personal information and upload tax files. The system will be built using Laravel backend with Inertia.js for seamless SPA experience, Vue.js frontend components, and MySQL database. The interface will exclude static navigation pages, focusing on functional admin and client panels with modern, intuitive UI/UX following HFI standards for visual hierarchy and user experience.
+A comprehensive My Super Tax consisting of an Admin Dashboard for tax professionals to manage services, invoices, clients, and tax documents, and a Client Panel for clients to manage their personal information and upload tax files. The system will be built using Laravel backend with Inertia.js for seamless SPA experience, Vue.js frontend components, and MySQL database. The interface will exclude static navigation pages, focusing on functional admin and client panels with modern, intuitive UI/UX following HFI standards for visual hierarchy and user experience.
 
 ## Glossary
 

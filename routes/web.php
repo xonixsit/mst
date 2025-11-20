@@ -15,6 +15,19 @@ Route::get('/test', function () {
     return 'Test route works!';
 });
 
+// Legal pages (accessible to everyone)
+Route::get('/legal/terms', function () {
+    return inertia('Legal/Terms');
+})->name('legal.terms');
+
+Route::get('/legal/privacy', function () {
+    return inertia('Legal/Privacy');
+})->name('legal.privacy');
+
+Route::get('/legal/disclaimer', function () {
+    return inertia('Legal/Disclaimer');
+})->name('legal.disclaimer');
+
 // Redirect root to admin login
 Route::get('/', function () {
     return redirect('/admin/login');
@@ -188,6 +201,12 @@ Route::middleware(['auth', 'auth.session', 'session.timeout', 'admin'])->prefix(
     Route::resource('invoices', InvoiceController::class);
     Route::post('invoices/{invoice}/mark-paid', [InvoiceController::class, 'markAsPaid'])->name('invoices.mark-paid');
     Route::post('invoices/{invoice}/send-email', [InvoiceController::class, 'sendEmail'])->name('invoices.send-email');
+    Route::get('invoices/{invoice}/download', [InvoiceController::class, 'download'])->name('invoices.download');
+    
+    // Secure client-specific routes (using route parameters instead of query strings)
+    Route::get('clients/{userId}/documents', [App\Http\Controllers\Admin\DocumentController::class, 'clientDocuments'])->name('clients.documents');
+    Route::get('clients/{userId}/invoices', [InvoiceController::class, 'clientInvoices'])->name('clients.invoices');
+    Route::get('clients/{userId}/invoices/create', [InvoiceController::class, 'createForClient'])->name('clients.invoices.create');
     
     // Admin message management routes
     Route::get('messages', [App\Http\Controllers\Admin\MessageController::class, 'index'])->name('messages.index');

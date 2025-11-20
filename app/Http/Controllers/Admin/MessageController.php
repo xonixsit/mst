@@ -56,7 +56,7 @@ class MessageController extends Controller
             });
         }
 
-        $messages = $query->orderBy('created_at', 'desc')->paginate(15);
+        $messages = $query->latest()->paginate(15);
 
         // Get clients for filter dropdown - only get one client per user
         $clients = Client::with('user')
@@ -83,7 +83,7 @@ class MessageController extends Controller
             'high_priority' => Message::where('priority', 'high')->count(),
             'client_messages' => Message::whereHas('sender', function ($q) {
                 $q->where('role', 'client');
-            })->count()
+            })->distinct('client_id')->count('client_id')
         ];
 
         return Inertia::render('Admin/Messages/Index', [
@@ -116,7 +116,7 @@ class MessageController extends Controller
                 });
             })
             ->with(['sender', 'recipient'])
-            ->orderBy('created_at', 'asc')
+            ->latest()
             ->get();
 
         return Inertia::render('Admin/Messages/Show', [
@@ -156,34 +156,31 @@ class MessageController extends Controller
     public function reply(Request $request, Message $originalMessage)
     {
         $request->validate([
-            'body' => 'required|string|max:2000'
+            'body' => 'required|string|max:2000',
+            'client_id' => 'nullable|exists:clients,id'
         ]);
 
-        // Simple reply logic - reply to the other person
-        $currentUserId = auth()->id();
+        // Get client_id first
+        $clientId = $request->client_id ?: $originalMessage->client_id ?: $originalMessage->client?->id;
         
-        if ($originalMessage->sender_id == $currentUserId) {
-            // Current user was sender, reply to recipient
-            $replyRecipientId = $originalMessage->recipient_id;
-        } else {
-            // Current user was recipient, reply to sender
-            $replyRecipientId = $originalMessage->sender_id;
-        }
+        // For admin replies, always send to the client's user
+        $client = \App\Models\Client::with('user')->find($clientId);
+        $replyRecipientId = $client->user->id;
+        
+        $currentUserId = auth()->id();
 
-        // Get client_id - use original or find any client as fallback
-        $clientId = $originalMessage->client_id ?: \App\Models\Client::first()->id;
+        // Client ID already determined above
 
         $replyMessage = Message::create([
             'client_id' => $clientId,
             'sender_id' => $currentUserId,
             'recipient_id' => $replyRecipientId,
-            'subject' => 'Re: ' . $originalMessage->subject,
+            'subject' => 'Re: ' . ($originalMessage->subject ?: 'Message'),
             'body' => $request->body,
-            'priority' => $originalMessage->priority
+            'priority' => $originalMessage->priority ?: 'normal'
         ]);
 
-        return redirect()->route('admin.messages.show', $originalMessage->id)
-            ->with('success', 'Reply sent successfully.');
+        return back()->with('success', 'Reply sent successfully.');
     }
 
     public function markAsRead(Message $message)

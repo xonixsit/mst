@@ -27,7 +27,7 @@ class QueryOptimizationService
                     'id', 'first_name', 'middle_name', 'last_name', 'email', 
                     'phone', 'status', 'created_at', 'user_id'
                 ])
-                ->with(['user:id,name']);
+                ->with(['user:id,first_name,last_name,email']);
 
             // Apply filters efficiently
             $this->applyFilters($query, $filters);
@@ -45,7 +45,7 @@ class QueryOptimizationService
         
         return Cache::remember($cacheKey, self::CACHE_DURATION, function () use ($clientId) {
             return Client::with([
-                'user:id,name,email',
+                'user:id,first_name,last_name,email',
                 'spouse',
                 'employees',
                 'projects' => function ($query) {
@@ -138,20 +138,26 @@ class QueryOptimizationService
         $cacheKey = "client_suggestions_" . md5($query . $limit);
         
         return Cache::remember($cacheKey, 15, function () use ($query, $limit) {
-            return Client::select(['id', 'first_name', 'last_name', 'email'])
-                ->where(function ($q) use ($query) {
-                    $q->where('first_name', 'like', "%{$query}%")
-                      ->orWhere('last_name', 'like', "%{$query}%")
-                      ->orWhere('email', 'like', "%{$query}%")
-                      ->orWhereRaw("CONCAT(first_name, ' ', last_name) like ?", ["%{$query}%"]);
+            return Client::with('user:id,first_name,last_name,email')
+                ->whereHas('user', function ($q) use ($query) {
+                    $q->where('role', 'client') // Only get actual client users
+                      ->where(function ($subQ) use ($query) {
+                          $subQ->where('first_name', 'like', "%{$query}%")
+                               ->orWhere('last_name', 'like', "%{$query}%")
+                               ->orWhere('email', 'like', "%{$query}%")
+                               ->orWhereRaw("CONCAT(first_name, ' ', last_name) like ?", ["%{$query}%"]);
+                      });
                 })
                 ->limit($limit)
                 ->get()
-                ->map(function ($client) {
+                ->groupBy('user_id') // Group by user_id to handle duplicates
+                ->map(function ($clientGroup) {
+                    // Take the first (or most recent) client for each user
+                    $client = $clientGroup->sortByDesc('created_at')->first();
                     return [
                         'id' => $client->id,
-                        'name' => $client->full_name,
-                        'email' => $client->email,
+                        'name' => trim(($client->user->first_name ?? '') . ' ' . ($client->user->last_name ?? '')),
+                        'email' => $client->user->email ?? '',
                     ];
                 });
         });
@@ -177,11 +183,28 @@ class QueryOptimizationService
     public function getClientsWithPendingReviews(): array
     {
         return Cache::remember('clients_pending_reviews', 30, function () {
-            return Client::select(['id', 'first_name', 'last_name', 'email', 'review_requested_at'])
+            return Client::with('user:id,first_name,last_name,email')
+                ->whereHas('user', function ($query) {
+                    $query->where('role', 'client');
+                })
                 ->whereNotNull('review_requested_at')
                 ->orderBy('review_requested_at', 'asc')
                 ->limit(50)
                 ->get()
+                ->groupBy('user_id') // Group by user_id to handle duplicates
+                ->map(function ($clientGroup) {
+                    // Take the first (or most recent) client for each user
+                    $client = $clientGroup->sortByDesc('created_at')->first();
+                    return [
+                        'id' => $client->id,
+                        'first_name' => $client->user->first_name ?? '',
+                        'last_name' => $client->user->last_name ?? '',
+                        'email' => $client->user->email ?? '',
+                        'review_requested_at' => $client->review_requested_at,
+                        'name' => trim(($client->user->first_name ?? '') . ' ' . ($client->user->last_name ?? ''))
+                    ];
+                })
+                ->values()
                 ->toArray();
         });
     }

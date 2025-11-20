@@ -19,6 +19,7 @@ class StoreInvoiceRequest extends FormRequest
             'comments' => 'nullable|string',
             'send_to_email' => 'required|email|max:255',
             'invoice_year' => 'required|integer|min:2024|max:2030',
+            'status' => 'required|in:draft,sent,paid,overdue',
             'items' => 'required|array|min:1',
             'items.*.service_name' => 'required|string|max:255',
             'items.*.quantity' => 'required|integer|min:1',

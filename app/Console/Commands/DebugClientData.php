@@ -35,7 +35,7 @@ class DebugClientData extends Command
             
             foreach ($duplicates as $userId => $clientGroup) {
                 $user = $clientGroup->first()->user;
-                $this->warn("User: {$user->name} ({$user->email}) has {$clientGroup->count()} client records:");
+                $this->warn("User: {$user->first_name} {$user->last_name} ({$user->email}) has {$clientGroup->count()} client records:");
                 
                 foreach ($clientGroup as $client) {
                     $this->line("  - Client ID: {$client->id}, Status: {$client->status}, Created: {$client->created_at}");

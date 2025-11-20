@@ -34,7 +34,7 @@ class StoreClientInformationRequest extends FormRequest
             'first_name' => 'required|string|max:255',
             'middle_name' => 'nullable|string|max:255',
             'last_name' => 'required|string|max:255',
-            'email' => ['required', 'max:255', 'unique:clients,email', new EmailFormat()],
+            'email' => ['required', 'max:255', 'unique:users,email', new EmailFormat()],
             'phone' => ['required', 'string', new PhoneNumberFormat()],
             'ssn' => ['required', 'string', 'unique:clients,ssn', new SSNFormat()],
             'date_of_birth' => ['required', new DateFormat('Y-m-d', false, true)],

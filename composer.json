@@ -1,15 +1,17 @@
 {
     "name": "laravel/laravel",
     "type": "project",
-    "description": "MySuperTax - Professional Tax Consulting Platform built with Laravel Framework",
+    "description": "MySuperTax - Professional My Super Tax built with Laravel Framework",
     "keywords": ["laravel", "framework", "tax", "consulting"],
     "license": "MIT",
     "require": {
         "php": "^8.2",
+        "barryvdh/laravel-dompdf": "^3.1",
         "inertiajs/inertia-laravel": "^2.0",
         "laravel/framework": "^12.0",
         "laravel/sanctum": "^4.0",
-        "laravel/tinker": "^2.9"
+        "laravel/tinker": "^2.9",
+        "tightenco/ziggy": "^2.6"
     },
     "require-dev": {
         "fakerphp/faker": "^1.23",

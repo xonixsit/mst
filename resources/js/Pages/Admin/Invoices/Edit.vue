@@ -88,6 +88,26 @@
                   {{ form.errors.invoice_year }}
                 </div>
               </div>
+
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-2">
+                  Status *
+                </label>
+                <select
+                  v-model="form.status"
+                  class="w-full border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                  :class="{ 'border-red-500': form.errors.status }"
+                  required
+                >
+                  <option value="draft">Draft</option>
+                  <option value="sent">Sent</option>
+                  <option value="paid">Paid</option>
+                  <option value="overdue">Overdue</option>
+                </select>
+                <div v-if="form.errors.status" class="text-red-500 text-sm mt-1">
+                  {{ form.errors.status }}
+                </div>
+              </div>
             </div>
 
             <div>
@@ -264,6 +284,7 @@ const form = useForm({
   comments: props.invoice.comments || '',
   send_to_email: props.invoice.send_to_email,
   invoice_year: props.invoice.invoice_year,
+  status: props.invoice.status,
   items: props.invoice.items.map(item => ({
     service_name: item.service_name,
     quantity: item.quantity,

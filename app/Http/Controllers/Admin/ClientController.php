@@ -11,8 +11,10 @@ use App\Services\CsvImportService;
 use App\Services\ComprehensiveExportService;
 use App\Services\AuditService;
 use App\Services\CommunicationService;
+use App\Services\InvoiceService;
 use App\Repositories\ClientRepository;
 use App\Models\Client;
+use App\Enums\VisaStatus;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
@@ -63,7 +65,15 @@ class ClientController extends Controller
                 'archived' => 'Archived'
             ],
             'perPageOptions' => [10, 25, 50, 100],
-            'availableUsers' => \App\Models\User::select('id', 'name', 'email')->get()
+            'availableUsers' => \App\Models\User::select('id', 'first_name', 'last_name', 'email')
+                ->get()
+                ->map(function ($user) {
+                    return [
+                        'id' => $user->id,
+                        'name' => trim($user->first_name . ' ' . $user->last_name),
+                        'email' => $user->email
+                    ];
+                })
         ]);
     }
 
@@ -72,7 +82,9 @@ class ClientController extends Controller
      */
     public function create(): Response
     {
-        return Inertia::render('Admin/Clients/Create');
+        return Inertia::render('Admin/Clients/Create', [
+            'visaStatusOptions' => VisaStatus::options(),
+        ]);
     }
 
     /**
@@ -114,7 +126,8 @@ class ClientController extends Controller
         }
 
         return Inertia::render('Admin/Clients/Edit', [
-            'client' => $client
+            'client' => $client,
+            'visaStatusOptions' => VisaStatus::options(),
         ]);
     }
 
@@ -539,7 +552,15 @@ class ClientController extends Controller
     public function importCsv(): Response
     {
         return Inertia::render('Admin/Clients/Import', [
-            'availableUsers' => \App\Models\User::select('id', 'name', 'email')->get(),
+            'availableUsers' => \App\Models\User::select('id', 'first_name', 'last_name', 'email')
+                ->get()
+                ->map(function ($user) {
+                    return [
+                        'id' => $user->id,
+                        'name' => trim($user->first_name . ' ' . $user->last_name),
+                        'email' => $user->email
+                    ];
+                }),
             'sampleHeaders' => $this->csvImportService->getSampleHeaders()
         ]);
     }
@@ -632,7 +653,15 @@ class ClientController extends Controller
     {
         return Inertia::render('Admin/Clients/Export', [
             'availableTemplates' => $this->comprehensiveExportService->getAvailableTemplates(),
-            'availableUsers' => \App\Models\User::select('id', 'name', 'email')->get()
+            'availableUsers' => \App\Models\User::select('id', 'first_name', 'last_name', 'email')
+                ->get()
+                ->map(function ($user) {
+                    return [
+                        'id' => $user->id,
+                        'name' => trim($user->first_name . ' ' . $user->last_name),
+                        'email' => $user->email
+                    ];
+                })
         ]);
     }
 

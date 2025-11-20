@@ -54,7 +54,7 @@
 
     <!-- Footer -->
     <footer class="mt-8 text-center text-sm text-gray-500">
-      <p>&copy; {{ new Date().getFullYear() }} MySuperTax. Professional tax consulting platform.</p>
+      <p>&copy; {{ new Date().getFullYear() }} MySuperTax. Professional My Super Tax.</p>
     </footer>
   </div>
 </template>

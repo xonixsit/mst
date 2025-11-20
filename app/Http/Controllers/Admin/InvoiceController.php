@@ -18,7 +18,7 @@ class InvoiceController extends Controller
 
     public function index(Request $request)
     {
-        $query = Invoice::with(['client', 'items']);
+        $query = Invoice::with(['client.user', 'items']);
 
         // Filter by client
         if ($request->filled('client_id')) {
@@ -45,10 +45,11 @@ class InvoiceController extends Controller
             $query->where(function ($q) use ($search) {
                 $q->where('invoice_number', 'like', "%{$search}%")
                   ->orWhere('title', 'like', "%{$search}%")
-                  ->orWhereHas('client', function ($clientQuery) use ($search) {
-                      $clientQuery->where('first_name', 'like', "%{$search}%")
-                                  ->orWhere('last_name', 'like', "%{$search}%")
-                                  ->orWhere('email', 'like', "%{$search}%");
+                  ->orWhereHas('client.user', function ($userQuery) use ($search) {
+                      $userQuery->where('first_name', 'like', "%{$search}%")
+                                ->orWhere('last_name', 'like', "%{$search}%")
+                                ->orWhere('email', 'like', "%{$search}%")
+                                ->orWhereRaw("CONCAT(first_name, ' ', COALESCE(middle_name, ''), ' ', last_name) LIKE ?", ["%{$search}%"]);
                   });
             });
         }
@@ -57,9 +58,25 @@ class InvoiceController extends Controller
                          ->paginate(25)
                          ->withQueryString();
 
-        $clients = Client::select('id', 'first_name', 'last_name', 'email')
-                        ->orderBy('first_name')
-                        ->get();
+        $clients = Client::with('user:id,first_name,last_name,email')
+                        ->whereHas('user', function ($query) {
+                            $query->where('role', 'client');
+                        })
+                        ->get()
+                        ->groupBy('user_id') // Group by user_id to handle duplicates
+                        ->map(function ($clientGroup) {
+                            // Take the first (or most recent) client for each user
+                            $client = $clientGroup->sortByDesc('created_at')->first();
+                            return [
+                                'id' => $client->id,
+                                'first_name' => $client->user->first_name ?? '',
+                                'last_name' => $client->user->last_name ?? '',
+                                'email' => $client->user->email ?? '',
+                                'name' => trim(($client->user->first_name ?? '') . ' ' . ($client->user->last_name ?? ''))
+                            ];
+                        })
+                        ->sortBy('first_name')
+                        ->values();
 
         $stats = $this->invoiceService->getInvoiceStats();
 
@@ -73,9 +90,27 @@ class InvoiceController extends Controller
 
     public function create(Request $request)
     {
-        $clients = Client::select('id', 'first_name', 'last_name', 'email', 'phone', 'mobile_number')
-                        ->orderBy('first_name')
-                        ->get();
+        $clients = Client::with('user:id,first_name,last_name,email')
+                        ->whereHas('user', function ($query) {
+                            $query->where('role', 'client');
+                        })
+                        ->get()
+                        ->groupBy('user_id') // Group by user_id to handle duplicates
+                        ->map(function ($clientGroup) {
+                            // Take the first (or most recent) client for each user
+                            $client = $clientGroup->sortByDesc('created_at')->first();
+                            return [
+                                'id' => $client->id,
+                                'first_name' => $client->user->first_name ?? '',
+                                'last_name' => $client->user->last_name ?? '',
+                                'email' => $client->user->email ?? '',
+                                'phone' => $client->phone ?? '',
+                                'mobile_number' => $client->mobile_number ?? '',
+                                'name' => trim(($client->user->first_name ?? '') . ' ' . ($client->user->last_name ?? ''))
+                            ];
+                        })
+                        ->sortBy('first_name')
+                        ->values();
 
         $defaultServices = $this->invoiceService->getDefaultServices();
 
@@ -124,9 +159,25 @@ class InvoiceController extends Controller
     {
         $invoice->load(['client', 'items']);
         
-        $clients = Client::select('id', 'first_name', 'last_name', 'email')
-                        ->orderBy('first_name')
-                        ->get();
+        $clients = Client::with('user:id,first_name,last_name,email')
+                        ->whereHas('user', function ($query) {
+                            $query->where('role', 'client');
+                        })
+                        ->get()
+                        ->groupBy('user_id') // Group by user_id to handle duplicates
+                        ->map(function ($clientGroup) {
+                            // Take the first (or most recent) client for each user
+                            $client = $clientGroup->sortByDesc('created_at')->first();
+                            return [
+                                'id' => $client->id,
+                                'first_name' => $client->user->first_name ?? '',
+                                'last_name' => $client->user->last_name ?? '',
+                                'email' => $client->user->email ?? '',
+                                'name' => trim(($client->user->first_name ?? '') . ' ' . ($client->user->last_name ?? ''))
+                            ];
+                        })
+                        ->sortBy('first_name')
+                        ->values();
 
         $defaultServices = $this->invoiceService->getDefaultServices();
 
@@ -178,5 +229,36 @@ class InvoiceController extends Controller
 
         return redirect()->back()
                        ->with('error', 'Failed to send invoice. Please try again.');
+    }
+
+    /**
+     * Download invoice as PDF.
+     */
+    public function download(Invoice $invoice)
+    {
+        $invoice->load(['client.user', 'items']);
+        
+        // Generate PDF using DomPDF
+        $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('invoices.pdf', compact('invoice'));
+        
+        return $pdf->download('invoice-' . $invoice->invoice_number . '.pdf');
+    }
+
+    /**
+     * Show invoices for a specific client (secure route)
+     */
+    public function clientInvoices(Request $request, int $userId)
+    {
+        // Redirect to invoices index with client filter
+        return redirect()->route('invoices.index', ['client_id' => $userId]);
+    }
+
+    /**
+     * Show create invoice form for a specific client (secure route)
+     */
+    public function createForClient(Request $request, int $userId)
+    {
+        // Redirect to invoice create with client pre-selected
+        return redirect()->route('invoices.create', ['client_id' => $userId]);
     }
 }

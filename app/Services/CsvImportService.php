@@ -258,7 +258,9 @@ class CsvImportService
                     }
 
                     // Check for existing client by email
-                    $existingClient = Client::where('email', $clientData['email'])->first();
+                    $existingClient = Client::whereHas('user', function ($query) use ($clientData) {
+                        $query->where('email', $clientData['email']);
+                    })->first();
 
                     if ($existingClient) {
                         if ($updateExisting) {

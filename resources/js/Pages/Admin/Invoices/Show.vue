@@ -70,7 +70,9 @@
                   <div class="flex">
                     <dt class="w-32 text-sm font-medium text-gray-500">Name:</dt>
                     <dd class="text-sm text-gray-900">
-                      {{ invoice.client.first_name }} {{ invoice.client.last_name }}
+                      {{ invoice.client?.user?.first_name && invoice.client?.user?.last_name 
+                          ? `${invoice.client.user.first_name} ${invoice.client.user.last_name}`.trim() 
+                          : 'Unknown Client' }}
                     </dd>
                   </div>
                   <div class="flex">

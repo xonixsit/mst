@@ -116,7 +116,9 @@
                   <div class="mt-1 flex items-center space-x-4 text-sm text-gray-500">
                     <span>
                       {{ message.sender_id === $page.props.auth.user.id ? 'To' : 'From' }}: 
-                      {{ message.sender_id === $page.props.auth.user.id ? message.recipient.name : message.sender.name }}
+                      {{ message.sender_id === $page.props.auth.user.id ? 
+                        (message.recipient ? `${message.recipient.first_name} ${message.recipient.last_name}` : 'Unknown') : 
+                        (message.sender ? `${message.sender.first_name} ${message.sender.last_name}` : 'Unknown') }}
                     </span>
                     <span>{{ formatDate(message.created_at) }}</span>
                   </div>
@@ -177,7 +179,7 @@
               >
                 <option value="">Select recipient</option>
                 <option v-for="professional in taxProfessionals" :key="professional.id" :value="professional.id">
-                  {{ professional.name }}
+                  {{ `${professional.first_name} ${professional.last_name}` }}
                 </option>
               </select>
             </div>

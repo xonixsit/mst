@@ -349,13 +349,16 @@ class Client extends Model
             return null;
         }
 
-        // The encryption trait handles decryption, so we just need to convert to Carbon
+        // For API/JSON responses, return the date string in Y-m-d format
+        // The encryption trait handles decryption, so we just need to ensure proper format
         try {
-            return \Carbon\Carbon::createFromFormat('Y-m-d', $value);
+            $date = \Carbon\Carbon::createFromFormat('Y-m-d', $value);
+            return $date->format('Y-m-d');
         } catch (\Exception $e) {
             // If parsing fails, try other common formats
             try {
-                return \Carbon\Carbon::parse($value);
+                $date = \Carbon\Carbon::parse($value);
+                return $date->format('Y-m-d');
             } catch (\Exception $e) {
                 return null;
             }
@@ -408,13 +411,16 @@ class Client extends Model
             return null;
         }
 
-        // The encryption trait handles decryption, so we just need to convert to Carbon
+        // For API/JSON responses, return the date string in Y-m-d format
+        // The encryption trait handles decryption, so we just need to ensure proper format
         try {
-            return \Carbon\Carbon::createFromFormat('Y-m-d', $value);
+            $date = \Carbon\Carbon::createFromFormat('Y-m-d', $value);
+            return $date->format('Y-m-d');
         } catch (\Exception $e) {
             // If parsing fails, try other common formats
             try {
-                return \Carbon\Carbon::parse($value);
+                $date = \Carbon\Carbon::parse($value);
+                return $date->format('Y-m-d');
             } catch (\Exception $e) {
                 return null;
             }

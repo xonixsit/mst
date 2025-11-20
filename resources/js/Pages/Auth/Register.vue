@@ -1,7 +1,7 @@
 <template>
   <AuthLayout 
     title="Create your account" 
-    subtitle="Join our professional tax consulting platform"
+    subtitle="Join our professional My Super Tax"
   >
     <form @submit.prevent="handleSubmit" class="space-y-6">
       <!-- Name Field -->

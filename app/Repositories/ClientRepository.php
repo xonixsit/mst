@@ -55,7 +55,9 @@ class ClientRepository
      */
     public function findByEmail(string $email): ?Client
     {
-        return Client::where('email', $email)->first();
+        return Client::whereHas('user', function ($query) use ($email) {
+            $query->where('email', $email);
+        })->first();
     }
 
     /**
@@ -311,12 +313,16 @@ class ClientRepository
         if (!empty($filters['search'])) {
             $searchTerm = $filters['search'];
             $query->where(function (Builder $q) use ($searchTerm) {
-                $q->where('first_name', 'LIKE', "%{$searchTerm}%")
-                  ->orWhere('last_name', 'LIKE', "%{$searchTerm}%")
-                  ->orWhere('email', 'LIKE', "%{$searchTerm}%")
-                  ->orWhere('phone', 'LIKE', "%{$searchTerm}%")
+                // Search in client table fields
+                $q->where('phone', 'LIKE', "%{$searchTerm}%")
                   ->orWhere('mobile_number', 'LIKE', "%{$searchTerm}%")
-                  ->orWhereRaw("CONCAT(first_name, ' ', COALESCE(middle_name, ''), ' ', last_name) LIKE ?", ["%{$searchTerm}%"]);
+                  // Search in user table fields
+                  ->orWhereHas('user', function (Builder $userQuery) use ($searchTerm) {
+                      $userQuery->where('first_name', 'LIKE', "%{$searchTerm}%")
+                               ->orWhere('last_name', 'LIKE', "%{$searchTerm}%")
+                               ->orWhere('email', 'LIKE', "%{$searchTerm}%")
+                               ->orWhereRaw("CONCAT(first_name, ' ', COALESCE(middle_name, ''), ' ', last_name) LIKE ?", ["%{$searchTerm}%"]);
+                  });
                 
                 if (is_numeric($searchTerm)) {
                     $q->orWhere('id', $searchTerm);
@@ -644,13 +650,17 @@ class ClientRepository
         if (!empty($filters['search'])) {
             $searchTerm = $filters['search'];
             $query->where(function (Builder $q) use ($searchTerm) {
-                $q->where('first_name', 'LIKE', "%{$searchTerm}%")
-                  ->orWhere('last_name', 'LIKE', "%{$searchTerm}%")
-                  ->orWhere('email', 'LIKE', "%{$searchTerm}%")
-                  ->orWhere('phone', 'LIKE', "%{$searchTerm}%")
+                // Search in client table fields
+                $q->where('phone', 'LIKE', "%{$searchTerm}%")
                   ->orWhere('mobile_number', 'LIKE', "%{$searchTerm}%")
                   ->orWhere('ssn', 'LIKE', "%{$searchTerm}%")
-                  ->orWhereRaw("CONCAT(first_name, ' ', COALESCE(middle_name, ''), ' ', last_name) LIKE ?", ["%{$searchTerm}%"]);
+                  // Search in user table fields
+                  ->orWhereHas('user', function (Builder $userQuery) use ($searchTerm) {
+                      $userQuery->where('first_name', 'LIKE', "%{$searchTerm}%")
+                               ->orWhere('last_name', 'LIKE', "%{$searchTerm}%")
+                               ->orWhere('email', 'LIKE', "%{$searchTerm}%")
+                               ->orWhereRaw("CONCAT(first_name, ' ', COALESCE(middle_name, ''), ' ', last_name) LIKE ?", ["%{$searchTerm}%"]);
+                  });
                 
                 if (is_numeric($searchTerm)) {
                     $q->orWhere('id', $searchTerm);

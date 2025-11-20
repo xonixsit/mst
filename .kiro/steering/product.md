@@ -2,7 +2,7 @@
 
 ## Product Overview
 
-MySuperTax is a comprehensive tax consulting platform designed for tax professionals to manage client relationships, services, and documentation. The platform consists of two main interfaces:
+MySuperTax is a comprehensive My Super Tax designed for tax professionals to manage client relationships, services, and documentation. The platform consists of two main interfaces:
 
 **Admin Dashboard**: Full-featured management interface for tax professionals to handle client information, invoices, document management, and business analytics.
 

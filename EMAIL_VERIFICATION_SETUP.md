@@ -7,7 +7,7 @@
 - **SMTP Host**: mst.xonixs.com
 - **SMTP Port**: 25 (for production)
 - **From Address**: support@mst.xonixs.com
-- **From Name**: Tax Consulting Platform
+- **From Name**: My Super Tax
 
 ### Implementation Details
 
@@ -51,7 +51,7 @@ MAIL_USERNAME=support@mst.xonixs.com
 MAIL_PASSWORD=4b9P7c4!g
 MAIL_ENCRYPTION=ssl
 MAIL_FROM_ADDRESS=support@mst.xonixs.com
-MAIL_FROM_NAME="Tax Consulting Platform"
+MAIL_FROM_NAME="My Super Tax"
 ```
 
 ### Client Registration Flow

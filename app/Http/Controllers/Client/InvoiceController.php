@@ -19,9 +19,7 @@ class InvoiceController extends Controller
         $user = Auth::user();
         
         // Get client record for the authenticated user
-        $client = Client::where('user_id', $user->id)
-            ->orWhere('email', $user->email)
-            ->first();
+        $client = Client::where('user_id', $user->id)->first();
         
         if (!$client) {
             return Inertia::render('Client/Invoices/Index', [
@@ -96,16 +94,14 @@ class InvoiceController extends Controller
         $user = Auth::user();
         
         // Get client record for the authenticated user
-        $client = Client::where('user_id', $user->id)
-            ->orWhere('email', $user->email)
-            ->first();
+        $client = Client::where('user_id', $user->id)->first();
         
         // Verify that this invoice belongs to the authenticated client
         if (!$client || $invoice->client_id !== $client->id) {
             abort(403, 'Unauthorized access to this invoice.');
         }
         
-        $invoice->load(['client', 'items']);
+        $invoice->load(['client.user', 'items']);
         
         return Inertia::render('Client/Invoices/Show', [
             'invoice' => $invoice,
@@ -120,52 +116,18 @@ class InvoiceController extends Controller
         $user = Auth::user();
         
         // Get client record for the authenticated user
-        $client = Client::where('user_id', $user->id)
-            ->orWhere('email', $user->email)
-            ->first();
+        $client = Client::where('user_id', $user->id)->first();
         
         // Verify that this invoice belongs to the authenticated client
         if (!$client || $invoice->client_id !== $client->id) {
             abort(403, 'Unauthorized access to this invoice.');
         }
         
-        $invoice->load(['client', 'items']);
+        $invoice->load(['client.user', 'items']);
         
-        // Generate PDF content (simplified version)
-        $pdf = $this->generatePdfContent($invoice);
+        // Generate PDF using DomPDF
+        $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('invoices.pdf', compact('invoice'));
         
-        return response($pdf, 200, [
-            'Content-Type' => 'application/pdf',
-            'Content-Disposition' => 'attachment; filename="invoice-' . $invoice->invoice_number . '.pdf"',
-        ]);
-    }
-    
-    /**
-     * Generate simple PDF content for invoice.
-     */
-    private function generatePdfContent($invoice)
-    {
-        // For now, return a simple text representation
-        // In production, you would use a PDF library like DomPDF or TCPDF
-        $content = "INVOICE\n\n";
-        $content .= "Invoice Number: {$invoice->invoice_number}\n";
-        $content .= "Date: {$invoice->created_at->format('F d, Y')}\n";
-        $content .= "Client: {$invoice->client->first_name} {$invoice->client->last_name}\n";
-        $content .= "Status: " . ucfirst($invoice->status) . "\n\n";
-        
-        $content .= "ITEMS:\n";
-        $content .= str_repeat('-', 50) . "\n";
-        
-        foreach ($invoice->items as $item) {
-            $content .= "{$item->service_name}\n";
-            $content .= "Qty: {$item->quantity} x \${$item->unit_price} = \${$item->total_price}\n\n";
-        }
-        
-        $content .= str_repeat('-', 50) . "\n";
-        $content .= "Subtotal: \${$invoice->subtotal}\n";
-        $content .= "Tax ({$invoice->tax_rate}%): \${$invoice->tax_amount}\n";
-        $content .= "TOTAL: \${$invoice->total_amount}\n";
-        
-        return $content;
+        return $pdf->download('invoice-' . $invoice->invoice_number . '.pdf');
     }
 }

@@ -368,21 +368,42 @@
                 <label for="visaStatus" class="block text-sm font-medium text-gray-700 mb-1">
                   Visa Status
                 </label>
-                <select
-                  id="visaStatus"
-                  v-model="localData.visaStatus"
-                  :class="inputClasses('visaStatus')"
-                  @change="handleInput('visaStatus', $event.target.value)"
-                >
-                  <option value="">Select visa status</option>
-                  <option 
-                    v-for="option in visaStatusOptions" 
-                    :key="option.value" 
-                    :value="option.value"
+                <!-- Custom Dropdown that opens upwards -->
+                <div class="relative">
+                  <button
+                    type="button"
+                    :class="inputClasses('visaStatus') + ' visa-dropdown-button'"
+                    @click="toggleVisaDropdown"
+                    @blur="closeVisaDropdown"
                   >
-                    {{ option.label }}
-                  </option>
-                </select>
+                    <span class="block truncate text-left">
+                      {{ getSelectedVisaLabel() || 'Select visa status' }}
+                    </span>
+                    <span class="absolute inset-y-0 right-0 flex items-center pr-2 pointer-events-none">
+                      <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 9l4-4 4 4m0 6l-4 4-4-4"></path>
+                      </svg>
+                    </span>
+                  </button>
+
+                  <!-- Dropdown menu that opens upwards -->
+                  <div
+                    v-if="showVisaDropdown"
+                    class="absolute bottom-full left-0 z-50 w-full mb-1 bg-white border border-gray-300 rounded-md shadow-lg max-h-60 overflow-auto"
+                  >
+                    <ul class="py-1">
+                      <li
+                        v-for="option in visaStatusOptions"
+                        :key="option.value"
+                        @mousedown="selectVisaOption(option.value)"
+                        class="px-3 py-2 text-sm text-gray-900 cursor-pointer hover:bg-blue-50 hover:text-blue-900"
+                        :class="{ 'bg-blue-100 text-blue-900': localData.visaStatus === option.value }"
+                      >
+                        {{ option.label }}
+                      </li>
+                    </ul>
+                  </div>
+                </div>
               </div>
 
               <div>
@@ -473,6 +494,9 @@ const localData = reactive({
 
 // Field validation errors
 const fieldErrors = reactive({})
+
+// Visa dropdown state
+const showVisaDropdown = ref(false)
 
 // US States data
 const usStates = [
@@ -699,6 +723,28 @@ const handleSubmit = () => {
   }
 }
 
+// Visa dropdown methods
+const toggleVisaDropdown = () => {
+  showVisaDropdown.value = !showVisaDropdown.value
+}
+
+const closeVisaDropdown = () => {
+  setTimeout(() => {
+    showVisaDropdown.value = false
+  }, 150) // Small delay to allow option selection
+}
+
+const selectVisaOption = (value) => {
+  localData.visaStatus = value
+  showVisaDropdown.value = false
+  handleInput('visaStatus', value)
+}
+
+const getSelectedVisaLabel = () => {
+  const selectedOption = props.visaStatusOptions.find(option => option.value === localData.visaStatus)
+  return selectedOption ? selectedOption.label : ''
+}
+
 // Initialize local data from props
 const initializeData = () => {
   if (props.modelValue) {
@@ -745,5 +791,20 @@ input:focus, select:focus {
 .required-field::after {
   content: ' *';
   @apply text-red-500;
+}
+
+/* Custom visa dropdown button styling */
+.visa-dropdown-button {
+  position: relative;
+  cursor: pointer;
+  text-align: left;
+  padding-right: 2.5rem;
+}
+
+.visa-dropdown-button:focus {
+  outline: none;
+  ring: 2px;
+  ring-color: rgb(59 130 246 / 0.5);
+  border-color: rgb(59 130 246);
 }
 </style>

@@ -30,7 +30,7 @@
                 >
                   <option value="">Select Client</option>
                   <option v-for="client in clients" :key="client.id" :value="client.id">
-                    {{ client.first_name }} {{ client.last_name }} ({{ client.email }})
+                    {{ client.name }} ({{ client.email }})
                   </option>
                 </select>
                 <div v-if="form.errors.client_id" class="text-red-500 text-sm mt-1">

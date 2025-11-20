@@ -43,7 +43,7 @@ class InvoiceService
             $invoice->save();
 
             // Send notification to client
-            $clientUser = User::where('email', $invoice->client->email)->first();
+            $clientUser = $invoice->client->user;
             if ($clientUser) {
                 $clientUser->notify(new InvoiceCreatedNotification($invoice));
             }
@@ -61,6 +61,7 @@ class InvoiceService
                 'comments' => $data['comments'] ?? null,
                 'send_to_email' => $data['send_to_email'],
                 'invoice_year' => $data['invoice_year'],
+                'status' => $data['status'],
             ]);
 
             // Delete existing items and create new ones

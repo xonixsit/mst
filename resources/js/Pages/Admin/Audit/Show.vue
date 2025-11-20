@@ -162,6 +162,9 @@ import {
   UserIcon,
 } from '@heroicons/vue/24/outline'
 
+// Use the global route function
+const route = window.route
+
 const props = defineProps({
   auditLog: Object,
 })

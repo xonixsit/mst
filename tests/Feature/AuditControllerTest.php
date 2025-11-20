@@ -73,7 +73,7 @@ class AuditControllerTest extends TestCase
 
     public function test_admin_can_search_audit_logs()
     {
-        $user = User::factory()->create(['name' => 'John Doe']);
+        $user = User::factory()->create(['first_name' => 'John', 'last_name' => 'Doe']);
         
         AuditLog::factory()->create([
             'user_id' => $user->id

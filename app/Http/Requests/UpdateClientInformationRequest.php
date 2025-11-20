@@ -40,7 +40,11 @@ class UpdateClientInformationRequest extends FormRequest
                 'sometimes',
                 'required',
                 'max:255',
-                Rule::unique('clients', 'email')->ignore($clientId),
+                Rule::unique('users', 'email')->ignore(function () {
+                    $clientId = request()->route('client');
+                    $client = \App\Models\Client::find($clientId);
+                    return $client ? $client->user_id : null;
+                }),
                 new EmailFormat()
             ],
             'phone' => ['sometimes', 'required', 'string', new PhoneNumberFormat()],

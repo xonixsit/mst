@@ -48,7 +48,7 @@ class DebugSpecificMessage extends Command
         if ($message->client) {
             $this->info("Client exists: ID {$message->client->id}");
             if ($message->client->user) {
-                $this->info("Client user: {$message->client->user->name} ({$message->client->user->email})");
+                $this->info("Client user: {$message->client->user->first_name} {$message->client->user->last_name} ({$message->client->user->email})");
             } else {
                 $this->error("Client has no user!");
             }

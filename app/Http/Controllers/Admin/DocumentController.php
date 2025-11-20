@@ -21,7 +21,7 @@ class DocumentController extends Controller
 
     public function index(Request $request)
     {
-        $query = Document::with(['client:id,first_name,last_name,email,phone,status', 'uploader:id,name']);
+        $query = Document::with(['client:id,phone,status,user_id', 'client.user:id,first_name,last_name,email', 'uploader:id,first_name,last_name,email']);
 
         // Filter by client
         if ($request->filled('client_id')) {
@@ -49,10 +49,10 @@ class DocumentController extends Controller
             $query->where(function ($q) use ($search) {
                 $q->where('name', 'like', "%{$search}%")
                   ->orWhere('original_name', 'like', "%{$search}%")
-                  ->orWhereHas('client', function ($clientQuery) use ($search) {
-                      $clientQuery->where('first_name', 'like', "%{$search}%")
-                                  ->orWhere('last_name', 'like', "%{$search}%")
-                                  ->orWhere('email', 'like', "%{$search}%");
+                  ->orWhereHas('client.user', function ($userQuery) use ($search) {
+                      $userQuery->where('first_name', 'like', "%{$search}%")
+                                ->orWhere('last_name', 'like', "%{$search}%")
+                                ->orWhere('email', 'like', "%{$search}%");
                   });
             });
         }
@@ -60,10 +60,31 @@ class DocumentController extends Controller
         $documents = $query->orderBy('created_at', 'desc')->paginate(15);
 
         // Get filter options with enhanced client information
-        $clients = Client::select('id', 'first_name', 'last_name', 'email', 'status')
-            ->withCount('documents')
-            ->orderBy('first_name')
-            ->get();
+        // Since documents use user_id as client_id, we need to map accordingly
+        $clients = Client::with(['user:id,first_name,last_name,email'])
+            ->whereHas('user', function ($query) {
+                $query->where('role', 'client');
+            })
+            ->get()
+            ->groupBy('user_id') // Group by user_id to handle duplicates
+            ->map(function ($clientGroup) {
+                // Take the first (or most recent) client for each user
+                $client = $clientGroup->sortByDesc('created_at')->first();
+                // Get document count using user_id since documents store user_id as client_id
+                $documentsCount = Document::where('client_id', $client->user_id)->count();
+                
+                return [
+                    'id' => $client->user_id, // Use user_id instead of client id
+                    'first_name' => $client->user->first_name ?? '',
+                    'last_name' => $client->user->last_name ?? '',
+                    'email' => $client->user->email ?? '',
+                    'status' => $client->status,
+                    'documents_count' => $documentsCount,
+                    'name' => trim(($client->user->first_name ?? '') . ' ' . ($client->user->last_name ?? ''))
+                ];
+            })
+            ->sortBy('first_name')
+            ->values();
 
         $taxYears = Document::whereNotNull('tax_year')
             ->distinct()
@@ -94,7 +115,7 @@ class DocumentController extends Controller
 
     public function show(Document $document)
     {
-        $document->load(['client:id,first_name,last_name,email', 'uploader:id,name']);
+        $document->load(['client:id,phone,status,user_id', 'client.user:id,first_name,last_name,email', 'uploader:id,first_name,last_name,email']);
 
         return Inertia::render('Admin/DocumentDetail', [
             'document' => $document
@@ -117,7 +138,10 @@ class DocumentController extends Controller
 
         // Send notification to client if status changed
         if ($oldStatus !== $request->status) {
-            $clientUser = User::where('email', $document->client->email)->first();
+            // Load the client and user relationships if not already loaded
+            $document->load(['client.user']);
+            
+            $clientUser = $document->client?->user;
             
             if ($clientUser) {
                 if ($request->status === 'approved') {
@@ -179,11 +203,20 @@ class DocumentController extends Controller
     }
 
     /**
+     * Show documents for a specific client (secure route)
+     */
+    public function clientDocuments(Request $request, int $userId)
+    {
+        // Redirect to documents index with client filter
+        return redirect()->route('documents', ['client_id' => $userId]);
+    }
+
+    /**
      * Get client document summary for integration with client profiles
      */
     public function clientDocumentSummary(Client $client)
     {
-        $documents = $client->documents()->with('uploader:id,name')->get();
+        $documents = $client->documents()->with('uploader:id,first_name,last_name,email')->get();
         
         $summary = [
             'total_documents' => $documents->count(),

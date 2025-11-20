@@ -1,8 +1,8 @@
-# Tax Consulting Platform Design Document
+# My Super Tax Design Document
 
 ## Overview
 
-The Tax Consulting Platform is a comprehensive web application built using the Laravel-Inertia-Vue stack, designed to facilitate efficient tax consulting operations through two primary interfaces: an Admin Dashboard for tax professionals and a Client Panel for end users. The platform emphasizes the Client Information Manager as a core feature, providing comprehensive client data management capabilities accessible from both admin and client interfaces.
+The My Super Tax is a comprehensive web application built using the Laravel-Inertia-Vue stack, designed to facilitate efficient tax consulting operations through two primary interfaces: an Admin Dashboard for tax professionals and a Client Panel for end users. The platform emphasizes the Client Information Manager as a core feature, providing comprehensive client data management capabilities accessible from both admin and client interfaces.
 
 The system architecture follows modern SPA principles with server-side rendering capabilities, ensuring optimal performance and user experience while maintaining data security and compliance with tax industry standards.
 
@@ -424,4 +424,4 @@ class ClientInformationTest extends TestCase {
 3. **User Analytics**: Usage patterns and feature adoption tracking
 4. **Infrastructure Monitoring**: Server performance and resource utilization
 
-This design document provides a comprehensive foundation for implementing the Client Information Manager functionality within the tax consulting platform, ensuring scalability, maintainability, and optimal user experience across both admin and client interfaces.
+This design document provides a comprehensive foundation for implementing the Client Information Manager functionality within the My Super Tax, ensuring scalability, maintainability, and optimal user experience across both admin and client interfaces.

@@ -243,13 +243,13 @@
                   {{ client.id }}
                 </td>
                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                  {{ client.first_name }}
+                  {{ client.user?.first_name || '-' }}
                 </td>
                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                  {{ client.last_name }}
+                  {{ client.user?.last_name || '-' }}
                 </td>
                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                  {{ client.email }}
+                  {{ client.user?.email || '-' }}
                 </td>
                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                   {{ client.phone }}
@@ -282,14 +282,14 @@
                       Edit
                     </button>
                     <button
-                      @click="viewTaxDocs(client.id)"
+                      @click="viewTaxDocs(client.user?.id || client.user_id)"
                       class="bg-green-500 hover:bg-green-600 text-white px-3 py-1 rounded text-xs"
                       title="Tax Docs"
                     >
                       Docs
                     </button>
                     <button
-                      @click="viewInvoices(client.id)"
+                      @click="viewInvoices(client.user?.id || client.user_id)"
                       class="bg-orange-500 hover:bg-orange-600 text-white px-3 py-1 rounded text-xs"
                       title="Invoices"
                     >
@@ -570,12 +570,12 @@ export default {
       router.visit(`/admin/clients/${id}/edit`)
     }
 
-    const viewTaxDocs = (id) => {
-      router.visit(`/admin/clients/${id}/tax-docs`)
+    const viewTaxDocs = (userId) => {
+      router.visit(`/admin/clients/${userId}/documents`)
     }
 
-    const viewInvoices = (id) => {
-      router.visit(`/admin/clients/${id}/invoices`)
+    const viewInvoices = (userId) => {
+      router.visit(`/admin/clients/${userId}/invoices`)
     }
 
     const deleteClient = (id) => {

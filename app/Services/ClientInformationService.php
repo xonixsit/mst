@@ -204,12 +204,12 @@ class ClientInformationService
                 'phone' => $client->phone,
                 'mobile_number' => $client->mobile_number,
                 'work_number' => $client->work_number,
-                'date_of_birth' => $client->date_of_birth?->format('Y-m-d'),
+                'date_of_birth' => $client->date_of_birth,
                 'marital_status' => $client->marital_status,
                 'occupation' => $client->occupation,
                 'insurance_covered' => $client->insurance_covered,
                 'visa_status' => $client->visa_status,
-                'date_of_entry_us' => $client->date_of_entry_us?->format('Y-m-d'),
+                'date_of_entry_us' => $client->date_of_entry_us,
             ],
             'address' => [
                 'street_no' => $client->street_no,
@@ -637,7 +637,7 @@ class ClientInformationService
             'full_name' => $spouse->full_name,
             'email' => $spouse->email,
             'phone' => $spouse->phone,
-            'date_of_birth' => $spouse->date_of_birth?->format('Y-m-d'),
+            'date_of_birth' => $spouse->date_of_birth,
             'occupation' => $spouse->occupation,
         ];
     }
@@ -1099,26 +1099,21 @@ class ClientInformationService
      */
     private function exportToPdf(Collection $clients)
     {
-        // For now, return a simple text-based PDF content
-        // In a real implementation, you would use a PDF library like TCPDF or DomPDF
+        $filename = 'clients_export_' . date('Y-m-d_H-i-s') . '.pdf';
+        $template = 'basic';
+        $options = [];
         
-        $content = "Client Export Report\n";
-        $content .= "Generated on: " . date('Y-m-d H:i:s') . "\n\n";
+        // Load related data for all clients
+        $clients->load(['spouse', 'employees', 'projects', 'assets', 'expenses', 'user']);
         
-        foreach ($clients as $client) {
-            $content .= "ID: {$client->id}\n";
-            $content .= "Name: {$client->full_name}\n";
-            $content .= "Email: {$client->email}\n";
-            $content .= "Phone: {$client->phone}\n";
-            $content .= "Status: {$client->status}\n";
-            $content .= "Registration Date: {$client->created_at->format('Y-m-d')}\n";
-            $content .= str_repeat('-', 50) . "\n";
-        }
-
-        return response($content, 200, [
-            'Content-Type' => 'application/pdf',
-            'Content-Disposition' => 'attachment; filename="clients_export_' . date('Y-m-d_H-i-s') . '.pdf"',
-        ]);
+        // Generate PDF using DomPDF
+        $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('exports.clients-bulk', compact('clients', 'template', 'options'));
+        
+        // Set paper size and orientation
+        $pdf->setPaper('A4', 'portrait');
+        
+        // Return PDF download
+        return $pdf->download($filename);
     }
 
     /**
@@ -1142,7 +1137,7 @@ class ClientInformationService
                 'Mobile Number' => $client->mobile_number,
                 'Work Number' => $client->work_number,
                 'SSN' => $client->ssn,
-                'Date of Birth' => $client->date_of_birth?->format('Y-m-d'),
+                'Date of Birth' => $client->date_of_birth,
                 'Marital Status' => $client->marital_status,
                 'Occupation' => $client->occupation,
                 'Insurance Covered' => $client->insurance_covered ? 'Yes' : 'No',
@@ -1153,7 +1148,7 @@ class ClientInformationService
                 'Zip Code' => $client->zip_code,
                 'Country' => $client->country,
                 'Visa Status' => $client->visa_status,
-                'Date of Entry US' => $client->date_of_entry_us?->format('Y-m-d'),
+                'Date of Entry US' => $client->date_of_entry_us,
                 'Status' => $client->status,
                 'Has Spouse' => $client->spouse ? 'Yes' : 'No',
                 'Projects Count' => $client->projects->count(),

@@ -20,7 +20,7 @@ class TestUserRole extends Command
             return;
         }
         
-        $this->info('User: ' . $user->name);
+        $this->info('User: ' . $user->first_name . ' ' . $user->last_name);
         $this->info('Email: ' . $user->email);
         $this->info('Role: ' . $user->role);
         $this->info('isClient(): ' . ($user->isClient() ? 'true' : 'false'));

@@ -112,7 +112,7 @@ class InformationController extends Controller
                 'email' => $client->user->email ?? '',
                 'phone' => $client->phone ?? '',
                 'ssn' => $client->ssn ?? '',
-                'date_of_birth' => $client->date_of_birth?->format('Y-m-d') ?? '',
+                'date_of_birth' => $client->date_of_birth ?? '',
                 'marital_status' => $client->marital_status ?? 'single',
                 'occupation' => $client->occupation ?? '',
                 'insurance_covered' => $client->insurance_covered ?? false,
@@ -125,7 +125,7 @@ class InformationController extends Controller
                 'mobile_number' => $client->mobile_number ?? '',
                 'work_number' => $client->work_number ?? '',
                 'visa_status' => $client->visa_status ?? '',
-                'date_of_entry_us' => $client->date_of_entry_us?->format('Y-m-d') ?? '',
+                'date_of_entry_us' => $client->date_of_entry_us ?? '',
             ],
             'spouse' => $client->spouse ? [
                 'first_name' => $client->spouse->first_name,
@@ -134,7 +134,7 @@ class InformationController extends Controller
                 'email' => $client->spouse->email,
                 'phone' => $client->spouse->phone,
                 'ssn' => $client->spouse->ssn,
-                'date_of_birth' => $client->spouse->date_of_birth?->format('Y-m-d') ?? '',
+                'date_of_birth' => $client->spouse->date_of_birth ?? '',
                 'occupation' => $client->spouse->occupation,
             ] : [],
             'employee' => $client->employees->map(function ($employee) {
@@ -550,20 +550,20 @@ class InformationController extends Controller
         // Update last export timestamp
         $client->update(['last_export_at' => now()]);
         
-        // Prepare data for PDF generation
-        $data = $this->prepareExportData($client);
+        // Load all related data for the PDF
+        $client->load(['spouse', 'employees', 'projects', 'assets', 'expenses', 'user']);
         
-        // For now, return a structured JSON response
-        // In a real implementation, you would use a PDF library like DomPDF or wkhtmltopdf
+        // Generate filename
         $filename = "client_information_{$client->id}_" . now()->format('Y-m-d') . ".pdf";
         
-        // Create a simple HTML structure for PDF generation
-        $html = $this->generatePdfHtml($data);
+        // Generate PDF using DomPDF
+        $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('exports.client-information', compact('client'));
         
-        // Return as downloadable response
-        return response($html)
-            ->header('Content-Type', 'text/html')
-            ->header('Content-Disposition', "attachment; filename=\"{$filename}\"");
+        // Set paper size and orientation
+        $pdf->setPaper('A4', 'portrait');
+        
+        // Return PDF download
+        return $pdf->download($filename);
     }
 
     /**
@@ -623,7 +623,7 @@ class InformationController extends Controller
                 ],
                 'immigration' => [
                     'visa_status' => $client->visa_status,
-                    'date_of_entry_us' => $client->date_of_entry_us?->format('F j, Y')
+                    'date_of_entry_us' => $client->date_of_entry_us ? \Carbon\Carbon::createFromFormat('Y-m-d', $client->date_of_entry_us)->format('F j, Y') : null
                 ]
             ],
             'spouse_information' => $client->spouse ? [
@@ -674,65 +674,7 @@ class InformationController extends Controller
         ];
     }
 
-    /**
-     * Generate HTML for PDF export
-     */
-    private function generatePdfHtml(array $data): string
-    {
-        $html = '<!DOCTYPE html>
-        <html>
-        <head>
-            <title>Client Information Export</title>
-            <style>
-                body { font-family: Arial, sans-serif; margin: 20px; }
-                .header { text-align: center; margin-bottom: 30px; }
-                .section { margin-bottom: 25px; }
-                .section-title { font-size: 18px; font-weight: bold; color: #333; border-bottom: 2px solid #007bff; padding-bottom: 5px; margin-bottom: 15px; }
-                .field { margin-bottom: 8px; }
-                .field-label { font-weight: bold; display: inline-block; width: 150px; }
-                .field-value { display: inline-block; }
-                table { width: 100%; border-collapse: collapse; margin-top: 10px; }
-                th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
-                th { background-color: #f2f2f2; }
-            </style>
-        </head>
-        <body>
-            <div class="header">
-                <h1>Client Information Export</h1>
-                <p>Generated on: ' . $data['export_info']['generated_at'] . '</p>
-                <p>Client ID: ' . $data['export_info']['client_id'] . '</p>
-            </div>';
 
-        // Personal Information Section
-        $personal = $data['personal_information'];
-        $html .= '<div class="section">
-            <div class="section-title">Personal Information</div>
-            <div class="field"><span class="field-label">Name:</span><span class="field-value">' . $personal['name'] . '</span></div>
-            <div class="field"><span class="field-label">Email:</span><span class="field-value">' . $personal['email'] . '</span></div>
-            <div class="field"><span class="field-label">Phone:</span><span class="field-value">' . $personal['phone'] . '</span></div>
-            <div class="field"><span class="field-label">Date of Birth:</span><span class="field-value">' . $personal['date_of_birth'] . '</span></div>
-            <div class="field"><span class="field-label">Marital Status:</span><span class="field-value">' . $personal['marital_status'] . '</span></div>
-            <div class="field"><span class="field-label">Occupation:</span><span class="field-value">' . $personal['occupation'] . '</span></div>
-            <div class="field"><span class="field-label">Insurance:</span><span class="field-value">' . $personal['insurance_covered'] . '</span></div>
-        </div>';
-
-        // Address Section
-        $address = $personal['address'];
-        $html .= '<div class="section">
-            <div class="section-title">Address Information</div>
-            <div class="field"><span class="field-label">Street:</span><span class="field-value">' . $address['street'] . '</span></div>
-            <div class="field"><span class="field-label">City:</span><span class="field-value">' . $address['city'] . '</span></div>
-            <div class="field"><span class="field-label">State:</span><span class="field-value">' . $address['state'] . '</span></div>
-            <div class="field"><span class="field-label">ZIP Code:</span><span class="field-value">' . $address['zip_code'] . '</span></div>
-            <div class="field"><span class="field-label">Country:</span><span class="field-value">' . $address['country'] . '</span></div>
-        </div>';
-
-        // Add other sections as needed...
-        
-        $html .= '</body></html>';
-        
-        return $html;
-    }
 
     /**
      * Request review from tax professional with enhanced features

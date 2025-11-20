@@ -601,7 +601,7 @@ const getSectionProgressColor = (sectionId) => {
   return 'bg-gray-300'
 }
 
-// Color psychology for tax consulting platform
+// Color psychology for My Super Tax
 const getSectionThemeColor = (sectionId) => {
   const colors = {
     personal: 'bg-blue-500',      // Trust, reliability, professionalism

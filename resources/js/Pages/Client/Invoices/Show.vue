@@ -37,9 +37,9 @@
           <div class="p-6">
             <!-- Status Badge -->
             <div class="mb-6">
-              <span :class="getStatusClass(invoice.status)" class="px-3 py-1 text-sm font-semibold rounded-full">
+              <!-- <span :class="getStatusClass(invoice.status)" class="px-3 py-1 text-sm font-semibold rounded-full">
                 {{ getStatusText(invoice.status) }}
-              </span>
+              </span> -->
               <span v-if="invoice.paid_at" class="ml-2 text-sm text-gray-600">
                 Paid on {{ formatDate(invoice.paid_at) }}
               </span>
@@ -49,9 +49,11 @@
             <div class="mb-6">
               <h3 class="text-lg font-semibold text-gray-900 mb-3">Bill To:</h3>
               <div class="text-sm text-gray-700">
-                <p class="font-medium">{{ invoice.client.first_name }} {{ invoice.client.last_name }}</p>
-                <p>{{ invoice.client.email }}</p>
-                <p v-if="invoice.client.phone">{{ invoice.client.phone }}</p>
+                <p class="font-medium">{{ invoice.client?.user?.first_name && invoice.client?.user?.last_name 
+                    ? `${invoice.client.user.first_name} ${invoice.client.user.last_name}`.trim() 
+                    : 'Unknown Client' }}</p>
+                <p>{{ invoice.client?.user?.email || 'No email' }}</p>
+                <p v-if="invoice.client?.phone">{{ invoice.client.phone }}</p>
                 <div v-if="invoice.client.street_no" class="mt-2">
                   <p>{{ invoice.client.street_no }} {{ invoice.client.apartment_no }}</p>
                   <p>{{ invoice.client.city }}, {{ invoice.client.state }} {{ invoice.client.zip_code }}</p>
@@ -172,6 +174,9 @@
 <script setup>
 import { Link } from '@inertiajs/vue3'
 import AppLayout from '@/Layouts/AppLayout.vue'
+
+// Use the global route function
+const route = window.route
 
 const props = defineProps({
   invoice: Object,

@@ -126,7 +126,7 @@
       </div>
 
       <!-- Status Overview -->
-      <div class="bg-white shadow rounded-lg">
+      <!-- <div class="bg-white shadow rounded-lg">
         <div class="px-6 py-4 border-b border-gray-200">
           <h2 class="text-lg font-medium text-gray-900">Account Status</h2>
         </div>
@@ -150,10 +150,10 @@
             </div>
           </div>
         </div>
-      </div>
+      </div> -->
 
       <!-- Recent Activity -->
-      <div class="bg-white shadow rounded-lg">
+      <!-- <div class="bg-white shadow rounded-lg">
         <div class="px-6 py-4 border-b border-gray-200">
           <h2 class="text-lg font-medium text-gray-900">Recent Activity</h2>
         </div>
@@ -164,7 +164,7 @@
             <p class="text-sm text-gray-500">Your activity will appear here once you start using the platform.</p>
           </div>
         </div>
-      </div>
+      </div> -->
     </div>
   </AppLayout>
 </template>

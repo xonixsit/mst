@@ -167,7 +167,7 @@
                         </div>
                     </div>
                 </div>
-
+                </div></div>
                 <!-- Messages List -->
                 <div class="bg-white shadow rounded-lg">
                     <!-- Bulk Actions -->
@@ -202,81 +202,113 @@
                     <div v-else class="divide-y divide-gray-200">
                         <div
                             v-for="message in messages.data"
-                            :key="message.id"
-                            class="p-6 hover:bg-gray-50 transition-colors duration-150"
-                            :class="{ 'bg-blue-50': !message.is_read }"
+                            :key="message?.id || Math.random()"
+                            class="p-6 hover:bg-gray-50 transition-all duration-200 border-l-4"
+                            :class="{ 
+                                'bg-blue-50 border-l-blue-500': !message?.is_read,
+                                'border-l-transparent': message?.is_read
+                            }"
                         >
                             <div class="flex items-start justify-between">
                                 <div class="flex items-start gap-4 flex-1">
                                     <!-- Checkbox -->
                                     <input
                                         v-model="selectedMessages"
-                                        :value="message.id"
+                                        :value="message?.id"
                                         type="checkbox"
                                         class="mt-1 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
                                     >
 
+                                    <!-- Avatar -->
+                                    <div class="w-10 h-10 rounded-full bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center flex-shrink-0">
+                                        <EnvelopeIcon class="w-5 h-5 text-white" />
+                                    </div>
+
                                     <!-- Message Content -->
-                                    <div class="flex-1">
-                                        <div class="flex items-center gap-3 mb-2">
-                                            <!-- Priority Badge -->
-                                            <span
-                                                v-if="message.priority !== 'normal'"
-                                                class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium"
-                                                :class="{
-                                                    'bg-red-100 text-red-800': message.priority === 'high',
-                                                    'bg-gray-100 text-gray-800': message.priority === 'low'
-                                                }"
-                                            >
-                                                {{ message.priority.toUpperCase() }}
-                                            </span>
-
-                                            <!-- Unread Indicator -->
-                                            <div v-if="!message.is_read" class="w-2 h-2 bg-blue-600 rounded-full"></div>
-                                        </div>
-
-                                        <div class="flex items-center justify-between mb-2">
-                                            <h4 class="text-sm font-medium text-gray-900">
-                                                {{ message.subject }}
+                                    <div class="flex-1 min-w-0">
+                                        <div class="flex items-center gap-3 mb-3">
+                                            <h4 class="text-lg font-semibold text-gray-900 truncate">
+                                                {{ message?.subject }}
                                             </h4>
-                                            <span class="text-xs text-gray-500">
-                                                {{ formatDate(message.created_at) }}
-                                            </span>
+                                            
+                                            <!-- Badges -->
+                                            <div class="flex items-center gap-2">
+                                                <span
+                                                    v-if="!message?.is_read"
+                                                    class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-700 border border-blue-200"
+                                                >
+                                                    <div class="w-1.5 h-1.5 bg-blue-500 rounded-full mr-1.5"></div>
+                                                    New
+                                                </span>
+                                                
+                                                <span
+                                                    :class="{
+                                                        'bg-red-50 text-red-700 border-red-200': message?.priority === 'high',
+                                                        'bg-amber-50 text-amber-700 border-amber-200': message?.priority === 'normal',
+                                                        'bg-gray-50 text-gray-700 border-gray-200': message?.priority === 'low'
+                                                    }"
+                                                    class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium border"
+                                                >
+                                                    {{ message?.priority ? message.priority.charAt(0).toUpperCase() + message.priority.slice(1) : 'Normal' }}
+                                                </span>
+                                            </div>
                                         </div>
 
-                                        <div class="text-sm text-gray-600 mb-2">
-                                            <span class="font-medium">From:</span> {{ message.sender?.name || 'Unknown' }}
-                                            <span class="mx-2">•</span>
-                                            <span class="font-medium">To:</span> {{ message.recipient?.name || 'Unknown' }}
-                                            <span class="mx-2">•</span>
-                                            <span class="font-medium">Client:</span> {{ message.client?.user?.name || 'Unknown Client' }}
+                                        <!-- Participants Info -->
+                                        <div class="bg-gray-50 rounded-lg p-3 mb-3">
+                                            <div class="grid grid-cols-3 gap-4 text-sm">
+                                                <div>
+                                                    <span class="font-medium text-gray-600">From:</span>
+                                                    <p class="text-gray-900 mt-0.5 truncate">{{ message?.sender?.first_name ? `${message.sender.first_name} ${message.sender.last_name || ''}`.trim() : 'Unknown' }}</p>
+                                                </div>
+                                                <div>
+                                                    <span class="font-medium text-gray-600">To:</span>
+                                                    <p class="text-gray-900 mt-0.5 truncate">{{ message?.recipient?.first_name ? `${message.recipient.first_name} ${message.recipient.last_name || ''}`.trim() : 'Unknown' }}</p>
+                                                </div>
+                                                <div>
+                                                    <span class="font-medium text-gray-600">Client:</span>
+                                                    <p class="text-gray-900 mt-0.5 truncate">{{ message?.client?.user?.first_name ? `${message.client.user.first_name} ${message.client.user.last_name || ''}`.trim() : 'Unknown Client' }}</p>
+                                                </div>
+                                            </div>
                                         </div>
 
-                                        <p class="text-sm text-gray-700 line-clamp-2">
-                                            {{ message.body }}
+                                        <!-- Message Preview -->
+                                        <p class="text-sm text-gray-700 line-clamp-2 leading-relaxed mb-3">
+                                            {{ message?.body }}
                                         </p>
+
+                                        <!-- Timestamp -->
+                                        <div class="flex items-center text-xs text-gray-500">
+                                            <ClockIcon class="w-4 h-4 mr-1.5" />
+                                            {{ formatDate(message?.created_at) }}
+                                        </div>
                                     </div>
                                 </div>
 
                                 <!-- Actions -->
-                                <div class="flex items-center gap-2 ml-4">
+                                <div class="flex flex-col gap-2 ml-4">
                                     <Link
+                                        v-if="message?.id"
                                         :href="`/admin/messages/${message.id}`"
-                                        class="text-blue-600 hover:text-blue-800 text-sm"
+                                        class="inline-flex items-center px-3 py-1.5 bg-indigo-50 text-indigo-700 text-sm font-medium rounded-lg hover:bg-indigo-100 transition-colors duration-200"
                                     >
+                                        <EyeIcon class="w-4 h-4 mr-1.5" />
                                         View
                                     </Link>
                                     <button
-                                        v-if="!message.is_read"
+                                        v-if="!message?.is_read && message?.id"
                                         @click="markAsRead(message.id)"
-                                        class="text-green-600 hover:text-green-800 text-sm"
+                                        class="inline-flex items-center px-3 py-1.5 bg-green-50 text-green-700 text-sm font-medium rounded-lg hover:bg-green-100 transition-colors duration-200"
                                     >
+                                        <CheckIcon class="w-4 h-4 mr-1.5" />
                                         Mark Read
                                     </button>
                                     <button
+                                        v-if="message?.id"
                                         @click="deleteMessage(message.id)"
-                                        class="text-red-600 hover:text-red-800 text-sm"
-                                    >
+                                        class="inline-flex items-center px-3 py-1.5 bg-red-50 text-red-700 text-sm font-medium rounded-lg hover:bg-red-100 transition-colors duration-200"
+                                    > 
+                                        <TrashIcon class="w-4 h-4 mr-1.5" />
                                         Delete
                                     </button>
                                 </div>
@@ -309,8 +341,6 @@
                         </div>
                     </div>
                 </div>
-            </div>
-        </div>
 
         <!-- New Message Modal -->
         <NewMessageModal
@@ -324,6 +354,13 @@
 <script setup>
 import { ref, reactive } from 'vue'
 import { Link, router } from '@inertiajs/vue3'
+import { 
+    EnvelopeIcon, 
+    EyeIcon,
+    TrashIcon,
+    CheckIcon,
+    ClockIcon
+} from '@heroicons/vue/24/outline'
 import AppLayout from '@/Layouts/AppLayout.vue'
 import NewMessageModal from '@/Components/NewMessageModal.vue'
 
@@ -353,12 +390,20 @@ const applyFilters = () => {
 }
 
 const markAsRead = (messageId) => {
+    if (!messageId) {
+        console.error('Message ID is required')
+        return
+    }
     router.post(`/admin/messages/${messageId}/mark-read`, {}, {
         preserveScroll: true
     })
 }
 
 const deleteMessage = (messageId) => {
+    if (!messageId) {
+        console.error('Message ID is required')
+        return
+    }
     if (confirm('Are you sure you want to delete this message?')) {
         router.delete(`/admin/messages/${messageId}`, {
             preserveScroll: true
@@ -410,6 +455,7 @@ const formatDate = (dateString) => {
 .line-clamp-2 {
     display: -webkit-box;
     -webkit-line-clamp: 2;
+    line-clamp: 2;
     -webkit-box-orient: vertical;
     overflow: hidden;
 }

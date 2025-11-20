@@ -37,7 +37,7 @@ class CleanupDuplicateClients extends Command
 
         foreach ($duplicates as $userId => $clientGroup) {
             $user = $clientGroup->first()->user;
-            $this->warn("User: {$user->name} ({$user->email}) has {$clientGroup->count()} client records");
+            $this->warn("User: {$user->first_name} {$user->last_name} ({$user->email}) has {$clientGroup->count()} client records");
 
             // Keep the most recent client record (or the one with most data)
             $clientsToKeep = $clientGroup->sortByDesc(function ($client) {

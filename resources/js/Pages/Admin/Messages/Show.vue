@@ -12,11 +12,10 @@
           <div>
             <h1 class="text-2xl font-bold text-gray-900">{{ message.subject }}</h1>
             <p class="mt-1 text-sm text-gray-600">
-              {{ message.sender_id === page.props.auth.user.id ? 'To' : 'From' }}: 
               {{ message.sender_id === page.props.auth.user.id ? getUserName(message.recipient) : getUserName(message.sender) }}
             </p>
             <p class="text-sm text-gray-500">
-              Client: {{ message.client?.user ? getUserName(message.client.user) : 'Unknown' }}
+              Client: {{ message.client?.user ? getUserName(message.client.user) : 'Unknown Client' }}
             </p>
           </div>
         </div>
@@ -195,7 +194,8 @@ const sendReply = () => {
   replying.value = true
   
   router.post(`/admin/messages/${props.message.id}/reply`, {
-    body: replyForm.value.body.trim()
+    body: replyForm.value.body.trim(),
+    client_id: props.message.client?.id
   }, {
     onSuccess: () => {
       closeReplyModal()
@@ -228,20 +228,24 @@ const getReplyRecipientName = () => {
 }
 
 const getUserName = (user) => {
-  if (!user) return 'Unknown'
+  if (!user) return 'Unknown User'
   
+  // Use the name field from users table
   if (user.name) return user.name
   
+  // Try to construct name from first/last name fields
   const nameParts = []
   if (user.first_name) nameParts.push(user.first_name)
-  if (user.middle_name) nameParts.push(user.middle_name)
   if (user.last_name) nameParts.push(user.last_name)
   
   if (nameParts.length > 0) {
     return nameParts.join(' ')
   }
   
-  return user.email || `User ${user.id}` || 'Unknown'
+  // Fallback to email
+  if (user.email) return user.email
+  
+  return 'Unknown User'
 }
 
 const formatDate = (dateString) => {
