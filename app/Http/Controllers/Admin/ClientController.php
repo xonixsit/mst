@@ -109,8 +109,11 @@ class ClientController extends Controller
             abort(404, 'Client not found');
         }
 
+        // Ensure user data is loaded
+        $client->load('user');
+
         return Inertia::render('Admin/Clients/Show', [
-            'client' => $client
+            'client' => $client->toArray()
         ]);
     }
 
