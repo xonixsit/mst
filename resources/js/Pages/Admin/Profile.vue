@@ -39,23 +39,12 @@
                   required
                 />
               </div>
-              <div>
-                <label for="phone" class="block text-sm font-medium text-gray-700">Phone Number</label>
-                <input
-                  id="phone"
-                  v-model="profileForm.phone"
-                  type="tel"
-                  class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
-                  placeholder="(555) 123-4567"
-                  maxlength="14"
-                  @input="handlePhoneInputMask"
-                />
-              </div>
+
               <div>
                 <label for="role" class="block text-sm font-medium text-gray-700">Role</label>
                 <input
                   id="role"
-                  :value="$page.props.auth.user.role.replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase())"
+                  :value="(page.props.auth.user?.role || '').replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase())"
                   type="text"
                   class="mt-1 block w-full border-gray-300 rounded-md shadow-sm bg-gray-50"
                   disabled
@@ -156,9 +145,11 @@
 
 <script setup>
 import { ref } from 'vue'
-import { useForm } from '@inertiajs/vue3'
+import { useForm, usePage } from '@inertiajs/vue3'
 import AppLayout from '@/Layouts/AppLayout.vue'
-import { handlePhoneInput, getPhoneDisplayFormat } from '@/Utils/PhoneMask.js'
+
+
+const page = usePage()
 
 const props = defineProps({
   stats: {
@@ -172,9 +163,8 @@ const props = defineProps({
 })
 
 const profileForm = useForm({
-  name: $page.props.auth.user.name,
-  email: $page.props.auth.user.email,
-  phone: getPhoneDisplayFormat($page.props.auth.user.phone || '')
+  name: page.props.auth.user?.name || '',
+  email: page.props.auth.user?.email || ''
 })
 
 const passwordForm = useForm({
@@ -201,9 +191,5 @@ const updatePassword = () => {
   })
 }
 
-const handlePhoneInputMask = (event) => {
-  handlePhoneInput(event, (formattedValue) => {
-    profileForm.phone = formattedValue
-  })
-}
+
 </script>

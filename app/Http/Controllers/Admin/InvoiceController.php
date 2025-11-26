@@ -25,6 +25,13 @@ class InvoiceController extends Controller
             $query->where('client_id', $request->client_id);
         }
 
+        // Filter by user_id
+        if ($request->filled('user_id')) {
+            $query->whereHas('client', function ($q) use ($request) {
+                $q->where('user_id', $request->user_id);
+            });
+        }
+
         // Filter by status
         if ($request->filled('status')) {
             $query->where('status', $request->status);
@@ -80,11 +87,21 @@ class InvoiceController extends Controller
 
         $stats = $this->invoiceService->getInvoiceStats();
 
+        // Handle user_id parameter by converting it to client_id
+        $filters = $request->only(['client_id', 'status', 'date_from', 'date_to', 'search']);
+        if ($request->filled('user_id')) {
+            // Find the client_id for this user_id
+            $client = Client::where('user_id', $request->user_id)->first();
+            if ($client) {
+                $filters['client_id'] = $client->id;
+            }
+        }
+
         return Inertia::render('Admin/Invoices/Index', [
             'invoices' => $invoices,
             'clients' => $clients,
             'stats' => $stats,
-            'filters' => $request->only(['client_id', 'status', 'date_from', 'date_to', 'search']),
+            'filters' => $filters,
         ]);
     }
 

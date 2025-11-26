@@ -84,7 +84,22 @@ Route::prefix('client')->name('client.')->group(function () {
 Route::middleware(['auth', 'auth.session', 'session.timeout', 'admin'])->prefix('admin')->name('admin.')->group(function () {
     // Admin dashboard
     Route::get('/dashboard', function () {
-        return inertia('Admin/Dashboard');
+        $stats = [
+            'totalClients' => \App\Models\Client::count(),
+            'monthlyRevenue' => \App\Models\Invoice::where('status', 'paid')
+                ->whereMonth('paid_at', now()->month)
+                ->whereYear('paid_at', now()->year)
+                ->sum('total_amount'),
+            'returnsFiled' => \App\Models\Document::where('document_type', 'tax_returns')
+                ->where('status', 'approved')
+                ->count(),
+            'efficiencyScore' => round((\App\Models\Document::where('status', 'approved')->count() / 
+                max(\App\Models\Document::count(), 1)) * 100, 1)
+        ];
+
+        return inertia('Admin/Dashboard', [
+            'stats' => $stats
+        ]);
     })->name('dashboard');
     
     // Admin settings and notifications
@@ -130,7 +145,15 @@ Route::middleware(['auth', 'auth.session', 'session.timeout', 'admin'])->prefix(
             'phone' => 'nullable|string|max:20'
         ]);
         
-        auth()->user()->update($validated);
+        // Split the name into first_name and last_name
+        $nameParts = explode(' ', trim($validated['name']), 2);
+        $updateData = [
+            'first_name' => $nameParts[0],
+            'last_name' => isset($nameParts[1]) ? $nameParts[1] : '',
+            'email' => $validated['email']
+        ];
+        
+        auth()->user()->update($updateData);
         
         return back()->with('success', 'Profile updated successfully.');
     });
@@ -194,6 +217,7 @@ Route::middleware(['auth', 'auth.session', 'session.timeout', 'admin'])->prefix(
     // Admin document management routes
     Route::get('/documents', [App\Http\Controllers\Admin\DocumentController::class, 'index'])->name('documents');
     Route::get('/documents/{document}', [App\Http\Controllers\Admin\DocumentController::class, 'show'])->name('documents.show');
+    Route::get('/documents/{document}/download', [App\Http\Controllers\Admin\DocumentController::class, 'download'])->name('documents.download');
     Route::patch('/documents/{document}/status', [App\Http\Controllers\Admin\DocumentController::class, 'updateStatus'])->name('documents.update-status');
     Route::delete('/documents/{document}', [App\Http\Controllers\Admin\DocumentController::class, 'destroy'])->name('documents.destroy');
     
@@ -202,6 +226,14 @@ Route::middleware(['auth', 'auth.session', 'session.timeout', 'admin'])->prefix(
     Route::post('invoices/{invoice}/mark-paid', [InvoiceController::class, 'markAsPaid'])->name('invoices.mark-paid');
     Route::post('invoices/{invoice}/send-email', [InvoiceController::class, 'sendEmail'])->name('invoices.send-email');
     Route::get('invoices/{invoice}/download', [InvoiceController::class, 'download'])->name('invoices.download');
+
+    // Admin reports routes
+    Route::get('reports', [App\Http\Controllers\Admin\ReportController::class, 'index'])->name('reports.index');
+    Route::get('reports/stats', [App\Http\Controllers\Admin\ReportController::class, 'stats'])->name('reports.stats');
+    Route::get('reports/client-summary', [App\Http\Controllers\Admin\ReportController::class, 'clientSummary'])->name('reports.client-summary');
+    Route::get('reports/financial', [App\Http\Controllers\Admin\ReportController::class, 'financial'])->name('reports.financial');
+    Route::get('reports/document-activity', [App\Http\Controllers\Admin\ReportController::class, 'documentActivity'])->name('reports.document-activity');
+    Route::get('reports/communication', [App\Http\Controllers\Admin\ReportController::class, 'communication'])->name('reports.communication');
     
     // Secure client-specific routes (using route parameters instead of query strings)
     Route::get('clients/{userId}/documents', [App\Http\Controllers\Admin\DocumentController::class, 'clientDocuments'])->name('clients.documents');

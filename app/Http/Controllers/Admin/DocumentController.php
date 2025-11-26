@@ -28,6 +28,11 @@ class DocumentController extends Controller
             $query->where('client_id', $request->client_id);
         }
 
+        // Filter by user_id (since documents store user_id as client_id)
+        if ($request->filled('user_id')) {
+            $query->where('client_id', $request->user_id);
+        }
+
         // Filter by document type
         if ($request->filled('type')) {
             $query->where('document_type', $request->type);
@@ -155,6 +160,73 @@ class DocumentController extends Controller
         return back()->with('success', 'Document status updated successfully.');
     }
 
+    /**
+     * Download or view a document
+     */
+    public function download(Document $document, Request $request)
+    {
+        // Documents are stored in private storage for security
+        $filePath = storage_path('app/private/' . $document->file_path);
+        
+        // Fallback to public storage if not found in private
+        if (!file_exists($filePath)) {
+            $filePath = storage_path('app/public/' . $document->file_path);
+        }
+        
+        if (!file_exists($filePath)) {
+            \Log::error('Document file not found', [
+                'document_id' => $document->id,
+                'file_path' => $document->file_path,
+                'attempted_paths' => [
+                    storage_path('app/private/' . $document->file_path),
+                    storage_path('app/public/' . $document->file_path)
+                ]
+            ]);
+            abort(404, 'File not found');
+        }
+
+        // Get the actual MIME type from the file
+        $actualMimeType = mime_content_type($filePath);
+        $fileExtension = strtolower(pathinfo($document->file_path, PATHINFO_EXTENSION));
+        
+        // Ensure we have a proper filename with extension
+        $filename = $document->original_name;
+        if (!pathinfo($filename, PATHINFO_EXTENSION) && $fileExtension) {
+            $filename .= '.' . $fileExtension;
+        }
+        
+        // Encode filename for proper header handling
+        $encodedFilename = rawurlencode($filename);
+        
+        // Check if it's a PDF and should be viewed inline
+        $isPdf = $actualMimeType === 'application/pdf' || 
+                 $document->mime_type === 'application/pdf' || 
+                 $fileExtension === 'pdf';
+        
+        if ($isPdf && !$request->has('download')) {
+            return response()->file($filePath, [
+                'Content-Type' => 'application/pdf',
+                'Content-Disposition' => 'inline; filename="' . $filename . '"; filename*=UTF-8\'\'' . $encodedFilename,
+                'Content-Length' => filesize($filePath),
+                'Accept-Ranges' => 'bytes',
+                'X-Frame-Options' => 'SAMEORIGIN',
+                'Cache-Control' => 'public, max-age=3600'
+            ]);
+        }
+
+        // For downloads, ensure proper headers
+        $headers = [
+            'Content-Type' => $actualMimeType ?: $document->mime_type ?: 'application/octet-stream',
+            'Content-Length' => filesize($filePath),
+            'Content-Disposition' => 'attachment; filename="' . $filename . '"; filename*=UTF-8\'\'' . $encodedFilename,
+            'Cache-Control' => 'no-cache, must-revalidate',
+            'Pragma' => 'no-cache',
+            'Expires' => '0'
+        ];
+
+        return response()->download($filePath, $filename, $headers);
+    }
+
     public function destroy(Document $document)
     {
         // Delete the physical file
@@ -208,7 +280,7 @@ class DocumentController extends Controller
     public function clientDocuments(Request $request, int $userId)
     {
         // Redirect to documents index with client filter
-        return redirect()->route('documents', ['client_id' => $userId]);
+        return redirect()->route('admin.documents', ['client_id' => $userId]);
     }
 
     /**

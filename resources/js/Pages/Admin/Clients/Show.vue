@@ -60,8 +60,6 @@
     </template>
 
     <div class="admin-client-show">
-
-
     <!-- Status and Quick Stats -->
     <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
       <div class="bg-white rounded-lg shadow p-6">
@@ -567,7 +565,7 @@
         </div>
       </div>
       <div class="p-6">
-        <div v-if="interactionHistory && interactionHistory.length > 0" class="space-y-4">
+        <div v-if="interactionHistory && interactionHistory.length > 0" class="space-y-4 max-h-96 overflow-y-auto">
           <div
             v-for="interaction in interactionHistory"
             :key="interaction.id"

@@ -1,46 +1,41 @@
 <template>
-  <div class="h-screen bg-gray-50 flex overflow-hidden">
+  <div class="h-screen bg-gradient-to-br from-neutral-50 to-neutral-100 flex overflow-hidden">
     <!-- Sidebar -->
     <div class="hidden lg:flex lg:flex-shrink-0">
       <div class="flex flex-col w-64 h-screen">
-        <div class="flex flex-col flex-grow bg-white border-r border-gray-200 pt-5 pb-4 overflow-y-auto">
+        <div class="flex flex-col flex-grow bg-gradient-to-b from-white via-neutral-50 to-neutral-100 border-r border-neutral-200/80 pt-6 pb-4 overflow-y-auto shadow-lg backdrop-blur-sm">
           <!-- Logo -->
-          <div class="flex items-center flex-shrink-0 px-4 mb-8">
-            <div class="flex items-center space-x-2">
-              <div class="w-8 h-8 bg-indigo-600 rounded-lg flex items-center justify-center">
-                <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+          <div class="flex items-center flex-shrink-0 px-6 mb-10">
+            <div class="flex items-center space-x-3">
+              <div class="w-10 h-10 bg-gradient-to-br from-primary-600 via-primary-700 to-secondary-600 rounded-xl flex items-center justify-center shadow-lg ring-2 ring-primary-100">
+                <svg class="w-6 h-6 text-white" fill="currentColor" viewBox="0 0 24 24">
+                  <path d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/>
                 </svg>
               </div>
-              <h1 class="text-xl font-bold text-gray-900">MySuperTax</h1>
+              <div>
+                <h1 class="text-xl font-bold bg-gradient-to-r from-primary-700 via-primary-800 to-secondary-700 bg-clip-text text-transparent">MySuperTax</h1>
+                <p class="text-xs text-neutral-500 font-medium">Professional Services</p>
+              </div>
             </div>
           </div>
 
           <!-- Navigation -->
-          <nav class="flex-1 px-2 space-y-1">
-            <a
-              v-for="item in navigation"
-              :key="item.name"
-              :href="item.href"
-              :class="[
+          <nav class="flex-1 px-3 space-y-2">
+            <a v-for="item in navigation" :key="item.name" :href="item.href" :class="[
                 item.current
-                  ? 'bg-indigo-50 border-r-4 border-indigo-500 text-indigo-700'
-                  : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900',
-                'group flex items-center px-3 py-2 text-sm font-medium rounded-l-md transition-colors duration-200'
-              ]"
-            >
-              <component
-                :is="item.icon"
-                :class="[
-                  item.current ? 'text-indigo-500' : 'text-gray-400 group-hover:text-gray-500',
-                  'mr-3 flex-shrink-0 h-5 w-5'
-                ]"
-              />
-              {{ item.name }}
-              <span
-                v-if="item.badge"
-                class="ml-auto inline-block py-0.5 px-2 text-xs font-medium rounded-full bg-indigo-100 text-indigo-600"
-              >
+                  ? 'bg-gradient-to-r from-primary-500 to-primary-600 text-white shadow-lg shadow-primary-500/25 border-l-4 border-primary-300'
+                  : 'text-neutral-700 hover:bg-gradient-to-r hover:from-primary-50 hover:to-secondary-50 hover:text-primary-700 hover:shadow-sm',
+                'group flex items-center px-4 py-3 text-sm font-medium rounded-lg transition-all duration-300 ease-in-out transform hover:scale-[1.02]'
+              ]">
+              <div :class="[
+                item.current ? 'bg-white/20 text-white' : 'bg-neutral-100 text-neutral-500 group-hover:bg-primary-100 group-hover:text-primary-600',
+                'p-2 rounded-lg mr-3 transition-all duration-300'
+              ]">
+                <component :is="item.icon" class="h-5 w-5" />
+              </div>
+              <span class="flex-1">{{ item.name }}</span>
+              <span v-if="item.badge"
+                class="inline-flex items-center px-2.5 py-1 text-xs font-semibold rounded-full bg-error-500 text-white shadow-sm animate-pulse">
                 {{ item.badge }}
               </span>
             </a>
@@ -49,51 +44,59 @@
       </div>
     </div>
 
-
-
     <!-- Main content area -->
     <div class="flex-1 flex flex-col min-h-0">
       <!-- Top Header Bar -->
-      <div class="bg-white border-b border-gray-200 px-4 sm:px-6 lg:px-8 py-3 flex-shrink-0">
+      <div class="bg-gradient-to-r from-white via-neutral-50 to-white border-b border-neutral-200/60 px-4 sm:px-6 lg:px-8 py-4 flex-shrink-0 shadow-sm backdrop-blur-sm">
         <div class="flex items-center justify-between">
           <!-- Mobile menu button (left side) -->
           <div class="lg:hidden">
-            <button
-              @click="showMobileMenu = !showMobileMenu"
-              class="p-2 rounded-md text-gray-400 hover:text-gray-500 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-indigo-500"
-            >
-              <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+            <button @click="showMobileMenu = !showMobileMenu"
+              class="p-2.5 rounded-xl text-neutral-500 hover:text-primary-600 hover:bg-primary-50 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 transition-all duration-200 shadow-sm">
+              <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16"></path>
               </svg>
             </button>
           </div>
 
           <!-- Greeting and User Menu (right side) -->
-          <div class="flex items-center space-x-4 ml-auto">
+          <div class="flex items-center space-x-6 ml-auto">
             <!-- Greeting -->
             <div class="hidden sm:block">
-              <p class="text-sm text-gray-600">
-                {{ greeting }}, 
-                <span class="font-medium text-gray-900">{{ page.props.auth.user?.name }}</span>
-              </p>
+              <div class="text-right">
+                <p class="text-sm font-medium text-neutral-800">
+                  {{ greeting }},
+                  <span class="text-primary-700 font-semibold">{{ page.props.auth.user?.name }}</span>
+                </p>
+                <p class="text-xs text-neutral-500 capitalize">{{ page.props.auth.user?.role?.replace('_', ' ') }}</p>
+              </div>
+            </div>
+
+            <!-- Notifications -->
+            <div class="relative">
+              <button class="p-2.5 rounded-xl text-neutral-500 hover:text-primary-600 hover:bg-primary-50 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 transition-all duration-200">
+                <BellIcon class="h-5 w-5" />
+                <span class="absolute -top-1 -right-1 h-4 w-4 bg-error-500 text-white text-xs rounded-full flex items-center justify-center font-semibold">3</span>
+              </button>
             </div>
 
             <!-- User Menu -->
             <div class="relative">
-              <button
-                @click="showUserMenu = !showUserMenu"
-                class="flex items-center space-x-2 p-2 rounded-lg hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-colors duration-200"
-              >
-                <div class="h-8 w-8 rounded-full bg-indigo-100 flex items-center justify-center">
-                  <span class="text-sm font-medium text-indigo-700">
+              <button @click="showUserMenu = !showUserMenu"
+                class="flex items-center space-x-3 p-2 rounded-xl hover:bg-gradient-to-r hover:from-primary-50 hover:to-secondary-50 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 transition-all duration-200 shadow-sm hover:shadow-md">
+                <div class="h-10 w-10 rounded-xl bg-gradient-to-br from-primary-500 via-primary-600 to-secondary-500 flex items-center justify-center shadow-lg ring-2 ring-primary-100">
+                  <span class="text-sm font-bold text-white">
                     {{ page.props.auth.user?.name?.charAt(0).toUpperCase() }}
                   </span>
                 </div>
                 <div class="hidden md:block text-left">
-                  <p class="text-sm font-medium text-gray-700">{{ page.props.auth.user?.name }}</p>
-                  <p class="text-xs text-gray-500 capitalize">{{ page.props.auth.user?.role?.replace('_', ' ') }}</p>
+                  <p class="text-sm font-semibold text-neutral-800">{{ page.props.auth.user?.name }}</p>
+                  <p class="text-xs text-neutral-500 capitalize flex items-center">
+                    <div class="w-2 h-2 bg-success-400 rounded-full mr-2"></div>
+                    {{ page.props.auth.user?.role?.replace('_', ' ') }}
+                  </p>
                 </div>
-                <svg class="h-4 w-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg class="h-4 w-4 text-neutral-400 transition-transform duration-200" :class="{ 'rotate-180': showUserMenu }" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
                 </svg>
               </button>
@@ -104,32 +107,23 @@
 
       <!-- Mobile navigation menu -->
       <div v-if="showMobileMenu" class="lg:hidden flex-shrink-0">
-        <div class="bg-white border-b border-gray-200">
-          <nav class="px-2 py-2 space-y-1">
-            <a
-              v-for="item in navigation"
-              :key="item.name"
-              :href="item.href"
-              :class="[
+        <div class="bg-gradient-to-b from-white to-neutral-50 border-b border-neutral-200/60 shadow-lg backdrop-blur-sm">
+          <nav class="px-4 py-4 space-y-2">
+            <a v-for="item in navigation" :key="item.name" :href="item.href" :class="[
                 item.current
-                  ? 'bg-indigo-50 text-indigo-700'
-                  : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900',
-                'group flex items-center px-2 py-2 text-base font-medium rounded-md'
-              ]"
-              @click="showMobileMenu = false"
-            >
-              <component
-                :is="item.icon"
-                :class="[
-                  item.current ? 'text-indigo-500' : 'text-gray-400 group-hover:text-gray-500',
-                  'mr-3 flex-shrink-0 h-6 w-6'
-                ]"
-              />
-              {{ item.name }}
-              <span
-                v-if="item.badge"
-                class="ml-auto inline-block py-0.5 px-2 text-xs font-medium rounded-full bg-indigo-100 text-indigo-600"
-              >
+                  ? 'bg-gradient-to-r from-primary-500 to-primary-600 text-white shadow-lg'
+                  : 'text-neutral-700 hover:bg-gradient-to-r hover:from-primary-50 hover:to-secondary-50 hover:text-primary-700',
+                'group flex items-center px-4 py-3 text-base font-medium rounded-xl transition-all duration-300 transform hover:scale-[1.02]'
+              ]" @click="showMobileMenu = false">
+              <div :class="[
+                item.current ? 'bg-white/20 text-white' : 'bg-neutral-100 text-neutral-500 group-hover:bg-primary-100 group-hover:text-primary-600',
+                'p-2 rounded-lg mr-3 transition-all duration-300'
+              ]">
+                <component :is="item.icon" class="h-6 w-6" />
+              </div>
+              <span class="flex-1">{{ item.name }}</span>
+              <span v-if="item.badge"
+                class="inline-flex items-center px-2.5 py-1 text-xs font-semibold rounded-full bg-error-500 text-white shadow-sm">
                 {{ item.badge }}
               </span>
             </a>
@@ -138,83 +132,80 @@
       </div>
 
       <!-- Page Header -->
-      <header v-if="$slots.header" class="bg-white shadow-sm border-b border-gray-200 flex-shrink-0">
-        <div class="px-4 sm:px-6 lg:px-8 py-6">
+      <header v-if="$slots.header" class="bg-gradient-to-r from-white via-neutral-50 to-white shadow-sm border-b border-neutral-200/60 flex-shrink-0 backdrop-blur-sm">
+        <div class="px-4 sm:px-6 lg:px-14 py-8 overflow-hidden">
           <slot name="header" />
         </div>
       </header>
 
       <!-- Main Content -->
       <main class="flex-1 overflow-y-auto">
-          <!-- Flash Messages -->
-          <div v-if="page.props.flash?.success" class="m-4">
-            <div class="bg-green-50 border border-green-200 rounded-md p-4">
-              <div class="flex">
-                <svg class="w-5 h-5 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                </svg>
-                <p class="ml-3 text-sm text-green-700">{{ page.props.flash.success }}</p>
-              </div>
+        <!-- Flash Messages -->
+        <div v-if="page.props.flash?.success" class="m-4">
+          <div class="bg-success-50 border border-success-200 rounded-md p-4 shadow-sm">
+            <div class="flex">
+              <svg class="w-5 h-5 text-success-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+              </svg>
+              <p class="ml-3 text-sm text-success-700 font-medium">{{ page.props.flash.success }}</p>
             </div>
           </div>
+        </div>
 
-          <div v-if="page.props.flash?.error" class="m-4">
-            <div class="bg-red-50 border border-red-200 rounded-md p-4">
-              <div class="flex">
-                <svg class="w-5 h-5 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                </svg>
-                <p class="ml-3 text-sm text-red-700">{{ page.props.flash.error }}</p>
-              </div>
+        <div v-if="page.props.flash?.error" class="m-4">
+          <div class="bg-error-50 border border-error-200 rounded-md p-4 shadow-sm">
+            <div class="flex">
+              <svg class="w-5 h-5 text-error-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+              </svg>
+              <p class="ml-3 text-sm text-error-700 font-medium">{{ page.props.flash.error }}</p>
             </div>
           </div>
+        </div>
 
-          <!-- Page Content -->
-          <div class="p-4 sm:p-6 lg:p-8">
-            <slot />
-          </div>
-          
-          <!-- Footer -->
-        </main>
+        <!-- Page Content -->
+        <div class="p-4 sm:p-6 lg:p-8 bg-gradient-to-br from-neutral-50/50 to-white/80 min-h-full">
+          <slot />
+        </div>
+      </main>
     </div>
 
     <!-- User Menu Dropdown -->
-    <div 
-      v-if="showUserMenu"
-      class="origin-top-right absolute right-4 top-16 w-48 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 z-50"
-    >
-      <div class="py-1">
-        <a 
-          v-for="item in userMenuItems" 
-          :key="item.name"
-          :href="item.href"
-          class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors duration-200"
-          @click="item.action && item.action()"
-        >
-          <div class="flex items-center">
-            <component :is="item.icon" class="w-4 h-4 mr-3" />
-            {{ item.name }}
-          </div>
-        </a>
+    <div v-if="showUserMenu"
+      class="origin-top-right absolute right-4 top-20 w-56 rounded-xl shadow-xl bg-white ring-1 ring-neutral-200/60 z-50 backdrop-blur-sm border border-neutral-100">
+      <div class="py-2">
+        <div class="px-4 py-3 border-b border-neutral-100">
+          <p class="text-sm font-semibold text-neutral-800">{{ page.props.auth.user?.name }}</p>
+          <p class="text-xs text-neutral-500 capitalize">{{ page.props.auth.user?.role?.replace('_', ' ') }}</p>
+        </div>
+        <div class="py-2">
+          <a v-for="item in userMenuItems" :key="item.name" :href="item.href"
+            class="flex items-center px-4 py-3 text-sm text-neutral-700 hover:bg-gradient-to-r hover:from-primary-50 hover:to-secondary-50 hover:text-primary-700 transition-all duration-200 group"
+            @click="item.action && item.action()">
+            <div class="p-2 rounded-lg bg-neutral-100 text-neutral-500 group-hover:bg-primary-100 group-hover:text-primary-600 transition-all duration-200 mr-3">
+              <component :is="item.icon" class="w-4 h-4" />
+            </div>
+            <span class="font-medium">{{ item.name }}</span>
+          </a>
+        </div>
       </div>
     </div>
 
     <!-- Click outside to close menus -->
-    <div 
-      v-if="showUserMenu || showMobileMenu" 
-      class="fixed inset-0 z-40" 
-      @click="showUserMenu = false; showMobileMenu = false"
-    ></div>
+    <div v-if="showUserMenu || showMobileMenu" class="fixed inset-0 z-40"
+      @click="showUserMenu = false; showMobileMenu = false"></div>
   </div>
 </template>
 
 <script setup>
 import { ref, computed } from 'vue'
-import { router, usePage } from '@inertiajs/vue3'
-import { 
-  HomeIcon, 
-  UsersIcon, 
-  DocumentTextIcon, 
+import { router, usePage, Link } from '@inertiajs/vue3'
+import {
+  HomeIcon,
+  UsersIcon,
+  DocumentTextIcon,
   CogIcon,
   UserIcon,
   ArrowRightOnRectangleIcon,
@@ -225,9 +216,21 @@ import {
   CurrencyDollarIcon,
   ClipboardDocumentListIcon,
   ChatBubbleLeftRightIcon,
-  ArchiveBoxIcon
+  ArchiveBoxIcon,
+  BuildingOfficeIcon,
+  DocumentCheckIcon,
+  CalculatorIcon,
+  PresentationChartLineIcon,
+  InboxIcon,
+  ShieldCheckIcon,
+  UserCircleIcon,
+  Cog6ToothIcon
 } from '@heroicons/vue/24/outline'
 import Footer from '@/Components/Footer.vue'
+import NavLink from '@/Components/NavLink.vue'
+import ResponsiveNavLink from '@/Components/ResponsiveNavLink.vue'
+import Dropdown from '@/Components/Dropdown.vue'
+import DropdownLink from '@/Components/DropdownLink.vue'
 
 const page = usePage()
 
@@ -244,124 +247,93 @@ const greeting = computed(() => {
 const navigation = computed(() => {
   const user = page.props.auth.user
   const currentPath = window.location.pathname
-  
+
   if (user?.role === 'admin' || user?.role === 'tax_professional') {
     // Admin/Tax Professional Navigation
     return [
-      { 
-        name: 'Dashboard', 
-        href: '/admin/dashboard', 
-        icon: HomeIcon, 
+      {
+        name: 'Dashboard',
+        href: '/admin/dashboard',
+        icon: PresentationChartLineIcon,
         current: currentPath === '/admin/dashboard'
       },
-      { 
-        name: 'Clients', 
-        href: '/admin/clients', 
-        icon: UsersIcon, 
+      {
+        name: 'Clients',
+        href: '/admin/clients',
+        icon: BuildingOfficeIcon,
         current: currentPath.startsWith('/admin/clients'),
         badge: '' // Example badge
       },
-      { 
-        name: 'Documents', 
-        href: '/admin/documents', 
-        icon: FolderIcon, 
+      {
+        name: 'Documents',
+        href: '/admin/documents',
+        icon: DocumentCheckIcon,
         current: currentPath.startsWith('/admin/documents')
       },
-      { 
-        name: 'Messages', 
-        href: '/admin/messages', 
-        icon: ChatBubbleLeftRightIcon, 
+      {
+        name: 'Messages',
+        href: '/admin/messages',
+        icon: InboxIcon,
         current: currentPath.startsWith('/admin/messages'),
         badge: page.props.navigationCounts?.unread_messages > 0 ? page.props.navigationCounts.unread_messages.toString() : null
       },
-      { 
-        name: 'Reports', 
-        href: '/admin/reports', 
-        icon: ChartBarIcon, 
+      {
+        name: 'Reports',
+        href: '/admin/reports',
+        icon: ChartBarIcon,
         current: currentPath.startsWith('/admin/reports')
       },
-      { 
-        name: 'Calendar', 
-        href: '/admin/calendar', 
-        icon: CalendarIcon, 
-        current: currentPath.startsWith('/admin/calendar')
-      },
-      { 
-        name: 'Invoices', 
-        href: '/admin/invoices', 
-        icon: CurrencyDollarIcon, 
+      {
+        name: 'Invoices',
+        href: '/admin/invoices',
+        icon: CalculatorIcon,
         current: currentPath.startsWith('/admin/invoices')
-      },
-      { 
-        name: 'Tasks', 
-        href: '/admin/tasks', 
-        icon: ClipboardDocumentListIcon, 
-        current: currentPath.startsWith('/admin/tasks')
-      },
-      { 
-        name: 'Audit Logs', 
-        href: '/admin/audit', 
-        icon: DocumentTextIcon, 
-        current: currentPath.startsWith('/admin/audit')
-      },
-      { 
-        name: 'Data Archival', 
-        href: '/admin/data-archival', 
-        icon: ArchiveBoxIcon, 
-        current: currentPath.startsWith('/admin/data-archival')
       }
     ]
   } else {
     // Client Navigation
     return [
-      { 
-        name: 'Dashboard', 
-        href: '/client/dashboard', 
-        icon: HomeIcon, 
+      {
+        name: 'Dashboard',
+        href: '/client/dashboard',
+        icon: HomeIcon,
         current: currentPath === '/client/dashboard'
       },
-      { 
-        name: 'My Information', 
-        href: '/client/information', 
-        icon: UserIcon, 
+      {
+        name: 'My Information',
+        href: '/client/information',
+        icon: UserCircleIcon,
         current: currentPath.startsWith('/client/information')
       },
-      { 
-        name: 'Documents', 
-        href: '/client/documents', 
-        icon: FolderIcon, 
+      {
+        name: 'Documents',
+        href: '/client/documents',
+        icon: DocumentCheckIcon,
         current: currentPath.startsWith('/client/documents')
       },
-      { 
-        name: 'Messages', 
-        href: '/client/messages', 
-        icon: ChatBubbleLeftRightIcon, 
+      {
+        name: 'Messages',
+        href: '/client/messages',
+        icon: InboxIcon,
         current: currentPath.startsWith('/client/messages'),
         badge: (page.props.navigationCounts?.unread_messages || 0) > 0 ? (page.props.navigationCounts.unread_messages || 0).toString() : null
       },
-      // { 
-      //   name: 'Notifications', 
-      //   href: '/client/notifications', 
-      //   icon: BellIcon, 
-      //   current: currentPath.startsWith('/client/notifications'),
-      //   badge: (page.props.navigationCounts?.unread_notifications || 0) > 0 ? (page.props.navigationCounts.unread_notifications || 0).toString() : null
-      // },
-      { 
-        name: 'Tax Returns', 
-        href: '/client/tax-returns', 
-        icon: DocumentTextIcon, 
+      {
+        name: 'Tax Returns',
+        href: '/client/tax-returns',
+        icon: DocumentTextIcon,
         current: currentPath.startsWith('/client/tax-returns')
       },
-      { 
-        name: 'Invoices', 
-        href: '/client/invoices', 
-        icon: CurrencyDollarIcon, 
+      {
+        name: 'Invoices',
+        href: '/client/invoices',
+        icon: CalculatorIcon,
         current: currentPath.startsWith('/client/invoices')
       },
-      { 
-        name: 'My Profile', 
-        href: '/client/profile', 
-        icon: CogIcon, 
+      {
+        name: 'My Profile',
+        href: '/client/profile',
+        icon: Cog6ToothIcon,
         current: currentPath === '/client/profile'
       }
     ]
@@ -370,27 +342,27 @@ const navigation = computed(() => {
 
 const userMenuItems = computed(() => {
   const user = page.props.auth.user
-  
+
   if (user?.role === 'admin' || user?.role === 'tax_professional') {
     return [
       {
-        name: 'Admin Profile', 
-        href: '/admin/profile', 
-        icon: UserIcon 
+        name: 'Admin Profile',
+        href: '/admin/profile',
+        icon: UserCircleIcon
       },
-      { 
-        name: 'Settings', 
-        href: '/admin/settings', 
-        icon: CogIcon 
+      {
+        name: 'Settings',
+        href: '/admin/settings',
+        icon: Cog6ToothIcon
       },
-      { 
-        name: 'Notifications', 
-        href: '/admin/notifications', 
-        icon: BellIcon 
+      {
+        name: 'Notifications',
+        href: '/admin/notifications',
+        icon: BellIcon
       },
-      { 
-        name: 'Sign out', 
-        href: '#', 
+      {
+        name: 'Sign out',
+        href: '#',
         icon: ArrowRightOnRectangleIcon,
         action: () => {
           router.post('/admin/logout')
@@ -400,23 +372,23 @@ const userMenuItems = computed(() => {
   } else {
     return [
       {
-        name: 'My Profile', 
-        href: '/client/profile', 
-        icon: UserIcon 
+        name: 'My Profile',
+        href: '/client/profile',
+        icon: UserCircleIcon
       },
-      { 
-        name: 'Settings', 
-        href: '/client/settings', 
-        icon: CogIcon 
+      {
+        name: 'Settings',
+        href: '/client/settings',
+        icon: Cog6ToothIcon
       },
-      { 
-        name: 'Notifications', 
-        href: '/client/notifications', 
-        icon: BellIcon 
+      {
+        name: 'Notifications',
+        href: '/client/notifications',
+        icon: BellIcon
       },
-      { 
-        name: 'Sign out', 
-        href: '#', 
+      {
+        name: 'Sign out',
+        href: '#',
         icon: ArrowRightOnRectangleIcon,
         action: () => {
           router.post('/client/logout')

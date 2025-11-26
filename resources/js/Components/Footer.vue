@@ -1,5 +1,5 @@
 <template>
-  <footer class="bg-gray-900 text-white">
+  <footer class="bg-neutral-900 text-white">
     <div class="max-w-7xl mx-auto py-8 px-4 sm:px-6 lg:px-8">
       <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
         <!-- Company Info -->
@@ -7,11 +7,11 @@
           <div class="flex items-center mb-3">
             <h3 class="text-lg font-bold">{{ $page.props.app?.name || 'MySuperTax' }}</h3>
           </div>
-          <p class="text-gray-300 mb-3 max-w-md text-sm">
+          <p class="text-neutral-300 mb-3 max-w-md text-sm">
             Professional tax consulting services providing comprehensive tax preparation, 
             planning, and advisory services for individuals and businesses.
           </p>
-          <div class="text-xs text-gray-400">
+          <div class="text-xs text-neutral-400">
             <p class="mb-1">📧 support@mysupertax.com</p>
             <p class="mb-1">📞 (555) 123-4567</p>
             <p>🏢 123 Tax Street, Finance City, FC 12345</p>
@@ -22,11 +22,11 @@
         <div>
           <h4 class="text-sm font-semibold mb-3">Quick Links</h4>
           <ul class="space-y-1 text-xs">
-            <li><a href="#" class="text-gray-300 hover:text-white transition-colors">Services</a></li>
-            <li><a href="#" class="text-gray-300 hover:text-white transition-colors">About Us</a></li>
-            <li><a href="#" class="text-gray-300 hover:text-white transition-colors">Contact</a></li>
-            <li><a href="#" class="text-gray-300 hover:text-white transition-colors">FAQ</a></li>
-            <li><a href="#" class="text-gray-300 hover:text-white transition-colors">Support</a></li>
+            <li><a href="#" class="text-neutral-300 hover:text-white transition-colors">Services</a></li>
+            <li><a href="#" class="text-neutral-300 hover:text-white transition-colors">About Us</a></li>
+            <li><a href="#" class="text-neutral-300 hover:text-white transition-colors">Contact</a></li>
+            <li><a href="#" class="text-neutral-300 hover:text-white transition-colors">FAQ</a></li>
+            <li><a href="#" class="text-neutral-300 hover:text-white transition-colors">Support</a></li>
           </ul>
         </div>
 
@@ -34,22 +34,22 @@
         <div>
           <h4 class="text-sm font-semibold mb-3">Legal</h4>
           <ul class="space-y-1 text-xs">
-            <li><a href="/legal/terms" target="_blank" class="text-gray-300 hover:text-white transition-colors">Terms of Service</a></li>
-            <li><a href="/legal/privacy" target="_blank" class="text-gray-300 hover:text-white transition-colors">Privacy Policy</a></li>
-            <li><a href="/legal/disclaimer" target="_blank" class="text-gray-300 hover:text-white transition-colors">Disclaimer</a></li>
-            <li><a href="#" @click.prevent="showTerms = true" class="text-gray-300 hover:text-white transition-colors cursor-pointer">Quick View Terms</a></li>
+            <li><a href="/legal/terms" target="_blank" class="text-neutral-300 hover:text-white transition-colors">Terms of Service</a></li>
+            <li><a href="/legal/privacy" target="_blank" class="text-neutral-300 hover:text-white transition-colors">Privacy Policy</a></li>
+            <li><a href="/legal/disclaimer" target="_blank" class="text-neutral-300 hover:text-white transition-colors">Disclaimer</a></li>
+            <li><a href="#" @click.prevent="showTerms = true" class="text-neutral-300 hover:text-white transition-colors cursor-pointer">Quick View Terms</a></li>
           </ul>
         </div>
       </div>
 
       <!-- Bottom Section -->
-      <div class="mt-6 pt-6 border-t border-gray-700">
+      <div class="mt-6 pt-6 border-t border-neutral-700">
         <div class="flex flex-col md:flex-row justify-between items-center">
-          <div class="text-xs text-gray-400 mb-3 md:mb-0">
+          <div class="text-xs text-neutral-400 mb-3 md:mb-0">
             <p>&copy; {{ currentYear }} {{ $page.props.app?.name || 'MySuperTax' }}. All rights reserved.</p>
             <p class="mt-1">Licensed Tax Professional | EIN: 12-3456789</p>
           </div>
-          <div class="flex space-x-4 text-xs text-gray-400">
+          <div class="flex space-x-4 text-xs text-neutral-400">
             <span>🔒 Secure & Confidential</span>
             <span>📋 IRS Compliant</span>
             <span>✅ PTIN Certified</span>
@@ -63,14 +63,14 @@
       <div class="bg-white rounded-lg max-w-4xl max-h-[80vh] overflow-y-auto">
         <div class="p-6">
           <div class="flex justify-between items-center mb-4">
-            <h2 class="text-2xl font-bold text-gray-900">Terms of Service</h2>
-            <button @click="showTerms = false" class="text-gray-500 hover:text-gray-700">
+            <h2 class="text-2xl font-bold text-neutral-900">Terms of Service</h2>
+            <button @click="showTerms = false" class="text-neutral-500 hover:text-neutral-700">
               <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
               </svg>
             </button>
           </div>
-          <div class="prose max-w-none text-gray-700">
+          <div class="prose max-w-none text-neutral-700">
             <p class="mb-4"><strong>Effective Date:</strong> January 1, 2025</p>
             
             <h3 class="text-lg font-semibold mb-2">1. Acceptance of Terms</h3>
@@ -100,14 +100,14 @@
       <div class="bg-white rounded-lg max-w-4xl max-h-[80vh] overflow-y-auto">
         <div class="p-6">
           <div class="flex justify-between items-center mb-4">
-            <h2 class="text-2xl font-bold text-gray-900">Privacy Policy</h2>
-            <button @click="showPrivacy = false" class="text-gray-500 hover:text-gray-700">
+            <h2 class="text-2xl font-bold text-neutral-900">Privacy Policy</h2>
+            <button @click="showPrivacy = false" class="text-neutral-500 hover:text-neutral-700">
               <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
               </svg>
             </button>
           </div>
-          <div class="prose max-w-none text-gray-700">
+          <div class="prose max-w-none text-neutral-700">
             <p class="mb-4"><strong>Effective Date:</strong> January 1, 2025</p>
             
             <h3 class="text-lg font-semibold mb-2">Information We Collect</h3>
@@ -137,14 +137,14 @@
       <div class="bg-white rounded-lg max-w-4xl max-h-[80vh] overflow-y-auto">
         <div class="p-6">
           <div class="flex justify-between items-center mb-4">
-            <h2 class="text-2xl font-bold text-gray-900">Professional Disclaimer</h2>
-            <button @click="showDisclaimer = false" class="text-gray-500 hover:text-gray-700">
+            <h2 class="text-2xl font-bold text-neutral-900">Professional Disclaimer</h2>
+            <button @click="showDisclaimer = false" class="text-neutral-500 hover:text-neutral-700">
               <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
               </svg>
             </button>
           </div>
-          <div class="prose max-w-none text-gray-700">
+          <div class="prose max-w-none text-neutral-700">
             <h3 class="text-lg font-semibold mb-2">Professional Services</h3>
             <p class="mb-4">MySuperTax provides professional tax preparation and advisory services. We are licensed tax professionals committed to accuracy and compliance.</p>
             

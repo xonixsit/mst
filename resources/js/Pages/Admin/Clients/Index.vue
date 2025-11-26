@@ -1,34 +1,34 @@
 <template>
   <AppLayout>
     <template #header>
-      <div class="flex justify-between items-center">
-        <div>
-          <h1 class="text-2xl font-bold text-gray-900">Client Management</h1>
+      <div class="flex justify-between items-center min-w-0">
+        <div class="min-w-0 flex-1 pr-4">
+          <h1 class="text-2xl font-bold text-gray-900 truncate">Client Management</h1>
           <p class="mt-1 text-sm text-gray-600">Manage all client information and operations</p>
         </div>
-        <div class="flex space-x-3">
+        <div class="flex space-x-3 flex-shrink-0">
+        <button
+            @click="router.visit('/admin/clients/create')"
+            class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2.5 rounded-lg flex items-center justify-center transition-colors duration-200 whitespace-nowrap"
+          >
+            <svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+            </svg>
+            <span class="hidden sm:inline">Add Client</span>
+            <span class="sm:hidden">Add</span>
+          </button>
           <button
             @click="showExportModal = true"
-            class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg flex items-center"
+            class="bg-green-600 hover:bg-green-700 text-white px-4 py-2.5 rounded-lg flex items-center justify-center transition-colors duration-200 whitespace-nowrap"
           >
-            <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg class="w-4 h-4 mr-2 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
             </svg>
             Export
           </button>
-          <button
-            @click="router.visit('/admin/clients/create')"
-            class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg flex items-center"
-          >
-            <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
-            </svg>
-            Add Client
-          </button>
         </div>
-      </div>
-    </template>
-
+        </div>
+        </template>
     <!-- Stats Cards -->
     <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
       <div class="bg-white rounded-lg shadow p-6">
@@ -190,7 +190,7 @@
 
         <div class="overflow-x-auto">
           <table class="min-w-full divide-y divide-gray-200">
-            <thead class="bg-gray-50">
+            <!-- <thead class="bg-gray-50">
               <tr>
                 <th class="px-6 py-3 text-left">
                   <input
@@ -221,10 +221,9 @@
                   </div>
                 </th>
                 <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Actions
                 </th>
               </tr>
-            </thead>
+            </thead> -->
             <tbody class="bg-white divide-y divide-gray-200">
               <tr
                 v-for="client in clients.data"
@@ -265,39 +264,39 @@
                     {{ statusOptions[client.status] }}
                   </span>
                 </td>
-                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                  <div class="flex space-x-2">
+                <td class="px-6 py-4 text-sm font-medium">
+                  <div class="flex flex-wrap gap-1 min-w-max">
                     <button
                       @click="viewClient(client.id)"
-                      class="bg-gray-500 hover:bg-gray-600 text-white px-3 py-1 rounded text-xs"
+                      class="bg-gray-500 hover:bg-gray-600 text-white px-2 py-1 rounded text-xs whitespace-nowrap transition-colors duration-200"
                       title="View"
                     >
                       View
                     </button>
                     <button
                       @click="editClient(client.id)"
-                      class="bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 rounded text-xs"
+                      class="bg-blue-500 hover:bg-blue-600 text-white px-2 py-1 rounded text-xs whitespace-nowrap transition-colors duration-200"
                       title="Edit"
                     >
                       Edit
                     </button>
                     <button
                       @click="viewTaxDocs(client.user?.id || client.user_id)"
-                      class="bg-green-500 hover:bg-green-600 text-white px-3 py-1 rounded text-xs"
+                      class="bg-green-500 hover:bg-green-600 text-white px-2 py-1 rounded text-xs whitespace-nowrap transition-colors duration-200"
                       title="Tax Docs"
                     >
                       Docs
                     </button>
                     <button
-                      @click="viewInvoices(client.user?.id || client.user_id)"
-                      class="bg-orange-500 hover:bg-orange-600 text-white px-3 py-1 rounded text-xs"
+                      @click="viewInvoices(client.user_id || client.user?.id)"
+                      class="bg-orange-500 hover:bg-orange-600 text-white px-2 py-1 rounded text-xs whitespace-nowrap transition-colors duration-200"
                       title="Invoices"
                     >
                       Invoice
                     </button>
                     <button
                       @click="deleteClient(client.id)"
-                      class="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded text-xs"
+                      class="bg-red-500 hover:bg-red-600 text-white px-2 py-1 rounded text-xs whitespace-nowrap transition-colors duration-200"
                       title="Delete"
                     >
                       Delete
@@ -575,7 +574,7 @@ export default {
     }
 
     const viewInvoices = (userId) => {
-      router.visit(`/admin/clients/${userId}/invoices`)
+      router.visit(`/admin/invoices?user_id=${userId}`)
     }
 
     const deleteClient = (id) => {

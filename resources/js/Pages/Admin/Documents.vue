@@ -152,12 +152,15 @@
                 <td class="px-6 py-4 whitespace-nowrap">
                   <span
                     :class="{
-                      'bg-yellow-100 text-yellow-800': document.status === 'pending',
-                      'bg-green-100 text-green-800': document.status === 'approved',
-                      'bg-red-100 text-red-800': document.status === 'rejected'
+                      'bg-yellow-50 text-yellow-700 border-yellow-200': document.status === 'pending',
+                      'bg-green-50 text-green-700 border-green-200': document.status === 'approved',
+                      'bg-red-50 text-red-700 border-red-200': document.status === 'rejected'
                     }"
-                    class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium"
+                    class="inline-flex items-center px-3 py-1 rounded-lg text-sm font-medium border"
                   >
+                    <span v-if="document.status === 'approved'" class="w-2 h-2 bg-green-400 rounded-full mr-2"></span>
+                    <span v-else-if="document.status === 'rejected'" class="w-2 h-2 bg-red-400 rounded-full mr-2"></span>
+                    <span v-else class="w-2 h-2 bg-yellow-400 rounded-full mr-2"></span>
                     {{ document.status.charAt(0).toUpperCase() + document.status.slice(1) }}
                   </span>
                 </td>
@@ -168,9 +171,9 @@
                   <div class="flex items-center justify-end space-x-2">
                     <button
                       @click="viewDocument(document)"
-                      class="text-indigo-600 hover:text-indigo-900"
+                      class="text-gray-600 hover:text-gray-900"
                     >
-                      View
+                      Details
                     </button>
                     <button
                       @click="showStatusModal(document)"
@@ -215,6 +218,13 @@
         </div>
       </div>
     </div>
+
+    <!-- Document View Modal -->
+    <DocumentViewModal
+      :show="showDocumentModal"
+      :document="selectedDocumentForView"
+      @close="closeDocumentModal"
+    />
 
     <!-- Status Update Modal -->
     <div v-if="showStatusUpdateModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50">
@@ -273,6 +283,7 @@ import { ref, computed, onMounted } from 'vue'
 import { router } from '@inertiajs/vue3'
 import { DocumentTextIcon } from '@heroicons/vue/24/outline'
 import AppLayout from '@/Layouts/AppLayout.vue'
+import DocumentViewModal from '@/Components/DocumentViewModal.vue'
 
 const props = defineProps({
   documents: Object,
@@ -283,8 +294,10 @@ const props = defineProps({
 })
 
 const showStatusUpdateModal = ref(false)
+const showDocumentModal = ref(false)
 const updating = ref(false)
 const selectedDocument = ref(null)
+const selectedDocumentForView = ref(null)
 const filters = ref({ ...props.filters })
 
 const statusForm = ref({
@@ -306,6 +319,16 @@ const paginationPages = computed(() => {
 
 const viewDocument = (document) => {
   router.get(`/admin/documents/${document.id}`)
+}
+
+const viewDocumentModal = (document) => {
+  selectedDocumentForView.value = document
+  showDocumentModal.value = true
+}
+
+const closeDocumentModal = () => {
+  showDocumentModal.value = false
+  selectedDocumentForView.value = null
 }
 
 const showStatusModal = (document) => {
