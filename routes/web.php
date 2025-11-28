@@ -290,6 +290,10 @@ Route::middleware(['auth', 'auth.session', 'session.timeout', 'admin'])->prefix(
     Route::post('invoices/{invoice}/send-email', [InvoiceController::class, 'sendEmail'])->name('invoices.send-email');
     Route::get('invoices/{invoice}/download', [InvoiceController::class, 'download'])->name('invoices.download');
 
+    // Admin tax professional management routes
+    Route::resource('tax-professionals', App\Http\Controllers\Admin\TaxProfessionalController::class)->names('tax-professionals')->parameters(['tax-professionals' => 'taxProfessional']);
+    Route::post('tax-professionals/{taxProfessional}/restore', [App\Http\Controllers\Admin\TaxProfessionalController::class, 'restore'])->name('tax-professionals.restore');
+
     // Admin reports routes
     Route::get('reports', [App\Http\Controllers\Admin\ReportController::class, 'index'])->name('reports.index');
     Route::get('reports/stats', [App\Http\Controllers\Admin\ReportController::class, 'stats'])->name('reports.stats');

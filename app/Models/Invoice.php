@@ -26,6 +26,10 @@ class Invoice extends Model
         'status',
         'sent_at',
         'paid_at',
+        'payment_method',
+        'transaction_id',
+        'amount_paid',
+        'payment_notes',
         'archived_at',
     ];
 
@@ -70,12 +74,25 @@ class Invoice extends Model
     /**
      * Mark invoice as paid and send notifications
      */
-    public function markAsPaid(): void
+    public function markAsPaid(array $paymentData = []): void
     {
-        $this->update([
+        $updateData = [
             'status' => 'paid',
-            'paid_at' => now(),
-        ]);
+            'paid_at' => isset($paymentData['payment_date']) ? $paymentData['payment_date'] : now(),
+        ];
+
+        // Store payment details if provided
+        if (!empty($paymentData)) {
+            $updateData['payment_method'] = $paymentData['payment_method'] ?? null;
+            $updateData['transaction_id'] = $paymentData['transaction_id'] ?? null;
+            $updateData['amount_paid'] = $paymentData['amount_paid'] ?? $this->total_amount;
+            $updateData['payment_notes'] = $paymentData['payment_notes'] ?? null;
+        }
+
+        $this->update($updateData);
+
+        // Send receipt email directly
+        $this->sendReceiptEmail($paymentData);
 
         // Send notifications to client and admins
         $clientUser = $this->client->user;
@@ -86,6 +103,40 @@ class Invoice extends Model
         // Notify admins
         $adminService = app(\App\Services\AdminNotificationService::class);
         $adminService->notifyInvoicePaid($this);
+    }
+
+    /**
+     * Send receipt email to client and admin
+     */
+    private function sendReceiptEmail(array $paymentData = []): void
+    {
+        try {
+            // Load the client relationship if not already loaded
+            if (!$this->relationLoaded('client')) {
+                $this->load('client.user');
+            }
+
+            // Get client email
+            $clientEmail = $this->client->user->email ?? $this->send_to_email;
+            
+            // Get admin email from config
+            $adminEmail = config('mail.from.address');
+
+            if ($clientEmail) {
+                // Send receipt to client
+                \Mail::to($clientEmail)->send(new \App\Mail\ReceiptMail($this, $paymentData));
+
+                // Send copy to admin
+                if ($adminEmail && $adminEmail !== $clientEmail) {
+                    \Mail::to($adminEmail)->send(new \App\Mail\ReceiptMail($this, $paymentData));
+                }
+            }
+        } catch (\Exception $e) {
+            \Log::error('Failed to send receipt email', [
+                'invoice_id' => $this->id,
+                'error' => $e->getMessage()
+            ]);
+        }
     }
 
     public function markAsSent(): void

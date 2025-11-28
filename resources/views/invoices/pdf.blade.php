@@ -1,12 +1,12 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <meta charset="utf-8">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Invoice {{ $invoice->invoice_number }}</title>
     <style>
         body {
             font-family: Arial, sans-serif;
-            font-size: 14px;
             line-height: 1.4;
             color: #333;
             margin: 0;
@@ -15,68 +15,74 @@
         .header {
             text-align: center;
             margin-bottom: 30px;
-            border-bottom: 2px solid #2563eb;
-            padding-bottom: 20px;
+            padding: 20px;
+            background-color: #10b981;
+            color: white;
+            border-radius: 8px;
         }
-        .company-name {
+        .header h1 {
+            margin: 0 0 10px 0;
             font-size: 24px;
-            font-weight: bold;
-            color: #2563eb;
-            margin-bottom: 5px;
         }
-        .invoice-title {
-            font-size: 20px;
-            font-weight: bold;
-            margin-bottom: 10px;
-        }
-        .invoice-number {
-            font-size: 16px;
-            color: #666;
+        .header p {
+            margin: 0;
+            font-size: 14px;
         }
         .invoice-info {
             display: table;
             width: 100%;
             margin-bottom: 30px;
         }
-        .bill-to, .invoice-details {
+        .invoice-info .left, .invoice-info .right {
             display: table-cell;
             width: 50%;
             vertical-align: top;
         }
-        .invoice-details {
-            text-align: right;
+        .info-section {
+            background-color: #f8f9fa;
+            padding: 15px;
+            border-radius: 6px;
+            margin-bottom: 15px;
         }
-        .section-title {
-            font-weight: bold;
+        .info-section h3 {
+            margin: 0 0 10px 0;
             font-size: 16px;
-            margin-bottom: 10px;
-            color: #2563eb;
+            color: #10b981;
         }
-        .client-info p, .details p {
-            margin: 3px 0;
+        .info-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+        .info-table td {
+            padding: 8px 0;
+            border-bottom: 1px solid #eee;
+        }
+        .info-table td:first-child {
+            font-weight: bold;
+            width: 40%;
         }
         .items-table {
             width: 100%;
             border-collapse: collapse;
-            margin: 30px 0;
+            margin: 20px 0;
         }
-        .items-table th {
-            background-color: #f8fafc;
-            border: 1px solid #e5e7eb;
+        .items-table th, .items-table td {
             padding: 12px;
             text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+        .items-table th {
+            background-color: #10b981;
+            color: white;
             font-weight: bold;
         }
-        .items-table td {
-            border: 1px solid #e5e7eb;
-            padding: 12px;
-        }
-        .items-table .text-right {
-            text-align: right;
+        .items-table tr:nth-child(even) {
+            background-color: #f8f9fa;
         }
         .totals {
+            float: right;
             width: 300px;
-            margin-left: auto;
             margin-top: 20px;
         }
         .totals table {
@@ -85,125 +91,111 @@
         }
         .totals td {
             padding: 8px 12px;
-            border-bottom: 1px solid #e5e7eb;
+            border-bottom: 1px solid #ddd;
         }
         .totals .total-row {
+            background-color: #10b981;
+            color: white;
             font-weight: bold;
-            font-size: 16px;
-            border-top: 2px solid #2563eb;
-            background-color: #f8fafc;
-        }
-        .status-badge {
-            display: inline-block;
-            padding: 6px 12px;
-            border-radius: 20px;
-            font-size: 12px;
-            font-weight: bold;
-            text-transform: uppercase;
-        }
-        .status-paid {
-            background-color: #dcfce7;
-            color: #166534;
-        }
-        .status-sent {
-            background-color: #dbeafe;
-            color: #1e40af;
-        }
-        .status-draft {
-            background-color: #f3f4f6;
-            color: #374151;
+            font-size: 18px;
         }
         .footer {
-            margin-top: 40px;
-            padding-top: 20px;
-            border-top: 1px solid #e5e7eb;
+            margin-top: 50px;
             text-align: center;
             font-size: 12px;
             color: #666;
+            border-top: 1px solid #ddd;
+            padding-top: 20px;
         }
         .comments {
-            margin: 20px 0;
+            background-color: #fff3cd;
+            border: 1px solid #ffeaa7;
+            border-radius: 6px;
             padding: 15px;
-            background-color: #f8fafc;
-            border-left: 4px solid #2563eb;
+            margin: 20px 0;
+        }
+        .comments h4 {
+            margin: 0 0 10px 0;
+            color: #856404;
         }
     </style>
 </head>
 <body>
     <div class="header">
-        <div class="company-name">{{ config('app.name') }}</div>
-        <div class="invoice-title">INVOICE</div>
-        <div class="invoice-number"># {{ $invoice->invoice_number }}</div>
+        <h1>Invoice {{ $invoice->invoice_number }}</h1>
+        <p>MySuperTax Professional Services</p>
     </div>
 
     <div class="invoice-info">
-        <div class="bill-to">
-            <div class="section-title">Bill To:</div>
-            <div class="client-info">
-                <p><strong>{{ $invoice->client->user ? $invoice->client->user->first_name . ' ' . $invoice->client->user->last_name : 'Unknown Client' }}</strong></p>
-                @if($invoice->client->user)
-                    <p>{{ $invoice->client->user->email }}</p>
-                @endif
-                @if($invoice->client->phone)
-                    <p>{{ $invoice->client->phone }}</p>
-                @endif
-                @if($invoice->client->street_no)
-                    <p>{{ $invoice->client->street_no }} {{ $invoice->client->apartment_no }}</p>
-                    <p>{{ $invoice->client->city }}, {{ $invoice->client->state }} {{ $invoice->client->zip_code }}</p>
-                @endif
+        <div class="left">
+            <div class="info-section">
+                <h3>Invoice Information</h3>
+                <table class="info-table">
+                    <tr>
+                        <td>Invoice Number:</td>
+                        <td>{{ $invoice->invoice_number }}</td>
+                    </tr>
+                    <tr>
+                        <td>Title:</td>
+                        <td>{{ $invoice->title }}</td>
+                    </tr>
+                    <tr>
+                        <td>Tax Year:</td>
+                        <td>{{ $invoice->invoice_year }}</td>
+                    </tr>
+                    <tr>
+                        <td>Invoice Date:</td>
+                        <td>{{ $invoice->created_at->format('F j, Y') }}</td>
+                    </tr>
+                    <tr>
+                        <td>Status:</td>
+                        <td style="text-transform: capitalize; font-weight: bold;">{{ $invoice->status }}</td>
+                    </tr>
+                </table>
             </div>
         </div>
         
-        <div class="invoice-details">
-            <div class="section-title">Invoice Details:</div>
-            <div class="details">
-                <p><strong>Invoice Date:</strong> {{ $invoice->created_at->format('F d, Y') }}</p>
-                @if($invoice->invoice_year)
-                    <p><strong>Tax Year:</strong> {{ $invoice->invoice_year }}</p>
-                @endif
-                @if($invoice->sent_at)
-                    <p><strong>Sent Date:</strong> {{ $invoice->sent_at->format('F d, Y') }}</p>
-                @endif
-                <!-- <p><strong>Status:</strong> 
-                    <span class="status-badge status-{{ $invoice->status }}">{{ ucfirst($invoice->status) }}</span>
-                </p> -->
-                @if($invoice->paid_at)
-                    <p><strong>Paid Date:</strong> {{ $invoice->paid_at->format('F d, Y') }}</p>
-                @endif
+        <div class="right">
+            <div class="info-section">
+                <h3>Client Information</h3>
+                <table class="info-table">
+                    <tr>
+                        <td>Name:</td>
+                        <td>{{ $invoice->client->user->first_name ?? '' }} {{ $invoice->client->user->last_name ?? '' }}</td>
+                    </tr>
+                    <tr>
+                        <td>Email:</td>
+                        <td>{{ $invoice->client->user->email ?? $invoice->send_to_email }}</td>
+                    </tr>
+                    @if($invoice->client->phone)
+                    <tr>
+                        <td>Phone:</td>
+                        <td>{{ $invoice->client->phone }}</td>
+                    </tr>
+                    @endif
+                </table>
             </div>
         </div>
     </div>
 
-    @if($invoice->title)
-        <div style="margin: 20px 0;">
-            <div class="section-title">{{ $invoice->title }}</div>
-        </div>
-    @endif
-
-    @if($invoice->comments)
-        <div class="comments">
-            <strong>Notes:</strong><br>
-            {{ $invoice->comments }}
-        </div>
-    @endif
-
+    <h3 style="color: #10b981; margin-bottom: 15px;">Services Provided</h3>
     <table class="items-table">
         <thead>
             <tr>
-                <th>Service Description</th>
-                <th class="text-right">Qty</th>
-                <th class="text-right">Rate</th>
-                <th class="text-right">Amount</th>
+                <th>Service</th>
+                <th>Quantity</th>
+                <th>Unit Price</th>
+                <th>Total</th>
             </tr>
         </thead>
         <tbody>
             @foreach($invoice->items as $item)
-                <tr>
-                    <td>{{ $item->service_name }}</td>
-                    <td class="text-right">{{ $item->quantity }}</td>
-                    <td class="text-right">${{ number_format($item->unit_price, 2) }}</td>
-                    <td class="text-right">${{ number_format($item->total_price, 2) }}</td>
-                </tr>
+            <tr>
+                <td>{{ $item->service_name }}</td>
+                <td>{{ $item->quantity }}</td>
+                <td>${{ number_format($item->unit_price, 2) }}</td>
+                <td>${{ number_format($item->total_price, 2) }}</td>
+            </tr>
             @endforeach
         </tbody>
     </table>
@@ -212,28 +204,36 @@
         <table>
             <tr>
                 <td>Subtotal:</td>
-                <td class="text-right">${{ number_format($invoice->subtotal, 2) }}</td>
+                <td style="text-align: right;">${{ number_format($invoice->subtotal, 2) }}</td>
             </tr>
             <tr>
                 <td>Tax ({{ $invoice->tax_rate }}%):</td>
-                <td class="text-right">${{ number_format($invoice->tax_amount, 2) }}</td>
+                <td style="text-align: right;">${{ number_format($invoice->tax_amount, 2) }}</td>
             </tr>
             <tr class="total-row">
-                <td>Total:</td>
-                <td class="text-right">${{ number_format($invoice->total_amount, 2) }}</td>
+                <td>Total Amount:</td>
+                <td style="text-align: right;">${{ number_format($invoice->total_amount, 2) }}</td>
             </tr>
         </table>
     </div>
 
-    @if($invoice->status === 'paid')
-        <div style="margin-top: 30px; padding: 15px; background-color: #dcfce7; border: 1px solid #16a34a; border-radius: 5px; text-align: center;">
-            <strong style="color: #166534;">✓ PAID - Thank you for your payment!</strong>
-        </div>
+    <div style="clear: both;"></div>
+
+    @if($invoice->comments)
+    <div class="comments">
+        <h4>Additional Notes:</h4>
+        <p>{{ $invoice->comments }}</p>
+    </div>
     @endif
 
     <div class="footer">
-        <p>Thank you for your business!</p>
-        <p>Generated on {{ now()->format('F d, Y \a\t g:i A') }}</p>
+        <p><strong>MySuperTax Professional Services</strong></p>
+        <p><strong>Office Address:</strong> TX-61265, USA</p>
+        <p><strong>Phone:</strong> +1 315-307-2751 | <strong>Email:</strong> help@mysupertax.com</p>
+        <p>Thank you for choosing MySuperTax for your tax preparation needs!</p>
+        <p style="margin-top: 10px; font-size: 11px; color: #666;">
+            For any queries or support regarding this invoice, please contact us using the above details.
+        </p>
     </div>
 </body>
 </html>

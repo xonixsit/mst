@@ -257,6 +257,7 @@
     InboxIcon,
     ShieldCheckIcon,
     UserCircleIcon,
+    UserGroupIcon,
     Cog6ToothIcon
   } from '@heroicons/vue/24/outline'
   import Footer from '@/Components/Footer.vue'
@@ -321,6 +322,12 @@
           href: '/admin/invoices',
           icon: CalculatorIcon,
           current: currentPath.startsWith('/admin/invoices')
+        },
+        {
+          name: 'Tax Professionals',
+          href: '/admin/tax-professionals',
+          icon: UsersIcon,
+          current: currentPath.startsWith('/admin/tax-professionals')
         }
       ]
     } else {

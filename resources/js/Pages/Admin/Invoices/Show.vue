@@ -132,14 +132,12 @@
                   <div class="flex items-center justify-between py-2 border-b border-blue-200/50">
                     <dt class="text-sm font-semibold text-blue-700">Name:</dt>
                     <dd class="text-sm font-bold text-blue-900">
-                      {{ invoice.client?.user?.first_name && invoice.client?.user?.last_name 
-                          ? `${invoice.client.user.first_name} ${invoice.client.user.last_name}`.trim() 
-                          : 'Unknown Client' }}
+                      {{ getClientName(invoice) }}
                     </dd>
                   </div>
                   <div class="flex items-center justify-between py-2">
                     <dt class="text-sm font-semibold text-blue-700">Email:</dt>
-                    <dd class="text-sm font-medium text-blue-900">{{ invoice.send_to_email }}</dd>
+                    <dd class="text-sm font-medium text-blue-900">{{ getClientEmail(invoice) }}</dd>
                   </div>
                 </dl>
               </div>
@@ -239,14 +237,7 @@
 
             <!-- Enhanced Action Buttons -->
             <div class="flex flex-wrap justify-end gap-3 pt-8 border-t border-gray-200 mt-8">
-              <button
-                v-if="invoice.status !== 'paid'"
-                @click="markAsPaid"
-                class="bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white px-6 py-3 rounded-xl flex items-center transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105 group"
-              >
-                <CheckCircleIcon class="w-5 h-5 mr-2" />
-                <span class="font-semibold">Mark as Paid</span>
-              </button>
+              <!-- Send Email Button - Only for draft invoices -->
               <button
                 v-if="invoice.status === 'draft'"
                 @click="sendEmail"
@@ -255,22 +246,71 @@
                 <PaperAirplaneIcon class="w-5 h-5 mr-2" />
                 <span class="font-semibold">Send Email</span>
               </button>
+              
+              <!-- Resend Email Button - Only for sent invoices -->
               <button
+                v-if="invoice.status === 'sent'"
+                @click="sendEmail"
+                class="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white px-6 py-3 rounded-xl flex items-center transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105 group"
+              >
+                <PaperAirplaneIcon class="w-5 h-5 mr-2" />
+                <span class="font-semibold">Resend Email</span>
+              </button>
+              
+              <!-- Mark as Paid Button - Only for sent invoices -->
+              <button
+                v-if="invoice.status === 'sent'"
+                @click="markAsPaid"
+                class="bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white px-6 py-3 rounded-xl flex items-center transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105 group"
+              >
+                <CheckCircleIcon class="w-5 h-5 mr-2" />
+                <span class="font-semibold">Mark as Paid</span>
+              </button>
+              
+              <!-- Delete Button - Only for draft and sent invoices -->
+              <button
+                v-if="invoice.status !== 'paid'"
                 @click="deleteInvoice"
                 class="bg-gradient-to-r from-red-600 to-rose-600 hover:from-red-700 hover:to-rose-700 text-white px-6 py-3 rounded-xl flex items-center transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105 group"
               >
                 <TrashIcon class="w-5 h-5 mr-2" />
                 <span class="font-semibold">Delete Invoice</span>
               </button>
+              
+              <!-- Paid Status Indicator -->
+              <div
+                v-if="invoice.status === 'paid'"
+                class="bg-gradient-to-r from-green-100 to-emerald-100 text-green-800 px-6 py-3 rounded-xl flex items-center border-2 border-green-200"
+              >
+                <CheckCircleIcon class="w-5 h-5 mr-2" />
+                <span class="font-semibold">Invoice Paid</span>
+              </div>
             </div>
           </div>
         </div>
       </div>
     </div>
+
+    <!-- Invoice Email Modal -->
+    <InvoiceEmailModal
+      v-if="showEmailModal"
+      :invoice="invoice"
+      @close="showEmailModal = false"
+      @sent="onEmailSent"
+    />
+
+    <!-- Payment Modal -->
+    <PaymentModal
+      v-if="showPaymentModal"
+      :invoice="invoice"
+      @close="showPaymentModal = false"
+      @paid="onPaymentRecorded"
+    />
   </AppLayout>
 </template>
 
 <script setup>
+import { ref } from 'vue'
 import { Link, router } from '@inertiajs/vue3'
 import { 
   DocumentTextIcon,
@@ -286,6 +326,8 @@ import {
   ArrowLeftIcon
 } from '@heroicons/vue/24/outline'
 import AppLayout from '@/Layouts/AppLayout.vue'
+import InvoiceEmailModal from '@/Components/InvoiceEmailModal.vue'
+import PaymentModal from '@/Components/PaymentModal.vue'
 
 const props = defineProps({
   invoice: Object,
@@ -339,21 +381,67 @@ const getStatusLabel = (status) => {
   return labels[status] || status
 }
 
+const showPaymentModal = ref(false)
+
 const markAsPaid = () => {
-  if (confirm('Mark this invoice as paid?')) {
-    router.post(`/admin/invoices/${props.invoice.id}/mark-paid`)
-  }
+  showPaymentModal.value = true
+}
+
+const onPaymentRecorded = () => {
+  // Refresh the page to show updated status
+  router.reload()
+}
+
+const showEmailModal = ref(false)
+
+// Check if we should show email modal from flash message
+if (window.history.state?.showEmailModal || new URLSearchParams(window.location.search).get('email') === 'true') {
+  showEmailModal.value = true
 }
 
 const sendEmail = () => {
-  if (confirm('Send this invoice via email?')) {
-    router.post(`/admin/invoices/${props.invoice.id}/send-email`)
-  }
+  showEmailModal.value = true
+}
+
+const onEmailSent = () => {
+  // Refresh the page or update the invoice status
+  router.reload()
 }
 
 const deleteInvoice = () => {
   if (confirm('Are you sure you want to delete this invoice?')) {
     router.delete(`/admin/invoices/${props.invoice.id}`)
   }
+}
+
+const getClientName = (invoice) => {
+  // Try different possible client data structures
+  if (invoice.client?.user?.first_name && invoice.client?.user?.last_name) {
+    return `${invoice.client.user.first_name} ${invoice.client.user.last_name}`.trim()
+  }
+  if (invoice.client?.first_name && invoice.client?.last_name) {
+    return `${invoice.client.first_name} ${invoice.client.last_name}`.trim()
+  }
+  if (invoice.client?.name) {
+    return invoice.client.name
+  }
+  if (invoice.client_name) {
+    return invoice.client_name
+  }
+  return 'Client Name Not Available'
+}
+
+const getClientEmail = (invoice) => {
+  // Prioritize the actual client's email from user relationship over send_to_email
+  if (invoice.client?.user?.email) {
+    return invoice.client.user.email
+  }
+  if (invoice.client?.email) {
+    return invoice.client.email
+  }
+  if (invoice.send_to_email) {
+    return invoice.send_to_email
+  }
+  return 'Email Not Available'
 }
 </script>

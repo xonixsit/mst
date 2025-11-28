@@ -272,9 +272,7 @@
                   </td>
                   <td class="px-6 py-5 whitespace-nowrap">
                     <div class="text-sm font-semibold text-gray-900">
-                      {{ invoice.client?.user?.first_name && invoice.client?.user?.last_name 
-                          ? `${invoice.client.user.first_name} ${invoice.client.user.last_name}`.trim() 
-                          : 'Unknown Client' }}
+                      {{ getClientName(invoice) }}
                     </div>
                   </td>
                   <td class="px-6 py-5 whitespace-nowrap">
@@ -311,14 +309,7 @@
                         <PencilIcon class="w-3 h-3 mr-1" />
                         Edit
                       </Link>
-                      <button
-                        v-if="invoice.status !== 'paid'"
-                        @click="markAsPaid(invoice)"
-                        class="bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white px-3 py-1.5 rounded-lg text-xs font-semibold transition-all duration-200 shadow-sm hover:shadow-md transform hover:scale-105 flex items-center"
-                      >
-                        <CheckCircleIcon class="w-3 h-3 mr-1" />
-                        Mark Paid
-                      </button>
+                      <!-- Send Email - Only for draft invoices -->
                       <button
                         v-if="invoice.status === 'draft'"
                         @click="sendEmail(invoice)"
@@ -326,6 +317,26 @@
                       >
                         <PaperAirplaneIcon class="w-3 h-3 mr-1" />
                         Send
+                      </button>
+                      
+                      <!-- Resend Email - Only for sent invoices -->
+                      <button
+                        v-if="invoice.status === 'sent'"
+                        @click="sendEmail(invoice)"
+                        class="bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 text-white px-3 py-1.5 rounded-lg text-xs font-semibold transition-all duration-200 shadow-sm hover:shadow-md transform hover:scale-105 flex items-center"
+                      >
+                        <PaperAirplaneIcon class="w-3 h-3 mr-1" />
+                        Resend
+                      </button>
+                      
+                      <!-- Mark as Paid - Only for sent invoices -->
+                      <button
+                        v-if="invoice.status === 'sent'"
+                        @click="markAsPaid(invoice)"
+                        class="bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white px-3 py-1.5 rounded-lg text-xs font-semibold transition-all duration-200 shadow-sm hover:shadow-md transform hover:scale-105 flex items-center"
+                      >
+                        <CheckCircleIcon class="w-3 h-3 mr-1" />
+                        Mark Paid
                       </button>
                       <button
                         @click="deleteInvoice(invoice)"
@@ -382,6 +393,22 @@
         </div>
       </div>
     </div>
+
+    <!-- Invoice Email Modal -->
+    <InvoiceEmailModal
+      v-if="showEmailModal && selectedInvoiceForEmail"
+      :invoice="selectedInvoiceForEmail"
+      @close="showEmailModal = false; selectedInvoiceForEmail = null"
+      @sent="onEmailSent"
+    />
+
+    <!-- Payment Modal -->
+    <PaymentModal
+      v-if="showPaymentModal && selectedInvoice"
+      :invoice="selectedInvoice"
+      @close="showPaymentModal = false; selectedInvoice = null"
+      @paid="onPaymentRecorded"
+    />
   </AppLayout>
 </template>
 
@@ -399,6 +426,8 @@ import {
   PaperAirplaneIcon
 } from '@heroicons/vue/24/outline'
 import AppLayout from '@/Layouts/AppLayout.vue'
+import InvoiceEmailModal from '@/Components/InvoiceEmailModal.vue'
+import PaymentModal from '@/Components/PaymentModal.vue'
 import { debounce } from 'lodash'
 
 const props = defineProps({
@@ -465,21 +494,55 @@ const getStatusLabel = (status) => {
   return labels[status] || status
 }
 
+const showPaymentModal = ref(false)
+const selectedInvoice = ref(null)
+
 const markAsPaid = (invoice) => {
-  if (confirm('Mark this invoice as paid?')) {
-    router.post(`/admin/invoices/${invoice.id}/mark-paid`)
-  }
+  selectedInvoice.value = invoice
+  showPaymentModal.value = true
 }
 
+const onPaymentRecorded = () => {
+  // Refresh the page to show updated status
+  router.reload()
+  selectedInvoice.value = null
+}
+
+const showEmailModal = ref(false)
+const selectedInvoiceForEmail = ref(null)
+
 const sendEmail = (invoice) => {
-  if (confirm('Send this invoice via email?')) {
-    router.post(`/admin/invoices/${invoice.id}/send-email`)
-  }
+  selectedInvoiceForEmail.value = invoice
+  showEmailModal.value = true
+}
+
+const onEmailSent = () => {
+  showEmailModal.value = false
+  selectedInvoiceForEmail.value = null
+  // Refresh the page to show updated status
+  router.reload()
 }
 
 const deleteInvoice = (invoice) => {
   if (confirm('Are you sure you want to delete this invoice?')) {
     router.delete(`/admin/invoices/${invoice.id}`)
   }
+}
+
+const getClientName = (invoice) => {
+  // Try different possible client data structures
+  if (invoice.client?.user?.first_name && invoice.client?.user?.last_name) {
+    return `${invoice.client.user.first_name} ${invoice.client.user.last_name}`.trim()
+  }
+  if (invoice.client?.first_name && invoice.client?.last_name) {
+    return `${invoice.client.first_name} ${invoice.client.last_name}`.trim()
+  }
+  if (invoice.client?.name) {
+    return invoice.client.name
+  }
+  if (invoice.client_name) {
+    return invoice.client_name
+  }
+  return 'Client Name Not Available'
 }
 </script>

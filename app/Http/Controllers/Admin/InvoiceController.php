@@ -8,6 +8,7 @@ use App\Models\Client;
 use App\Models\Invoice;
 use App\Services\InvoiceService;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Mail;
 use Inertia\Inertia;
 
 class InvoiceController extends Controller
@@ -154,9 +155,9 @@ class InvoiceController extends Controller
         $invoice = $this->invoiceService->createInvoice($request->validated());
 
         if ($request->has('send_email') && $request->send_email) {
-            $this->invoiceService->sendInvoice($invoice);
-            return redirect()->route('admin.invoices.index')
-                           ->with('success', 'Invoice created and sent successfully!');
+            // Redirect to the invoice show page with email modal flag
+            return redirect()->route('admin.invoices.show', $invoice->id)
+                           ->with('showEmailModal', true);
         }
 
         return redirect()->route('admin.invoices.index')
@@ -165,7 +166,7 @@ class InvoiceController extends Controller
 
     public function show(Invoice $invoice)
     {
-        $invoice->load(['client', 'items']);
+        $invoice->load(['client.user', 'items']);
 
         return Inertia::render('Admin/Invoices/Show', [
             'invoice' => $invoice,
@@ -227,17 +228,35 @@ class InvoiceController extends Controller
                        ->with('success', 'Invoice deleted successfully!');
     }
 
-    public function markAsPaid(Invoice $invoice)
+    public function markAsPaid(Request $request, Invoice $invoice)
     {
-        $invoice->markAsPaid();
+        // Validate payment details
+        $paymentData = $request->validate([
+            'payment_method' => 'required|string',
+            'transaction_id' => 'nullable|string|max:255',
+            'payment_date' => 'required|date',
+            'amount_paid' => 'required|numeric|min:0',
+            'payment_notes' => 'nullable|string',
+        ]);
+
+        $invoice->markAsPaid($paymentData);
 
         return redirect()->back()
-                       ->with('success', 'Invoice marked as paid!');
+                       ->with('success', 'Payment recorded successfully!');
     }
 
-    public function sendEmail(Invoice $invoice)
+    public function sendEmail(Request $request, Invoice $invoice)
     {
-        $success = $this->invoiceService->sendInvoice($invoice);
+        // Validate the email data from the modal
+        $emailData = $request->validate([
+            'email' => 'required|email',
+            'subject' => 'required|string|max:255',
+            'message' => 'nullable|string',
+            'payment_link' => 'nullable|url',
+            'due_date' => 'nullable|date',
+        ]);
+
+        $success = $this->invoiceService->sendInvoice($invoice, $emailData);
 
         if ($success) {
             return redirect()->back()

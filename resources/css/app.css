@@ -46,6 +46,16 @@
     color: #111827 !important;
   }
   
+  /* More specific targeting for all inputs and selects */
+  input, select, textarea {
+    color: #111827 !important;
+  }
+  
+  /* Target any element with common input classes */
+  .form-input, .form-control, [class*="border-gray"], [class*="rounded-xl"] input, [class*="rounded-xl"] select {
+    color: #111827 !important;
+  }
+  
   h1 { @apply text-3xl; }
   h2 { @apply text-2xl; }
   h3 { @apply text-xl; }

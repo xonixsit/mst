@@ -84,14 +84,36 @@ class InvoiceService
         });
     }
 
-    public function sendInvoice(Invoice $invoice): bool
+    public function sendInvoice(Invoice $invoice, array $emailData = []): bool
     {
         try {
-            // Here you would implement email sending logic
-            // For now, we'll just mark it as sent
+            // Load the client relationship if not already loaded
+            if (!$invoice->relationLoaded('client')) {
+                $invoice->load('client.user');
+            }
+
+            // Determine the recipient email
+            $recipientEmail = $emailData['email'] ?? 
+                             $invoice->client->user->email ?? 
+                             $invoice->send_to_email;
+
+            if (!$recipientEmail) {
+                throw new \Exception('No recipient email found');
+            }
+
+            // Send the email
+            Mail::to($recipientEmail)->send(new \App\Mail\InvoiceMail($invoice, $emailData));
+
+            // Mark invoice as sent
             $invoice->markAsSent();
+
             return true;
         } catch (\Exception $e) {
+            \Log::error('Failed to send invoice email', [
+                'invoice_id' => $invoice->id,
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ]);
             return false;
         }
     }
