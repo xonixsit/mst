@@ -76,16 +76,15 @@
               <label for="spouseSSN" class="block text-sm font-medium text-gray-700 mb-1">
                 Social Security Number
               </label>
-              <input
-                id="spouseSSN"
+              <SSNInput
+                input-id="spouseSSN"
                 v-model="localData.ssn"
-                type="text"
-                :class="inputClasses('ssn')"
+                :input-classes="inputClasses('ssn')"
                 placeholder="123-45-6789"
-                maxlength="11"
                 :disabled="readonly"
+                :is-pre-masked="true"
                 @blur="validateField('ssn')"
-                @input="handleSSNInput"
+                @input="handleSSNInputChange"
               />
               <p v-if="fieldErrors.ssn" class="mt-1 text-sm text-red-600">
                 {{ fieldErrors.ssn }}
@@ -182,6 +181,7 @@
 <script setup>
 import { ref, reactive, computed, watch, onMounted } from 'vue'
 import { InformationCircleIcon } from '@heroicons/vue/24/outline'
+import SSNInput from '@/Components/SSNInput.vue'
 
 // Props
 const props = defineProps({
@@ -222,7 +222,7 @@ const fieldErrors = reactive({})
 
 // Computed properties
 const inputClasses = (fieldName) => {
-  const baseClasses = 'block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm disabled:bg-gray-50 disabled:text-gray-500'
+  const baseClasses = 'block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm text-gray-900 placeholder-gray-500 disabled:bg-gray-50 disabled:text-gray-500'
   const errorClasses = 'border-red-300 text-red-900 placeholder-red-300 focus:border-red-500 focus:ring-red-500'
   
   return fieldErrors[fieldName] ? `${baseClasses} ${errorClasses}` : baseClasses
@@ -307,19 +307,8 @@ const handleInput = (fieldName, value) => {
   emit('update', { ...localData })
 }
 
-const handleSSNInput = (event) => {
-  let value = event.target.value.replace(/\D/g, '')
-  
-  // Format SSN as user types
-  if (value.length >= 6) {
-    value = `${value.slice(0, 3)}-${value.slice(3, 5)}-${value.slice(5, 9)}`
-  } else if (value.length >= 4) {
-    value = `${value.slice(0, 3)}-${value.slice(3)}`
-  }
-  
+const handleSSNInputChange = (value) => {
   localData.ssn = value
-  event.target.value = value
-  
   handleInput('ssn', value)
 }
 

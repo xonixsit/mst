@@ -1,112 +1,111 @@
 <template>
   <AppLayout>
     <template #header>
-      <div class="flex justify-between items-center min-w-0">
-        <div class="min-w-0 flex-1 pr-4">
-          <h1 class="text-2xl font-bold text-gray-900 truncate">Client Management</h1>
-          <p class="mt-1 text-sm text-gray-600">Manage all client information and operations</p>
-        </div>
-        <div class="flex space-x-3 flex-shrink-0">
-        <button
-            @click="router.visit('/admin/clients/create')"
-            class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2.5 rounded-lg flex items-center justify-center transition-colors duration-200 whitespace-nowrap"
-          >
-            <svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
-            </svg>
-            <span class="hidden sm:inline">Add Client</span>
-            <span class="sm:hidden">Add</span>
-          </button>
-          <button
-            @click="showExportModal = true"
-            class="bg-green-600 hover:bg-green-700 text-white px-4 py-2.5 rounded-lg flex items-center justify-center transition-colors duration-200 whitespace-nowrap"
-          >
-            <svg class="w-4 h-4 mr-2 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
-            </svg>
-            Export
-          </button>
-        </div>
-        </div>
-        </template>
-    <!-- Stats Cards -->
-    <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
-      <div class="bg-white rounded-lg shadow p-6">
-        <div class="flex items-center">
-          <div class="p-2 bg-blue-100 rounded-lg">
-            <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path>
-            </svg>
+      <div class="relative overflow-hidden">
+        <!-- Background Pattern -->
+        <div class="absolute inset-0 bg-gradient-to-r from-slate-50 via-emerald-50 to-blue-50"></div>
+        <div class="absolute top-0 right-0 w-64 h-32 bg-gradient-to-bl from-emerald-100/40 to-transparent rounded-bl-full"></div>
+        <div class="absolute bottom-0 left-0 w-48 h-24 bg-gradient-to-tr from-blue-100/30 to-transparent rounded-tr-full"></div>
+        
+        <!-- Content -->
+        <div class="relative flex flex-col lg:flex-row lg:justify-between lg:items-center space-y-6 lg:space-y-0 py-2">
+          <div class="flex items-center space-x-4">
+            <!-- Client Management Icon -->
+            <div class="w-16 h-16 bg-gradient-to-br from-emerald-500 via-emerald-600 to-blue-600 rounded-2xl flex items-center justify-center shadow-lg ring-4 ring-emerald-100">
+              <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path>
+              </svg>
+            </div>
+            
+            <!-- Title Section -->
+            <div>
+              <h1 class="text-3xl font-bold bg-gradient-to-r from-gray-900 via-emerald-900 to-blue-900 bg-clip-text text-transparent">
+                Client Management
+              </h1>
+              <p class="mt-2 text-sm text-gray-600 font-medium">Comprehensive client information and operations center</p>
+              
+              <!-- Status Indicators -->
+              <div class="flex items-center space-x-4 mt-3">
+                <div class="flex items-center space-x-2">
+                  <div class="w-2 h-2 bg-emerald-400 rounded-full animate-pulse"></div>
+                  <span class="text-xs font-semibold text-emerald-700">{{ stats.total_clients }} Total Clients</span>
+                </div>
+                <div class="flex items-center space-x-2">
+                  <div class="w-2 h-2 bg-blue-400 rounded-full"></div>
+                  <span class="text-xs font-semibold text-blue-700">{{ stats.active_clients }} Active</span>
+                </div>
+              </div>
+            </div>
           </div>
-          <div class="ml-4">
-            <p class="text-sm font-medium text-gray-600">Total Clients</p>
-            <p class="text-2xl font-bold text-gray-900">{{ stats.total_clients }}</p>
-          </div>
-        </div>
-      </div>
-      <div class="bg-white rounded-lg shadow p-6">
-        <div class="flex items-center">
-          <div class="p-2 bg-green-100 rounded-lg">
-            <svg class="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-            </svg>
-          </div>
-          <div class="ml-4">
-            <p class="text-sm font-medium text-gray-600">Active Clients</p>
-            <p class="text-2xl font-bold text-gray-900">{{ stats.active_clients }}</p>
-          </div>
-        </div>
-      </div>
-      <div class="bg-white rounded-lg shadow p-6">
-        <div class="flex items-center">
-          <div class="p-2 bg-yellow-100 rounded-lg">
-            <svg class="w-6 h-6 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-            </svg>
-          </div>
-          <div class="ml-4">
-            <p class="text-sm font-medium text-gray-600">New This Month</p>
-            <p class="text-2xl font-bold text-gray-900">{{ stats.new_this_month }}</p>
+          
+          <!-- Action Buttons -->
+          <div class="flex flex-col sm:flex-row items-start sm:items-center space-y-3 sm:space-y-0 sm:space-x-4">
+            <button
+              @click="router.visit('/admin/clients/create')"
+              class="bg-gradient-to-r from-emerald-600 to-green-600 hover:from-emerald-700 hover:to-green-700 text-white px-6 py-3 rounded-xl flex items-center transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105 group"
+            >
+              <svg class="w-5 h-5 mr-2 transition-transform duration-300 group-hover:rotate-90" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+              </svg>
+              <span class="font-semibold">Add New Client</span>
+            </button>
+            
+            <button
+              @click="showExportModal = true"
+              class="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white px-6 py-3 rounded-xl flex items-center transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105 group"
+            >
+              <svg class="w-5 h-5 mr-2 transition-transform duration-300 group-hover:-translate-y-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+              </svg>
+              <span class="font-semibold">Export Data</span>
+            </button>
           </div>
         </div>
       </div>
-      <div class="bg-white rounded-lg shadow p-6">
-        <div class="flex items-center">
-          <div class="p-2 bg-red-100 rounded-lg">
-            <svg class="w-6 h-6 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4"></path>
-            </svg>
-          </div>
-          <div class="ml-4">
-            <p class="text-sm font-medium text-gray-600">Archived</p>
-            <p class="text-2xl font-bold text-gray-900">{{ stats.archived_clients }}</p>
-          </div>
-        </div>
-      </div>
-    </div>
+    </template>
 
-    <!-- Filters and Search -->
-    <div class="bg-white rounded-lg shadow mb-6">
-      <div class="p-6">
-        <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
-          <!-- Search -->
+
+    <!-- Enhanced Filters and Search -->
+    <div class="bg-white shadow-xl rounded-2xl border border-gray-100 overflow-hidden mb-8">
+      <div class="bg-gradient-to-r from-slate-50 to-gray-50 px-6 py-5 border-b border-gray-200">
+        <div class="flex items-center justify-between">
           <div>
-            <label class="block text-sm font-medium text-gray-700 mb-2">Search</label>
-            <input
-              v-model="searchForm.search"
-              type="text"
-              placeholder="Search by name, email, phone..."
-              class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-              @input="debouncedSearch"
-            />
+            <h3 class="text-xl font-bold text-gray-900">Search & Filter Clients</h3>
+            <p class="text-sm text-gray-600 mt-1">Find and manage your client database</p>
+          </div>
+          <div class="flex items-center space-x-2">
+            <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+            </svg>
+          </div>
+        </div>
+      </div>
+      
+      <div class="p-8">
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+          <!-- Search -->
+          <div class="space-y-2">
+            <label class="block text-sm font-semibold text-gray-700">Search Clients</label>
+            <div class="relative">
+              <input
+                v-model="searchForm.search"
+                type="text"
+                placeholder="Name, email, phone..."
+                class="w-full px-4 py-3 pl-10 border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200"
+                @input="debouncedSearch"
+              />
+              <svg class="absolute left-3 top-3.5 w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+              </svg>
+            </div>
           </div>
 
           <!-- Status Filter -->
-          <div>
-            <label class="block text-sm font-medium text-gray-700 mb-2">Status</label>
+          <div class="space-y-2">
+            <label class="block text-sm font-semibold text-gray-700">Client Status</label>
             <select
               v-model="searchForm.status"
-              class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 bg-white"
               @change="applyFilters"
             >
               <option value="">All Statuses</option>
@@ -116,47 +115,55 @@
             </select>
           </div>
 
-          <!-- Date Range -->
-          <div>
-            <label class="block text-sm font-medium text-gray-700 mb-2">Registration Date From</label>
+          <!-- Date Range From -->
+          <div class="space-y-2">
+            <label class="block text-sm font-semibold text-gray-700">Registration From</label>
             <input
               v-model="searchForm.date_from"
               type="date"
-              class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200"
               @change="applyFilters"
             />
           </div>
-          <div>
-            <label class="block text-sm font-medium text-gray-700 mb-2">To</label>
+          
+          <!-- Date Range To -->
+          <div class="space-y-2">
+            <label class="block text-sm font-semibold text-gray-700">Registration To</label>
             <input
               v-model="searchForm.date_to"
               type="date"
-              class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200"
               @change="applyFilters"
             />
           </div>
         </div>
 
-        <div class="flex justify-between items-center mt-4">
+        <!-- Action Bar -->
+        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mt-8 pt-6 border-t border-gray-200 space-y-4 sm:space-y-0">
           <button
             @click="clearFilters"
-            class="text-gray-600 hover:text-gray-800 text-sm"
+            class="flex items-center space-x-2 text-gray-600 hover:text-gray-800 font-medium transition-colors duration-200"
           >
-            Clear Filters
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
+            </svg>
+            <span>Clear All Filters</span>
           </button>
           
           <!-- Bulk Actions -->
-          <div v-if="selectedClients.length > 0" class="flex items-center space-x-3">
-            <span class="text-sm text-gray-600">{{ selectedClients.length }} selected</span>
+          <div v-if="selectedClients.length > 0" class="flex items-center space-x-4">
+            <div class="bg-blue-50 px-4 py-2 rounded-lg">
+              <span class="text-sm font-semibold text-blue-700">{{ selectedClients.length }} clients selected</span>
+            </div>
             <button
               @click="showBulkModal = true"
-              class="bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded text-sm"
+              class="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white px-4 py-2 rounded-lg font-semibold transition-all duration-200 shadow-md hover:shadow-lg"
             >
               Bulk Actions
             </button>
             <button
               @click="clearSelection"
-              class="text-gray-600 hover:text-gray-800 text-sm"
+              class="text-gray-600 hover:text-gray-800 font-medium transition-colors duration-200"
             >
               Clear Selection
             </button>
@@ -165,170 +172,190 @@
       </div>
     </div>
 
-    <!-- Client Table -->
-    <div class="bg-white rounded-lg shadow">
-      <div class="p-6">
-        <div class="flex justify-between items-center mb-4">
-          <div class="flex items-center space-x-4">
-            <label class="text-sm text-gray-600">Show</label>
-            <select
-              v-model="perPage"
-              class="px-3 py-1 border border-gray-300 rounded text-sm"
-              @change="changePerPage"
-            >
-              <option v-for="option in perPageOptions" :key="option" :value="option">
-                {{ option }}
-              </option>
-            </select>
-            <label class="text-sm text-gray-600">entries</label>
+    <!-- Enhanced Client Table -->
+    <div class="bg-white shadow-xl rounded-2xl border border-gray-100 overflow-hidden">
+      <div class="bg-gradient-to-r from-slate-50 to-gray-50 px-6 py-5 border-b border-gray-200">
+        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center space-y-4 sm:space-y-0">
+          <div>
+            <h3 class="text-xl font-bold text-gray-900">Client Directory</h3>
+            <p class="text-sm text-gray-600 mt-1">Comprehensive client information and management</p>
           </div>
           
-          <div class="text-sm text-gray-600">
-            Showing {{ clients.from || 0 }} to {{ clients.to || 0 }} of {{ clients.total || 0 }} results
+          <div class="flex items-center space-x-4">
+            <div class="flex items-center space-x-2 bg-white px-3 py-2 rounded-lg border border-gray-200 shadow-sm">
+              <label class="text-sm font-medium text-gray-600">Show</label>
+              <select
+                v-model="perPage"
+                class="border-0 bg-transparent text-sm font-semibold text-gray-900 focus:ring-0 focus:outline-none"
+                @change="changePerPage"
+              >
+                <option v-for="option in perPageOptions" :key="option" :value="option">
+                  {{ option }}
+                </option>
+              </select>
+              <label class="text-sm font-medium text-gray-600">entries</label>
+            </div>
+            
+            <div class="bg-white px-4 py-2 rounded-lg border border-gray-200 shadow-sm">
+              <span class="text-sm font-medium text-gray-600">
+                Showing <span class="font-bold text-gray-900">{{ clients.from || 0 }}</span> to 
+                <span class="font-bold text-gray-900">{{ clients.to || 0 }}</span> of 
+                <span class="font-bold text-blue-600">{{ clients.total || 0 }}</span> results
+              </span>
+            </div>
           </div>
         </div>
-
-        <div class="overflow-x-auto">
-          <table class="min-w-full divide-y divide-gray-200">
-            <!-- <thead class="bg-gray-50">
-              <tr>
-                <th class="px-6 py-3 text-left">
-                  <input
-                    type="checkbox"
-                    :checked="allSelected"
-                    @change="toggleSelectAll"
-                    class="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
-                  />
-                </th>
-                <th
-                  v-for="(label, key) in sortOptions"
-                  :key="key"
-                  class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100"
-                  @click="sortBy(key)"
+      </div>
+    </div>  
+      <div class="overflow-x-auto">
+        <table class="min-w-full">
+          <thead class="bg-gradient-to-r from-gray-50 to-slate-50 border-b border-gray-200">
+            <tr>
+              <th class="px-6 py-4 text-left">
+                <input
+                  type="checkbox"
+                  :checked="allSelected"
+                  @change="toggleSelectAll"
+                  class="w-4 h-4 rounded border-2 border-gray-300 text-blue-600 focus:ring-2 focus:ring-blue-500 focus:ring-offset-0 transition-all duration-200"
+                />
+              </th>
+              <th class="px-6 py-4 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">
+                <div class="flex items-center space-x-1">
+                  <span>ID</span>
+                  <svg class="w-3 h-3 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16V4m0 0L3 8m4-4l4 4m6 0v12m0 0l4-4m-4 4l-4-4"></path>
+                  </svg>
+                </div>
+              </th>
+              <th class="px-6 py-4 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">First Name</th>
+              <th class="px-6 py-4 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">Last Name</th>
+              <th class="px-6 py-4 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">Email</th>
+              <th class="px-6 py-4 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">Phone</th>
+              <th class="px-6 py-4 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">Registration</th>
+              <th class="px-6 py-4 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">Status</th>
+              <th class="px-6 py-4 text-center text-xs font-bold text-gray-700 uppercase tracking-wider">Actions</th>
+            </tr>
+          </thead>
+          <tbody class="bg-white divide-y divide-gray-100">
+            <tr
+              v-for="client in clients.data"
+              :key="client.id"
+              class="hover:bg-gradient-to-r hover:from-blue-50 hover:to-indigo-50 transition-all duration-200 group"
+            >
+              <td class="px-6 py-5">
+                <input
+                  type="checkbox"
+                  :value="client.id"
+                  v-model="selectedClients"
+                  class="w-4 h-4 rounded border-2 border-gray-300 text-blue-600 focus:ring-2 focus:ring-blue-500 focus:ring-offset-0 transition-all duration-200"
+                />
+              </td>
+              <td class="px-6 py-5 whitespace-nowrap">
+                <div class="flex items-center">
+                  <div class="w-8 h-8 bg-gradient-to-br from-blue-100 to-blue-200 rounded-lg flex items-center justify-center mr-3">
+                    <span class="text-xs font-bold text-blue-700">#{{ client.id }}</span>
+                  </div>
+                </div>
+              </td>
+              <td class="px-6 py-5 whitespace-nowrap">
+                <div class="text-sm font-semibold text-gray-900">{{ client.user?.first_name || '-' }}</div>
+              </td>
+              <td class="px-6 py-5 whitespace-nowrap">
+                <div class="text-sm font-semibold text-gray-900">{{ client.user?.last_name || '-' }}</div>
+              </td>
+              <td class="px-6 py-5 whitespace-nowrap">
+                <div class="text-sm text-gray-900 font-medium">{{ client.user?.email || '-' }}</div>
+              </td>
+              <td class="px-6 py-5 whitespace-nowrap">
+                <div class="text-sm text-gray-900 font-medium">{{ client.phone || '-' }}</div>
+              </td>
+              <td class="px-6 py-5 whitespace-nowrap">
+                <div class="text-sm text-gray-600 font-medium">{{ formatDate(client.created_at) }}</div>
+              </td>
+              <td class="px-6 py-5 whitespace-nowrap">
+                <span
+                  class="inline-flex items-center px-3 py-1 text-xs font-bold rounded-full shadow-sm"
+                  :class="getStatusClass(client.status)"
                 >
-                  <div class="flex items-center">
-                    {{ label }}
-                    <svg
-                      v-if="currentSort === key"
-                      class="w-4 h-4 ml-1"
-                      :class="sortDirection === 'asc' ? 'transform rotate-180' : ''"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                    >
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
-                    </svg>
-                  </div>
-                </th>
-                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                </th>
-              </tr>
-            </thead> -->
-            <tbody class="bg-white divide-y divide-gray-200">
-              <tr
-                v-for="client in clients.data"
-                :key="client.id"
-                class="hover:bg-gray-50"
-              >
-                <td class="px-6 py-4">
-                  <input
-                    type="checkbox"
-                    :value="client.id"
-                    v-model="selectedClients"
-                    class="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
-                  />
-                </td>
-                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                  {{ client.id }}
-                </td>
-                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                  {{ client.user?.first_name || '-' }}
-                </td>
-                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                  {{ client.user?.last_name || '-' }}
-                </td>
-                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                  {{ client.user?.email || '-' }}
-                </td>
-                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                  {{ client.phone }}
-                </td>
-                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                  {{ formatDate(client.created_at) }}
-                </td>
-                <td class="px-6 py-4 whitespace-nowrap">
-                  <span
-                    class="px-2 py-1 text-xs font-semibold rounded-full"
-                    :class="getStatusClass(client.status)"
+                  <span class="w-1.5 h-1.5 rounded-full mr-2" :class="getStatusDotClass(client.status)"></span>
+                  {{ statusOptions[client.status] }}
+                </span>
+              </td>
+              <td class="px-6 py-5 text-center">
+                <div class="flex justify-center space-x-2">
+                  <button
+                    @click="viewClient(client.id)"
+                    class="bg-gradient-to-r from-slate-500 to-gray-600 hover:from-slate-600 hover:to-gray-700 text-white px-3 py-1.5 rounded-lg text-xs font-semibold transition-all duration-200 shadow-sm hover:shadow-md transform hover:scale-105"
+                    title="View Client"
                   >
-                    {{ statusOptions[client.status] }}
-                  </span>
-                </td>
-                <td class="px-6 py-4 text-sm font-medium">
-                  <div class="flex flex-wrap gap-1 min-w-max">
-                    <button
-                      @click="viewClient(client.id)"
-                      class="bg-gray-500 hover:bg-gray-600 text-white px-2 py-1 rounded text-xs whitespace-nowrap transition-colors duration-200"
-                      title="View"
-                    >
-                      View
-                    </button>
-                    <button
-                      @click="editClient(client.id)"
-                      class="bg-blue-500 hover:bg-blue-600 text-white px-2 py-1 rounded text-xs whitespace-nowrap transition-colors duration-200"
-                      title="Edit"
-                    >
-                      Edit
-                    </button>
-                    <button
-                      @click="viewTaxDocs(client.user?.id || client.user_id)"
-                      class="bg-green-500 hover:bg-green-600 text-white px-2 py-1 rounded text-xs whitespace-nowrap transition-colors duration-200"
-                      title="Tax Docs"
-                    >
-                      Docs
-                    </button>
-                    <button
-                      @click="viewInvoices(client.user_id || client.user?.id)"
-                      class="bg-orange-500 hover:bg-orange-600 text-white px-2 py-1 rounded text-xs whitespace-nowrap transition-colors duration-200"
-                      title="Invoices"
-                    >
-                      Invoice
-                    </button>
-                    <button
-                      @click="deleteClient(client.id)"
-                      class="bg-red-500 hover:bg-red-600 text-white px-2 py-1 rounded text-xs whitespace-nowrap transition-colors duration-200"
-                      title="Delete"
-                    >
-                      Delete
-                    </button>
-                  </div>
-                </td>
-              </tr>
-            </tbody>
+                    <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
+                    </svg>
+                  </button>
+                  <button
+                    @click="editClient(client.id)"
+                    class="bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 text-white px-3 py-1.5 rounded-lg text-xs font-semibold transition-all duration-200 shadow-sm hover:shadow-md transform hover:scale-105"
+                    title="Edit Client"
+                  >
+                    <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
+                    </svg>
+                  </button>
+                  <button
+                    @click="viewTaxDocs(client.user?.id || client.user_id)"
+                    class="bg-gradient-to-r from-emerald-500 to-green-600 hover:from-emerald-600 hover:to-green-700 text-white px-3 py-1.5 rounded-lg text-xs font-semibold transition-all duration-200 shadow-sm hover:shadow-md transform hover:scale-105"
+                    title="View Documents"
+                  >
+                    <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                    </svg>
+                  </button>
+                  <button
+                    @click="viewInvoices(client.user_id || client.user?.id)"
+                    class="bg-gradient-to-r from-amber-500 to-orange-600 hover:from-amber-600 hover:to-orange-700 text-white px-3 py-1.5 rounded-lg text-xs font-semibold transition-all duration-200 shadow-sm hover:shadow-md transform hover:scale-105"
+                    title="View Invoices"
+                  >
+                    <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z"></path>
+                    </svg>
+                  </button>
+                  <button
+                    @click="deleteClient(client.id)"
+                    class="bg-gradient-to-r from-red-500 to-rose-600 hover:from-red-600 hover:to-rose-700 text-white px-3 py-1.5 rounded-lg text-xs font-semibold transition-all duration-200 shadow-sm hover:shadow-md transform hover:scale-105"
+                    title="Delete Client"
+                  >
+                    <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                    </svg>
+                  </button>
+                </div>
+              </td>
+            </tr>
+          </tbody>
           </table>
         </div>
 
         <!-- Pagination -->
-        <div v-if="clients.last_page > 1" class="mt-6 flex justify-between items-center">
-          <div class="text-sm text-gray-600">
-            Page {{ clients.current_page }} of {{ clients.last_page }}
+        <div v-if="clients.last_page > 1" class="px-6 py-4 bg-gray-50 border-t border-gray-200">
+          <div class="flex justify-between items-center">
+            <div class="text-sm text-gray-600 font-medium">
+              Page {{ clients.current_page }} of {{ clients.last_page }}
+            </div>
+            <div class="flex space-x-2"></div>
+              <button
+                v-for="page in paginationPages"
+                :key="page"
+                @click="goToPage(page)"
+                class="px-4 py-2 text-sm rounded-lg font-semibold transition-all duration-200"
+                :class="page === clients.current_page 
+                  ? 'bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-md' 
+                  : 'bg-white text-gray-700 hover:bg-gray-100 border border-gray-200 shadow-sm'"
+              >
+                {{ page }}
+              </button>
+            </div>
           </div>
-          <div class="flex space-x-2">
-            <button
-              v-for="page in paginationPages"
-              :key="page"
-              @click="goToPage(page)"
-              class="px-3 py-2 text-sm rounded"
-              :class="page === clients.current_page 
-                ? 'bg-blue-600 text-white' 
-                : 'bg-gray-200 text-gray-700 hover:bg-gray-300'"
-            >
-              {{ page }}
-            </button>
-          </div>
-        </div>
-      </div>
-    </div>
 
     <!-- Export Modal -->
     <div v-if="showExportModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 flex items-center justify-center z-50">
@@ -535,12 +562,35 @@ export default {
     }
 
     const exportClients = () => {
-      const params = new URLSearchParams({
-        ...searchForm.value,
-        format: exportFormat.value
+      // Create a form and submit it to maintain authentication
+      const form = document.createElement('form')
+      form.method = 'GET'
+      form.action = route('admin.clients.export')
+      form.target = '_blank'
+      
+      // Add search parameters
+      Object.entries(searchForm.value).forEach(([key, value]) => {
+        if (value) {
+          const input = document.createElement('input')
+          input.type = 'hidden'
+          input.name = key
+          input.value = value
+          form.appendChild(input)
+        }
       })
       
-      window.open(`${route('admin.clients.export')}?${params}`, '_blank')
+      // Add format parameter
+      const formatInput = document.createElement('input')
+      formatInput.type = 'hidden'
+      formatInput.name = 'format'
+      formatInput.value = exportFormat.value
+      form.appendChild(formatInput)
+      
+      // Submit form
+      document.body.appendChild(form)
+      form.submit()
+      document.body.removeChild(form)
+      
       showExportModal.value = false
     }
 
@@ -554,11 +604,20 @@ export default {
 
     const getStatusClass = (status) => {
       const classes = {
-        active: 'bg-green-100 text-green-800',
-        inactive: 'bg-yellow-100 text-yellow-800',
-        archived: 'bg-red-100 text-red-800'
+        active: 'bg-emerald-100 text-emerald-800 border border-emerald-200',
+        inactive: 'bg-amber-100 text-amber-800 border border-amber-200',
+        archived: 'bg-rose-100 text-rose-800 border border-rose-200'
       }
-      return classes[status] || 'bg-gray-100 text-gray-800'
+      return classes[status] || 'bg-gray-100 text-gray-800 border border-gray-200'
+    }
+
+    const getStatusDotClass = (status) => {
+      const classes = {
+        active: 'bg-emerald-400',
+        inactive: 'bg-amber-400',
+        archived: 'bg-rose-400'
+      }
+      return classes[status] || 'bg-gray-400'
     }
 
     const viewClient = (id) => {
@@ -584,6 +643,7 @@ export default {
     }
 
     return {
+      router,
       searchForm,
       selectedClients,
       bulkAction,
@@ -607,6 +667,7 @@ export default {
       exportClients,
       formatDate,
       getStatusClass,
+      getStatusDotClass,
       viewClient,
       editClient,
       viewTaxDocs,

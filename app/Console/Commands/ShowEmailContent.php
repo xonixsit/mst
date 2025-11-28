@@ -25,9 +25,9 @@ class ShowEmailContent extends Command
             'created_at' => now(),
         ]);
         
-        $adminUser = new User([
-            'name' => 'Admin User',
-            'email' => 'admin@mysupertax.com',
+        $adminUser = User::where('role', 'admin')->first() ?? new User([
+            'name' => 'Sample Admin',
+            'email' => 'sample.admin@company.com',
             'role' => 'admin',
         ]);
         

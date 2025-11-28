@@ -43,14 +43,14 @@
 @endif
 
 <div style="text-align: center; margin: 30px 0;">
-    <a href="{{ route('admin.messages.show', $message->id) }}" class="button">View & Respond</a>
+    <a href="{{ url('/admin/messages') }}" class="button">View & Respond</a>
 </div>
 
 <h3>Client Context</h3>
 <div style="background-color: #f7fafc; padding: 20px; border-radius: 6px; margin: 20px 0;">
     <p><strong>Client Status:</strong> {{ $message->client ? ucfirst($message->client->status) : 'N/A' }}</p>
     <p><strong>Recent Activity:</strong> Last login {{ $message->sender->updated_at->diffForHumans() }}</p>
-    <p><strong>Total Messages:</strong> {{ $message->sender->sentMessages()->count() }} sent</p>
+    <p><strong>Total Messages:</strong> {{ \App\Models\Message::where('sender_id', $message->sender_id)->count() }} sent</p>
 </div>
 
 <h3>Response Guidelines</h3>

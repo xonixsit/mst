@@ -1,60 +1,130 @@
 <template>
   <AppLayout>
     <template #header>
-      <div class="flex items-center justify-between">
-        <div>
-          <h1 class="text-2xl font-bold text-gray-900">Create New Client</h1>
-          <p class="mt-1 text-sm text-gray-600">Add comprehensive client information to the system</p>
-        </div>
-        <div class="flex items-center space-x-3">
-          <button
-            @click="router.visit(route('admin.clients.index'))"
-            class="bg-gray-600 hover:bg-gray-700 text-white px-4 py-2 rounded-lg flex items-center"
-          >
-            <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
-            </svg>
-            Back to Clients
-          </button>
+      <div class="relative overflow-hidden">
+        <!-- Background Pattern -->
+        <div class="absolute inset-0 bg-gradient-to-r from-slate-50 via-emerald-50 to-blue-50"></div>
+        <div class="absolute top-0 right-0 w-64 h-32 bg-gradient-to-bl from-emerald-100/40 to-transparent rounded-bl-full"></div>
+        <div class="absolute bottom-0 left-0 w-48 h-24 bg-gradient-to-tr from-blue-100/30 to-transparent rounded-tr-full"></div>
+        
+        <!-- Content -->
+        <div class="relative flex flex-col lg:flex-row lg:justify-between lg:items-center space-y-6 lg:space-y-0 py-2">
+          <div class="flex items-center space-x-4">
+            <!-- Create Client Icon -->
+            <div class="w-16 h-16 bg-gradient-to-br from-emerald-500 via-emerald-600 to-blue-600 rounded-2xl flex items-center justify-center shadow-lg ring-4 ring-emerald-100">
+              <UserPlusIcon class="w-8 h-8 text-white" />
+            </div>
+            
+            <!-- Title Section -->
+            <div>
+              <h1 class="text-3xl font-bold bg-gradient-to-r from-gray-900 via-emerald-900 to-blue-900 bg-clip-text text-transparent">
+                Create New Client
+              </h1>
+              <p class="mt-2 text-sm text-gray-600 font-medium">Add comprehensive client information to the system</p>
+              
+              <!-- Progress Indicator -->
+              <div class="flex items-center space-x-4 mt-3">
+                <div class="flex items-center space-x-2">
+                  <div class="w-2 h-2 bg-emerald-400 rounded-full animate-pulse"></div>
+                  <span class="text-xs font-semibold text-emerald-700">{{ Math.round(overallProgress) }}% Complete</span>
+                </div>
+                <div class="flex items-center space-x-2">
+                  <div class="w-2 h-2 bg-blue-400 rounded-full"></div>
+                  <span class="text-xs font-semibold text-blue-700">{{ activeSection.charAt(0).toUpperCase() + activeSection.slice(1) }} Section</span>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Action Button -->
+          <div class="flex items-center">
+            <button
+              @click="handleCancel"
+              class="bg-gradient-to-r from-slate-500 to-gray-600 hover:from-slate-600 hover:to-gray-700 text-white px-6 py-3 rounded-xl flex items-center transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105 group"
+            >
+              <ArrowLeftIcon class="w-5 h-5 mr-2" />
+              <span class="font-semibold">Back to Clients</span>
+            </button>
+          </div>
         </div>
       </div>
     </template>
 
-    <div class="max-w-7xl mx-auto">
-      <!-- Navigation Tabs -->
-      <div class="bg-gradient-to-r from-gray-50 to-gray-100 border-b border-gray-200 mb-6 p-2 rounded-t-lg">
-        <nav class="flex space-x-2" aria-label="Tabs">
-          <button
-            v-for="section in sections"
-            :key="section.id"
-            @click="activeSection = section.id"
-            :class="[
-              'py-3 px-4 font-medium text-sm whitespace-nowrap transition-all duration-200 rounded-lg flex-1 min-w-0',
-              getSectionTabClasses(section.id)
-            ]"
-          >
-            <div class="flex items-center justify-center space-x-2">
-              <component :is="section.icon" :class="getTabIconClasses(section.id)" class="w-4 h-4" />
-              <span class="font-medium">{{ section.name }}</span>
-              <div 
-                v-if="getSectionProgress(section.id) === 100"
-                class="w-2 h-2 bg-green-400 rounded-full animate-pulse"
-              ></div>
-              <div 
-                v-else-if="getSectionProgress(section.id) === null"
-                :class="`w-2 h-2 rounded-full ${getTabStatusDotClasses(section.id)}`"
-              ></div>
+    <div class="py-12">
+      <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
+        <!-- Enhanced Navigation Tabs -->
+        <div class="bg-white shadow-xl rounded-2xl border border-gray-100 overflow-hidden mb-8">
+          <div class="bg-gradient-to-r from-slate-50 to-gray-50 px-6 py-5 border-b border-gray-200">
+            <div class="flex items-center justify-between">
+              <div>
+                <h3 class="text-xl font-bold text-gray-900">Client Information Sections</h3>
+                <p class="text-sm text-gray-600 mt-1">Complete all sections to create a comprehensive client profile</p>
+              </div>
+              <div class="bg-white px-4 py-2 rounded-lg border border-gray-200 shadow-sm">
+                <span class="text-sm font-semibold text-emerald-600">{{ Math.round(overallProgress) }}% Complete</span>
+              </div>
             </div>
-          </button>
-        </nav>
+          </div>
+          
+          <div class="p-6">
+            <nav class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3" aria-label="Tabs">
+              <button
+                v-for="section in sections"
+                :key="section.id"
+                @click="activeSection = section.id"
+                :class="[
+                  'relative p-4 rounded-xl font-medium text-sm transition-all duration-300 border-2 group hover:shadow-md transform hover:scale-105',
+                  getSectionTabClasses(section.id)
+                ]"
+              >
+                <div class="flex flex-col items-center space-y-2">
+                  <div :class="[
+                    'w-10 h-10 rounded-lg flex items-center justify-center transition-all duration-300',
+                    getTabIconBgClasses(section.id)
+                  ]">
+                    <component :is="section.icon" :class="getTabIconClasses(section.id)" class="w-5 h-5" />
+                  </div>
+                  <span class="font-semibold text-center">{{ section.name }}</span>
+                  <div class="flex items-center space-x-1">
+                    <div 
+                      v-if="getSectionProgress(section.id) === 100"
+                      class="w-2 h-2 bg-green-500 rounded-full animate-pulse"
+                    ></div>
+                    <div 
+                      v-else
+                      :class="`w-2 h-2 rounded-full ${getTabStatusDotClasses(section.id)}`"
+                    ></div>
+                    <span class="text-xs font-medium opacity-75">
+                      {{ getSectionProgress(section.id) === 100 ? 'Complete' : 'Pending' }}
+                    </span>
+                  </div>
+                </div>
+              </button>
+            </nav>
+          </div>
+        </div>
       </div>
-
-      <!-- Content Area -->
-      <div class="grid grid-cols-1 lg:grid-cols-4 gap-6">
-        <!-- Main Content -->
-        <div class="lg:col-span-3">
-          <div class="shadow rounded-lg overflow-hidden" :class="getSectionBackgroundClasses(activeSection)">
-            <div class="p-6">
+    </div>
+        <!-- Enhanced Content Area -->
+        <div class="grid grid-cols-1 lg:grid-cols-4 gap-8">
+          <!-- Main Content -->
+          <div class="lg:col-span-3">
+            <div class="bg-white shadow-xl rounded-2xl border border-gray-100 overflow-hidden">
+              <div class="bg-gradient-to-r from-slate-50 to-gray-50 px-6 py-5 border-b border-gray-200">
+                <div class="flex items-center">
+                  <div :class="[
+                    'w-8 h-8 rounded-lg flex items-center justify-center mr-3',
+                    getActiveTabIconBgClasses()
+                  ]">
+                    <component :is="getActiveSection().icon" :class="getActiveTabIconClasses()" class="w-4 h-4" />
+                  </div>
+                  <div>
+                    <h3 class="text-lg font-bold text-gray-900">{{ getActiveSection().name }}</h3>
+                    <p class="text-sm text-gray-600">{{ getActiveSection().description }}</p>
+                  </div>
+                </div>
+              </div>
+              <div class="p-8">
               <!-- Personal Details Section -->
               <PersonalDetailsSection
                 v-if="activeSection === 'personal'"
@@ -108,109 +178,135 @@
           </div>
         </div>
 
-        <!-- Sidebar Summary -->
-        <div class="lg:col-span-1">
-          <div class="bg-white shadow rounded-lg p-6 sticky top-6">
-            <h3 class="text-lg font-medium text-gray-900 mb-4">Creation Progress</h3>
-            
-            <!-- Overall Progress Bar -->
-            <div class="mb-6">
-              <div class="flex items-center justify-between mb-2">
-                <span class="text-sm font-medium text-gray-700">Overall Completion</span>
-                <span class="text-sm text-gray-500">{{ Math.round(overallProgress) }}%</span>
-              </div>
-              <div class="w-full bg-gray-200 rounded-full h-2">
-                <div 
-                  class="bg-gradient-to-r from-blue-500 to-emerald-500 h-2 rounded-full transition-all duration-300"
-                  :style="{ width: `${overallProgress}%` }"
-                ></div>
-              </div>
-            </div>
-            
-            <!-- Section List -->
-            <div class="space-y-3 mb-6">
-              <div 
-                v-for="section in sections"
-                :key="section.id"
-                :class="[
-                  'flex items-center justify-between p-3 rounded-lg cursor-pointer transition-all duration-200',
-                  getSidebarSectionClasses(section.id)
-                ]"
-                @click="activeSection = section.id"
-              >
-                <div class="flex items-center space-x-3">
-                  <component :is="section.icon" :class="getSectionIconClasses(section.id)" class="w-4 h-4" />
-                  <span class="text-sm font-medium" :class="getSectionTextClasses(section.id)">{{ section.name }}</span>
+          <!-- Enhanced Sidebar Summary -->
+          <div class="lg:col-span-1">
+            <div class="bg-white shadow-xl rounded-2xl border border-gray-100 overflow-hidden sticky top-6">
+              <div class="bg-gradient-to-r from-slate-50 to-gray-50 px-6 py-5 border-b border-gray-200">
+                <div class="flex items-center">
+                  <div class="w-8 h-8 bg-emerald-500 rounded-lg flex items-center justify-center mr-3">
+                    <ChartBarIcon class="w-4 h-4 text-white" />
+                  </div>
+                  <h3 class="text-lg font-bold text-gray-900">Creation Progress</h3>
                 </div>
-                <div class="flex items-center space-x-2">
-                  <!-- Progress indicator -->
-                  <div class="w-8 h-2 bg-gray-200 rounded-full">
+              </div>
+              
+              <div class="p-6">
+                <!-- Overall Progress Bar -->
+                <div class="mb-6">
+                  <div class="flex items-center justify-between mb-3">
+                    <span class="text-sm font-semibold text-gray-700">Overall Completion</span>
+                    <span class="text-sm font-bold text-emerald-600">{{ Math.round(overallProgress) }}%</span>
+                  </div>
+                  <div class="w-full bg-gray-200 rounded-full h-3 shadow-inner">
                     <div 
-                      class="h-2 rounded-full transition-all duration-300"
-                      :class="getSectionProgressColor(section.id)"
-                      :style="{ width: getSectionProgress(section.id) !== null ? `${getSectionProgress(section.id)}%` : '100%' }"
+                      class="bg-gradient-to-r from-emerald-500 to-blue-500 h-3 rounded-full transition-all duration-500 shadow-sm"
+                      :style="{ width: `${overallProgress}%` }"
                     ></div>
                   </div>
-                  <!-- Completion status -->
-                  <div 
-                    v-if="getSectionProgress(section.id) === null"
-                    :class="`w-2 h-2 rounded-full ${getSectionThemeColor(section.id)}`"
-                  ></div>
-                  <div 
-                    v-else-if="getSectionProgress(section.id) === 100"
-                    class="w-2 h-2 bg-green-500 rounded-full"
-                  ></div>
-                  <div 
-                    v-else-if="getSectionProgress(section.id) > 0"
-                    class="w-2 h-2 bg-amber-500 rounded-full"
-                  ></div>
-                  <div 
-                    v-else
-                    class="w-2 h-2 bg-gray-300 rounded-full"
-                  ></div>
+                  <p class="text-xs text-gray-500 mt-2">Complete all sections to create client</p>
                 </div>
-              </div>
+            
+                <!-- Enhanced Section List -->
+                <div class="space-y-3 mb-6">
+                  <div 
+                    v-for="section in sections"
+                    :key="section.id"
+                    :class="[
+                      'flex items-center justify-between p-4 rounded-xl cursor-pointer transition-all duration-300 border-2 hover:shadow-md transform hover:scale-105',
+                      getSidebarSectionClasses(section.id)
+                    ]"
+                    @click="activeSection = section.id"
+                  >
+                    <div class="flex items-center space-x-3">
+                      <div :class="[
+                        'w-8 h-8 rounded-lg flex items-center justify-center transition-all duration-300',
+                        getSectionIconBgClasses(section.id)
+                      ]">
+                        <component :is="section.icon" :class="getSectionIconClasses(section.id)" class="w-4 h-4" />
+                      </div>
+                      <div>
+                        <span class="text-sm font-semibold block" :class="getSectionTextClasses(section.id)">{{ section.name }}</span>
+                        <span class="text-xs opacity-75" :class="getSectionTextClasses(section.id)">
+                          {{ getSectionProgress(section.id) === 100 ? 'Complete' : getSectionProgress(section.id) > 0 ? 'In Progress' : 'Not Started' }}
+                        </span>
+                      </div>
+                    </div>
+                    <div class="flex items-center space-x-2">
+                      <!-- Progress indicator -->
+                      <div class="w-12 h-2 bg-gray-200 rounded-full shadow-inner">
+                        <div 
+                          class="h-2 rounded-full transition-all duration-500"
+                          :class="getSectionProgressColor(section.id)"
+                          :style="{ width: getSectionProgress(section.id) !== null ? `${getSectionProgress(section.id)}%` : '0%' }"
+                        ></div>
+                      </div>
+                      <!-- Completion status -->
+                      <div 
+                        v-if="getSectionProgress(section.id) === 100"
+                        class="w-3 h-3 bg-green-500 rounded-full animate-pulse shadow-sm"
+                      ></div>
+                      <div 
+                        v-else-if="getSectionProgress(section.id) > 0"
+                        class="w-3 h-3 bg-amber-500 rounded-full shadow-sm"
+                      ></div>
+                      <div 
+                        v-else
+                        class="w-3 h-3 bg-gray-300 rounded-full shadow-sm"
+                      ></div>
+                    </div>
+                  </div>
             </div>
 
-            <!-- Action Buttons -->
-            <div class="space-y-3">
-              <button
-                @click="saveClient"
-                :disabled="form.processing"
-                class="w-full bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                {{ form.processing ? 'Creating Client...' : 'Create Client' }}
-              </button>
-              
-              <button
-                @click="handleCancel"
-                class="w-full bg-gray-600 text-white py-2 px-4 rounded-md hover:bg-gray-700"
-              >
-                Cancel
-              </button>
-            </div>
+                <!-- Enhanced Action Buttons -->
+                <div class="space-y-3">
+                  <button
+                    @click="saveClient"
+                    :disabled="form.processing"
+                    class="w-full bg-gradient-to-r from-emerald-600 to-blue-600 hover:from-emerald-700 hover:to-blue-700 text-white py-3 px-4 rounded-xl font-semibold transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none flex items-center justify-center"
+                  >
+                    <UserPlusIcon v-if="!form.processing" class="w-5 h-5 mr-2" />
+                    <svg v-else class="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                      <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                      <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                    </svg>
+                    {{ form.processing ? 'Creating Client...' : 'Create Client' }}
+                  </button>
+                  
+                  <button
+                    @click="handleCancel"
+                    class="w-full bg-gradient-to-r from-gray-500 to-slate-600 hover:from-gray-600 hover:to-slate-700 text-white py-3 px-4 rounded-xl font-semibold transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105 flex items-center justify-center"
+                  >
+                    <XMarkIcon class="w-5 h-5 mr-2" />
+                    Cancel
+                  </button>
+                </div>
 
-            <!-- Admin Help Section -->
-            <div class="mt-6 p-4 bg-blue-50 rounded-lg">
-              <h4 class="text-sm font-medium text-blue-900 mb-2">Admin Notes</h4>
-              <p class="text-xs text-blue-700 mb-3">
-                Fill out client information sections as needed. Not all sections are required for initial client creation.
-              </p>
-              
-              <!-- Section-specific help -->
-              <div v-if="getSectionHelp(activeSection)" class="mb-3 p-2 bg-blue-100 rounded text-xs text-blue-800">
-                {{ getSectionHelp(activeSection) }}
-              </div>
-              
-              <div class="space-y-2">
-                <button class="block text-xs text-blue-600 hover:text-blue-800 underline">
-                  Admin Guidelines
-                </button>
-                <button class="block text-xs text-blue-600 hover:text-blue-800 underline">
-                  Client Data Policy
-                </button>
-              </div>
-            </div>
+                <!-- Enhanced Admin Help Section -->
+                <div class="mt-6 bg-gradient-to-br from-blue-50 to-indigo-100 rounded-xl p-4 border border-blue-200">
+                  <div class="flex items-center mb-3">
+                    <div class="w-6 h-6 bg-blue-500 rounded-lg flex items-center justify-center mr-2">
+                      <InformationCircleIcon class="w-3 h-3 text-white" />
+                    </div>
+                    <h4 class="text-sm font-bold text-blue-900">Admin Notes</h4>
+                  </div>
+                  <p class="text-xs text-blue-700 mb-3 leading-relaxed">
+                    Fill out client information sections as needed. Not all sections are required for initial client creation.
+                  </p>
+                  
+                  <!-- Section-specific help -->
+                  <div v-if="getSectionHelp(activeSection)" class="mb-3 p-3 bg-blue-100 rounded-lg border border-blue-200">
+                    <p class="text-xs text-blue-800 font-medium">{{ getSectionHelp(activeSection) }}</p>
+                  </div>
+                  
+                  <div class="space-y-2">
+                    <button class="block text-xs text-blue-600 hover:text-blue-800 font-medium hover:underline transition-all duration-200">
+                      📋 Admin Guidelines
+                    </button>
+                    <button class="block text-xs text-blue-600 hover:text-blue-800 font-medium hover:underline transition-all duration-200">
+                      🔒 Client Data Policy
+                    </button>
+                  </div>
+                </div>
             
             <!-- Completion Status -->
             <div class="mt-4 p-4 bg-green-50 rounded-lg" v-if="overallProgress >= 80">
@@ -232,6 +328,7 @@
 <script setup>
 import { ref, computed, watch } from 'vue'
 import { useForm, router } from '@inertiajs/vue3'
+import { route } from 'ziggy-js'
 import AppLayout from '@/Layouts/AppLayout.vue'
 import PersonalDetailsSection from '@/Components/PersonalDetailsSection.vue'
 import SpouseDetailsSection from '@/Components/SpouseDetailsSection.vue'
@@ -248,7 +345,12 @@ import {
   FolderIcon, 
   CurrencyDollarIcon, 
   ReceiptPercentIcon,
-  CheckCircleIcon
+  CheckCircleIcon,
+  UserPlusIcon,
+  ArrowLeftIcon,
+  ChartBarIcon,
+  XMarkIcon,
+  InformationCircleIcon
 } from '@heroicons/vue/24/outline'
 
 // Props
@@ -524,6 +626,44 @@ const getSectionHelp = (sectionId) => {
   return helpTexts[sectionId] || ''
 }
 
+const getTabIconBgClasses = (sectionId) => {
+  const isActive = activeSection.value === sectionId
+  const bgMap = {
+    personal: isActive ? 'bg-blue-500' : 'bg-blue-100',
+    spouse: isActive ? 'bg-pink-500' : 'bg-pink-100',
+    employee: isActive ? 'bg-purple-500' : 'bg-purple-100',
+    projects: isActive ? 'bg-indigo-500' : 'bg-indigo-100',
+    assets: isActive ? 'bg-emerald-500' : 'bg-emerald-100',
+    expenses: isActive ? 'bg-orange-500' : 'bg-orange-100'
+  }
+  return bgMap[sectionId] || (isActive ? 'bg-gray-500' : 'bg-gray-100')
+}
+
+const getActiveSection = () => {
+  return sections.value.find(section => section.id === activeSection.value) || sections.value[0]
+}
+
+const getActiveTabIconBgClasses = () => {
+  return getTabIconBgClasses(activeSection.value)
+}
+
+const getActiveTabIconClasses = () => {
+  return 'text-white'
+}
+
+const getSectionIconBgClasses = (sectionId) => {
+  const isActive = activeSection.value === sectionId
+  const bgMap = {
+    personal: isActive ? 'bg-blue-500' : 'bg-blue-100',
+    spouse: isActive ? 'bg-pink-500' : 'bg-pink-100',
+    employee: isActive ? 'bg-purple-500' : 'bg-purple-100',
+    projects: isActive ? 'bg-indigo-500' : 'bg-indigo-100',
+    assets: isActive ? 'bg-emerald-500' : 'bg-emerald-100',
+    expenses: isActive ? 'bg-orange-500' : 'bg-orange-100'
+  }
+  return bgMap[sectionId] || (isActive ? 'bg-gray-500' : 'bg-gray-100')
+}
+
 // Methods
 const handleSectionUpdate = () => {
   // Handle section updates
@@ -573,7 +713,7 @@ const saveClient = () => {
 }
 
 const handleCancel = () => {
-  router.visit(route('admin.clients.index'))
+  router.visit('/admin/clients')
 }
 
 // Utility functions

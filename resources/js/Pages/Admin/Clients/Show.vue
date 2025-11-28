@@ -1,204 +1,237 @@
 <template>
   <AppLayout>
     <template #header>
-      <div class="flex items-center justify-between">
-        <div>
-          <h1 class="text-2xl font-bold text-gray-900">{{ client.user?.first_name && client.user?.last_name 
-              ? `${client.user.first_name} ${client.user.last_name}`.trim() 
-              : 'Unknown Client' }}</h1>
-          <p class="mt-1 text-sm text-gray-600">Client ID: {{ client.id }} • Registered: {{ formatDate(client.created_at) }}</p>
-        </div>
-        <div class="flex space-x-2">
-          <button
-            @click="router.visit(`/admin/clients/${client.id}`)"
-            class="bg-gray-600 hover:bg-gray-700 text-white px-3 py-2 rounded text-sm flex items-center"
-          >
-            <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
-            </svg>
-            View
-          </button>
-          <button
-            @click="router.visit(`/admin/clients/${client.id}/edit`)"
-            class="bg-blue-600 hover:bg-blue-700 text-white px-3 py-2 rounded text-sm flex items-center"
-          >
-            <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
-            </svg>
-            Edit
-          </button>
-          <button
-            @click="viewDocuments"
-            class="bg-green-600 hover:bg-green-700 text-white px-3 py-2 rounded text-sm flex items-center"
-          >
-            <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
-            </svg>
-            Docs
-          </button>
-          <button
-            @click="viewInvoices"
-            class="bg-orange-600 hover:bg-orange-700 text-white px-3 py-2 rounded text-sm flex items-center"
-          >
-            <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z"></path>
-            </svg>
-            Invoice
-          </button>
-          <button
-            @click="showDeleteModal = true"
-            class="bg-red-600 hover:bg-red-700 text-white px-3 py-2 rounded text-sm flex items-center"
-          >
-            <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
-            </svg>
-            Delete
-          </button>
+      <div class="relative overflow-hidden">
+        <!-- Background Pattern -->
+        <div class="absolute inset-0 bg-gradient-to-r from-slate-50 via-cyan-50 to-blue-50"></div>
+        <div class="absolute top-0 right-0 w-64 h-32 bg-gradient-to-bl from-cyan-100/40 to-transparent rounded-bl-full"></div>
+        <div class="absolute bottom-0 left-0 w-48 h-24 bg-gradient-to-tr from-blue-100/30 to-transparent rounded-tr-full"></div>
+        
+        <!-- Content -->
+        <div class="relative flex flex-col lg:flex-row lg:justify-between lg:items-center space-y-6 lg:space-y-0 py-2">
+          <div class="flex items-center space-x-4">
+            <!-- Client Icon -->
+            <div class="w-16 h-16 bg-gradient-to-br from-cyan-500 via-cyan-600 to-blue-600 rounded-2xl flex items-center justify-center shadow-lg ring-4 ring-cyan-100">
+              <UserIcon class="w-8 h-8 text-white" />
+            </div>
+            
+            <!-- Title Section -->
+            <div>
+              <h1 class="text-3xl font-bold bg-gradient-to-r from-gray-900 via-cyan-900 to-blue-900 bg-clip-text text-transparent">
+                {{ client.user?.first_name && client.user?.last_name 
+                    ? `${client.user.first_name} ${client.user.last_name}`.trim() 
+                    : 'Unknown Client' }}
+              </h1>
+              <p class="mt-2 text-sm text-gray-600 font-medium">Client ID: {{ client.id }} • Registered: {{ formatDate(client.created_at) }}</p>
+              
+              <!-- Status Indicators -->
+              <div class="flex items-center space-x-4 mt-3">
+                <div class="flex items-center space-x-2">
+                  <div :class="getStatusDotClass(client.status)" class="w-2 h-2 rounded-full"></div>
+                  <span :class="getStatusTextClass(client.status)" class="text-xs font-semibold capitalize">{{ client.status }}</span>
+                </div>
+                <div class="flex items-center space-x-2">
+                  <div class="w-2 h-2 bg-blue-400 rounded-full"></div>
+                  <span class="text-xs font-semibold text-blue-700">{{ client.projects?.length || 0 }} Projects</span>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Action Buttons -->
+          <div class="flex flex-wrap items-center gap-2">
+            <button
+              @click="router.visit(`/admin/clients/${client.id}/edit`)"
+              class="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white px-4 py-2 rounded-lg flex items-center transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105 group text-sm"
+            >
+              <PencilIcon class="w-4 h-4 mr-2" />
+              <span class="font-semibold">Edit</span>
+            </button>
+            <button
+              @click="viewDocuments"
+              class="bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white px-4 py-2 rounded-lg flex items-center transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105 group text-sm"
+            >
+              <DocumentTextIcon class="w-4 h-4 mr-2" />
+              <span class="font-semibold">Documents</span>
+            </button>
+            <button
+              @click="viewInvoices"
+              class="bg-gradient-to-r from-orange-600 to-amber-600 hover:from-orange-700 hover:to-amber-700 text-white px-4 py-2 rounded-lg flex items-center transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105 group text-sm"
+            >
+              <CurrencyDollarIcon class="w-4 h-4 mr-2" />
+              <span class="font-semibold">Invoices</span>
+            </button>
+            <button
+              @click="showDeleteModal = true"
+              class="bg-gradient-to-r from-red-600 to-rose-600 hover:from-red-700 hover:to-rose-700 text-white px-4 py-2 rounded-lg flex items-center transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105 group text-sm"
+            >
+              <TrashIcon class="w-4 h-4 mr-2" />
+              <span class="font-semibold">Delete</span>
+            </button>
+          </div>
         </div>
       </div>
     </template>
 
-    <div class="admin-client-show">
-    <!-- Status and Quick Stats -->
-    <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
-      <div class="bg-white rounded-lg shadow p-6">
-        <div class="flex items-center">
-          <div class="p-2 rounded-lg" :class="getStatusBgClass(client.status)">
-            <svg class="w-6 h-6" :class="getStatusTextClass(client.status)" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
-            </svg>
+    <div class="py-12">
+      <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
+        <!-- Enhanced Status and Quick Stats -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+          <!-- Status Card -->
+          <div class="relative overflow-hidden bg-gradient-to-br from-cyan-50 via-cyan-100 to-cyan-200 rounded-xl shadow-lg border border-cyan-200/50 hover:shadow-xl transition-all duration-300 group">
+            <div class="absolute top-0 right-0 w-20 h-20 bg-gradient-to-bl from-cyan-300/30 to-transparent rounded-bl-full"></div>
+            <div class="relative p-6">
+              <div class="flex items-center justify-between">
+                <div class="flex-1">
+                  <p class="text-sm font-semibold text-cyan-700 uppercase tracking-wide">Status</p>
+                  <p class="text-3xl font-bold text-cyan-900 mt-2 capitalize">{{ client.status }}</p>
+                </div>
+                <div class="p-4 bg-cyan-500 rounded-xl shadow-lg group-hover:bg-cyan-600 transition-colors duration-300">
+                  <UserIcon class="w-8 h-8 text-white" />
+                </div>
+              </div>
+            </div>
           </div>
-          <div class="ml-4">
-            <p class="text-sm font-medium text-gray-600">Status</p>
-            <p class="text-lg font-bold text-gray-900 capitalize">{{ client.status }}</p>
+          
+          <!-- Projects Card -->
+          <div class="relative overflow-hidden bg-gradient-to-br from-blue-50 via-blue-100 to-blue-200 rounded-xl shadow-lg border border-blue-200/50 hover:shadow-xl transition-all duration-300 group">
+            <div class="absolute top-0 right-0 w-20 h-20 bg-gradient-to-bl from-blue-300/30 to-transparent rounded-bl-full"></div>
+            <div class="relative p-6">
+              <div class="flex items-center justify-between">
+                <div class="flex-1">
+                  <p class="text-sm font-semibold text-blue-700 uppercase tracking-wide">Projects</p>
+                  <p class="text-3xl font-bold text-blue-900 mt-2">{{ client.projects?.length || 0 }}</p>
+                </div>
+                <div class="p-4 bg-blue-500 rounded-xl shadow-lg group-hover:bg-blue-600 transition-colors duration-300">
+                  <ClipboardDocumentListIcon class="w-8 h-8 text-white" />
+                </div>
+              </div>
+            </div>
           </div>
-        </div>
-      </div>
-      
-      <div class="bg-white rounded-lg shadow p-6">
-        <div class="flex items-center">
-          <div class="p-2 bg-blue-100 rounded-lg">
-            <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path>
-            </svg>
-          </div>
-          <div class="ml-4">
-            <p class="text-sm font-medium text-gray-600">Projects</p>
-            <p class="text-lg font-bold text-gray-900">{{ client.projects?.length || 0 }}</p>
-          </div>
-        </div>
-      </div>
 
-      <div class="bg-white rounded-lg shadow p-6">
-        <div class="flex items-center">
-          <div class="p-2 bg-green-100 rounded-lg">
-            <svg class="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path>
-            </svg>
+          <!-- Assets Card -->
+          <div class="relative overflow-hidden bg-gradient-to-br from-green-50 via-green-100 to-green-200 rounded-xl shadow-lg border border-green-200/50 hover:shadow-xl transition-all duration-300 group">
+            <div class="absolute top-0 right-0 w-20 h-20 bg-gradient-to-bl from-green-300/30 to-transparent rounded-bl-full"></div>
+            <div class="relative p-6">
+              <div class="flex items-center justify-between">
+                <div class="flex-1">
+                  <p class="text-sm font-semibold text-green-700 uppercase tracking-wide">Assets</p>
+                  <p class="text-3xl font-bold text-green-900 mt-2">{{ client.assets?.length || 0 }}</p>
+                </div>
+                <div class="p-4 bg-green-500 rounded-xl shadow-lg group-hover:bg-green-600 transition-colors duration-300">
+                  <BuildingOfficeIcon class="w-8 h-8 text-white" />
+                </div>
+              </div>
+            </div>
           </div>
-          <div class="ml-4">
-            <p class="text-sm font-medium text-gray-600">Assets</p>
-            <p class="text-lg font-bold text-gray-900">{{ client.assets?.length || 0 }}</p>
-          </div>
-        </div>
-      </div>
 
-      <div class="bg-white rounded-lg shadow p-6">
-        <div class="flex items-center">
-          <div class="p-2 bg-red-100 rounded-lg">
-            <svg class="w-6 h-6 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z"></path>
-            </svg>
+          <!-- Expenses Card -->
+          <div class="relative overflow-hidden bg-gradient-to-br from-red-50 via-red-100 to-red-200 rounded-xl shadow-lg border border-red-200/50 hover:shadow-xl transition-all duration-300 group">
+            <div class="absolute top-0 right-0 w-20 h-20 bg-gradient-to-bl from-red-300/30 to-transparent rounded-bl-full"></div>
+            <div class="relative p-6">
+              <div class="flex items-center justify-between">
+                <div class="flex-1">
+                  <p class="text-sm font-semibold text-red-700 uppercase tracking-wide">Expenses</p>
+                  <p class="text-3xl font-bold text-red-900 mt-2">{{ client.expenses?.length || 0 }}</p>
+                </div>
+                <div class="p-4 bg-red-500 rounded-xl shadow-lg group-hover:bg-red-600 transition-colors duration-300">
+                  <CreditCardIcon class="w-8 h-8 text-white" />
+                </div>
+              </div>
+            </div>
           </div>
-          <div class="ml-4">
-            <p class="text-sm font-medium text-gray-600">Expenses</p>
-            <p class="text-lg font-bold text-gray-900">{{ client.expenses?.length || 0 }}</p>
+        </div>
+
+        <!-- Enhanced Client Information Sections -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+          <!-- Personal Information -->
+          <div class="bg-white shadow-xl rounded-2xl border border-gray-100 overflow-hidden">
+            <div class="bg-gradient-to-r from-slate-50 to-gray-50 px-6 py-5 border-b border-gray-200">
+              <div class="flex items-center">
+                <div class="w-8 h-8 bg-cyan-500 rounded-lg flex items-center justify-center mr-3">
+                  <UserIcon class="w-4 h-4 text-white" />
+                </div>
+                <h3 class="text-lg font-bold text-gray-900">Personal Information</h3>
+              </div>
+            </div>
+            <div class="p-6">
+              <dl class="grid grid-cols-1 gap-4">
+                <div class="flex items-center justify-between py-2 border-b border-gray-100">
+                  <dt class="text-sm font-semibold text-gray-600">Full Name</dt>
+                  <dd class="text-sm font-medium text-gray-900">{{ client.user?.first_name && client.user?.last_name 
+                      ? `${client.user.first_name} ${client.user.middle_name || ''} ${client.user.last_name}`.replace(/\s+/g, ' ').trim() 
+                      : 'Unknown Client' }}</dd>
+                </div>
+                <div class="flex items-center justify-between py-2 border-b border-gray-100">
+                  <dt class="text-sm font-semibold text-gray-600">Email</dt>
+                  <dd class="text-sm font-medium text-gray-900">{{ client.user?.email || 'No email' }}</dd>
+                </div>
+                <div class="flex items-center justify-between py-2 border-b border-gray-100">
+                  <dt class="text-sm font-semibold text-gray-600">Phone</dt>
+                  <dd class="text-sm font-medium text-gray-900">{{ client.phone }}</dd>
+                </div>
+                <div v-if="client.mobile_number" class="flex items-center justify-between py-2 border-b border-gray-100">
+                  <dt class="text-sm font-semibold text-gray-600">Mobile</dt>
+                  <dd class="text-sm font-medium text-gray-900">{{ client.mobile_number }}</dd>
+                </div>
+                <div v-if="client.date_of_birth" class="flex items-center justify-between py-2 border-b border-gray-100">
+                  <dt class="text-sm font-semibold text-gray-600">Date of Birth</dt>
+                  <dd class="text-sm font-medium text-gray-900">{{ formatDate(client.date_of_birth) }}</dd>
+                </div>
+                <div class="flex items-center justify-between py-2 border-b border-gray-100">
+                  <dt class="text-sm font-semibold text-gray-600">Marital Status</dt>
+                  <dd class="text-sm font-medium text-gray-900 capitalize">{{ client.marital_status }}</dd>
+                </div>
+                <div v-if="client.occupation" class="flex items-center justify-between py-2 border-b border-gray-100">
+                  <dt class="text-sm font-semibold text-gray-600">Occupation</dt>
+                  <dd class="text-sm font-medium text-gray-900">{{ client.occupation }}</dd>
+                </div>
+                <div v-if="client.visa_status" class="flex items-center justify-between py-2">
+                  <dt class="text-sm font-semibold text-gray-600">Visa Status</dt>
+                  <dd class="text-sm font-medium text-gray-900">{{ client.visa_status }}</dd>
+                </div>
+              </dl>
+            </div>
+          </div>
+
+          <!-- Address Information -->
+          <div class="bg-white shadow-xl rounded-2xl border border-gray-100 overflow-hidden">
+            <div class="bg-gradient-to-r from-slate-50 to-gray-50 px-6 py-5 border-b border-gray-200">
+              <div class="flex items-center">
+                <div class="w-8 h-8 bg-blue-500 rounded-lg flex items-center justify-center mr-3">
+                  <MapPinIcon class="w-4 h-4 text-white" />
+                </div>
+                <h3 class="text-lg font-bold text-gray-900">Address Information</h3>
+              </div>
+            </div>
+            <div class="p-6">
+              <dl class="grid grid-cols-1 gap-4">
+                <div class="flex items-center justify-between py-2 border-b border-gray-100">
+                  <dt class="text-sm font-semibold text-gray-600">Street Address</dt>
+                  <dd class="text-sm font-medium text-gray-900">
+                    {{ client.street_no }}{{ client.apartment_no ? ', ' + client.apartment_no : '' }}
+                  </dd>
+                </div>
+                <div class="flex items-center justify-between py-2 border-b border-gray-100">
+                  <dt class="text-sm font-semibold text-gray-600">City</dt>
+                  <dd class="text-sm font-medium text-gray-900">{{ client.city }}</dd>
+                </div>
+                <div class="flex items-center justify-between py-2 border-b border-gray-100">
+                  <dt class="text-sm font-semibold text-gray-600">State</dt>
+                  <dd class="text-sm font-medium text-gray-900">{{ client.state }}</dd>
+                </div>
+                <div class="flex items-center justify-between py-2 border-b border-gray-100">
+                  <dt class="text-sm font-semibold text-gray-600">Zip Code</dt>
+                  <dd class="text-sm font-medium text-gray-900">{{ client.zip_code }}</dd>
+                </div>
+                <div class="flex items-center justify-between py-2">
+                  <dt class="text-sm font-semibold text-gray-600">Country</dt>
+                  <dd class="text-sm font-medium text-gray-900">{{ client.country }}</dd>
+                </div>
+              </dl>
+            </div>
           </div>
         </div>
-      </div>
-    </div>
-
-    <!-- Client Information Sections -->
-    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-      <!-- Personal Information -->
-      <div class="bg-white rounded-lg shadow">
-        <div class="p-6 border-b border-gray-200">
-          <h3 class="text-lg font-medium text-gray-900">Personal Information</h3>
-        </div>
-        <div class="p-6">
-          <dl class="grid grid-cols-1 gap-4">
-            <div>
-              <dt class="text-sm font-medium text-gray-500">Full Name</dt>
-              <dd class="mt-1 text-sm text-gray-900">{{ client.user?.first_name && client.user?.last_name 
-                  ? `${client.user.first_name} ${client.user.middle_name || ''} ${client.user.last_name}`.replace(/\s+/g, ' ').trim() 
-                  : 'Unknown Client' }}</dd>
-            </div>
-            <div>
-              <dt class="text-sm font-medium text-gray-500">Email</dt>
-              <dd class="mt-1 text-sm text-gray-900">{{ client.user?.email || 'No email' }}</dd>
-            </div>
-            <div>
-              <dt class="text-sm font-medium text-gray-500">Phone</dt>
-              <dd class="mt-1 text-sm text-gray-900">{{ client.phone }}</dd>
-            </div>
-            <div v-if="client.mobile_number">
-              <dt class="text-sm font-medium text-gray-500">Mobile</dt>
-              <dd class="mt-1 text-sm text-gray-900">{{ client.mobile_number }}</dd>
-            </div>
-            <div v-if="client.date_of_birth">
-              <dt class="text-sm font-medium text-gray-500">Date of Birth</dt>
-              <dd class="mt-1 text-sm text-gray-900">{{ formatDate(client.date_of_birth) }}</dd>
-            </div>
-            <div>
-              <dt class="text-sm font-medium text-gray-500">Marital Status</dt>
-              <dd class="mt-1 text-sm text-gray-900 capitalize">{{ client.marital_status }}</dd>
-            </div>
-            <div v-if="client.occupation">
-              <dt class="text-sm font-medium text-gray-500">Occupation</dt>
-              <dd class="mt-1 text-sm text-gray-900">{{ client.occupation }}</dd>
-            </div>
-            <div v-if="client.visa_status">
-              <dt class="text-sm font-medium text-gray-500">Visa Status</dt>
-              <dd class="mt-1 text-sm text-gray-900">{{ client.visa_status }}</dd>
-            </div>
-          </dl>
-        </div>
-      </div>
-
-      <!-- Address Information -->
-      <div class="bg-white rounded-lg shadow">
-        <div class="p-6 border-b border-gray-200">
-          <h3 class="text-lg font-medium text-gray-900">Address Information</h3>
-        </div>
-        <div class="p-6">
-          <dl class="grid grid-cols-1 gap-4">
-            <div>
-              <dt class="text-sm font-medium text-gray-500">Street Address</dt>
-              <dd class="mt-1 text-sm text-gray-900">
-                {{ client.street_no }}{{ client.apartment_no ? ', ' + client.apartment_no : '' }}
-              </dd>
-            </div>
-            <div>
-              <dt class="text-sm font-medium text-gray-500">City</dt>
-              <dd class="mt-1 text-sm text-gray-900">{{ client.city }}</dd>
-            </div>
-            <div>
-              <dt class="text-sm font-medium text-gray-500">State</dt>
-              <dd class="mt-1 text-sm text-gray-900">{{ client.state }}</dd>
-            </div>
-            <div>
-              <dt class="text-sm font-medium text-gray-500">Zip Code</dt>
-              <dd class="mt-1 text-sm text-gray-900">{{ client.zip_code }}</dd>
-            </div>
-            <div>
-              <dt class="text-sm font-medium text-gray-500">Country</dt>
-              <dd class="mt-1 text-sm text-gray-900">{{ client.country }}</dd>
-            </div>
-          </dl>
-        </div>
-      </div>
-    </div>
 
     <!-- Spouse Information -->
     <div v-if="client.spouse" class="mt-6 bg-white rounded-lg shadow">
@@ -647,6 +680,7 @@
         </div>
       </div>
     </div>
+      </div>
     </div>
   </AppLayout>
 </template>
@@ -654,6 +688,17 @@
 <script>
 import { ref, onMounted } from 'vue'
 import { router } from '@inertiajs/vue3'
+import { 
+  UserIcon,
+  PencilIcon,
+  DocumentTextIcon,
+  CurrencyDollarIcon,
+  TrashIcon,
+  ClipboardDocumentListIcon,
+  BuildingOfficeIcon,
+  CreditCardIcon,
+  MapPinIcon
+} from '@heroicons/vue/24/outline'
 import AppLayout from '@/Layouts/AppLayout.vue'
 
 export default {
@@ -696,11 +741,20 @@ export default {
 
     const getStatusTextClass = (status) => {
       const classes = {
-        active: 'text-green-600',
-        inactive: 'text-yellow-600',
-        archived: 'text-red-600'
+        active: 'text-green-700',
+        inactive: 'text-yellow-700',
+        archived: 'text-red-700'
       }
-      return classes[status] || 'text-gray-600'
+      return classes[status] || 'text-gray-700'
+    }
+
+    const getStatusDotClass = (status) => {
+      const classes = {
+        active: 'bg-green-500',
+        inactive: 'bg-yellow-500',
+        archived: 'bg-red-500'
+      }
+      return classes[status] || 'bg-gray-500'
     }
 
     const getProjectStatusClass = (status) => {

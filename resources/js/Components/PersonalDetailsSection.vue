@@ -115,15 +115,14 @@
                   class="ml-1"
                 />
               </label>
-              <input
-                id="ssn"
+              <SSNInput
+                input-id="ssn"
                 v-model="localData.ssn"
-                type="text"
-                :class="inputClasses('ssn')"
+                :input-classes="inputClasses('ssn')"
                 placeholder="123-45-6789"
-                maxlength="11"
+                :is-pre-masked="true"
                 @blur="validateField('ssn')"
-                @input="handleSSNInput"
+                @input="handleSSNInputChange"
               />
               <p v-if="fieldErrors.ssn" class="mt-1 text-sm text-red-600">
                 {{ fieldErrors.ssn }}
@@ -412,12 +411,12 @@
                   <span v-if="localData.visaStatus === 'citizen'" class="text-xs text-gray-500 ml-1">(Not applicable for US Citizens)</span>
                 </label>
                 <input
-                  id="date_of_entry_us"
-                  v-model="localData.date_of_entry_us"
+                  id="dateOfEntryUs"
+                  v-model="localData.dateOfEntryUs"
                   type="date"
-                  :class="inputClasses('date_of_entry_us')"
+                  :class="inputClasses('dateOfEntryUs')"
                   :disabled="localData.visaStatus === 'citizen'"
-                  @input="handleInput('date_of_entry_us', $event.target.value)"
+                  @input="handleInput('dateOfEntryUs', $event.target.value)"
                 />
                 <p v-if="localData.visaStatus === 'citizen'" class="mt-1 text-xs text-gray-500">
                   This field is not required for US Citizens
@@ -434,6 +433,7 @@
 <script setup>
 import { ref, reactive, computed, watch, onMounted } from 'vue'
 import HelpTooltip from '@/Components/HelpTooltip.vue'
+import SSNInput from '@/Components/SSNInput.vue'
 import { formatPhoneNumber, handlePhoneInput, isValidPhoneNumber, getPhoneDisplayFormat } from '@/Utils/PhoneMask.js'
 
 // Props
@@ -489,7 +489,7 @@ const localData = reactive({
   mobileNumber: '',
   workNumber: '',
   visaStatus: '',
-  date_of_entry_us: ''
+  dateOfEntryUs: ''
 })
 
 // Field validation errors
@@ -559,7 +559,7 @@ const showImmigrationFields = computed(() => {
 })
 
 const inputClasses = (fieldName) => {
-  const baseClasses = 'block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm'
+  const baseClasses = 'block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm text-gray-900 placeholder-gray-500'
   const errorClasses = 'border-red-300 text-red-900 placeholder-red-300 focus:border-red-500 focus:ring-red-500'
   
   return fieldErrors[fieldName] ? `${baseClasses} ${errorClasses}` : baseClasses
@@ -676,19 +676,8 @@ const handleInput = (fieldName, value) => {
   emit('update', { ...localData })
 }
 
-const handleSSNInput = (event) => {
-  let value = event.target.value.replace(/\D/g, '')
-  
-  // Format SSN as user types
-  if (value.length >= 6) {
-    value = `${value.slice(0, 3)}-${value.slice(3, 5)}-${value.slice(5, 9)}`
-  } else if (value.length >= 4) {
-    value = `${value.slice(0, 3)}-${value.slice(3)}`
-  }
-  
+const handleSSNInputChange = (value) => {
   localData.ssn = value
-  event.target.value = value
-  
   handleInput('ssn', value)
 }
 

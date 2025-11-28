@@ -274,7 +274,7 @@
 
   // Computed properties
   const inputClasses = (fieldPath) => {
-    const baseClasses = 'block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm disabled:bg-gray-50 disabled:text-gray-500'
+    const baseClasses = 'block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm text-gray-900 placeholder-gray-500 disabled:bg-gray-50 disabled:text-gray-500'
     const errorClasses = 'border-red-300 text-red-900 placeholder-red-300 focus:border-red-500 focus:ring-red-500'
 
     return fieldErrors[fieldPath] ? `${baseClasses} ${errorClasses}` : baseClasses

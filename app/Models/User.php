@@ -50,6 +50,15 @@ class User extends Authenticatable implements MustVerifyEmail
     ];
 
     /**
+     * The accessors to append to the model's array form.
+     *
+     * @var array<int, string>
+     */
+    protected $appends = [
+        'name',
+    ];
+
+    /**
      * Get the clients managed by this user.
      */
     public function clients(): HasMany

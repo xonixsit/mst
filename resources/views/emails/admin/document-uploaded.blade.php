@@ -32,7 +32,7 @@
 </div>
 
 <div style="text-align: center; margin: 30px 0;">
-    <a href="{{ route('admin.documents.index') }}" class="button">Review Document</a>
+    <a href="{{ url('/admin/clients/' . $document->client->id) }}" class="button">Review Document</a>
 </div>
 
 <h3>Client Information</h3>

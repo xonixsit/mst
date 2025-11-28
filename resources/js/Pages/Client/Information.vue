@@ -26,6 +26,27 @@
     </template>
 
     <div class="max-w-7xl mx-auto">
+      <!-- Error Display -->
+      <ErrorDisplay 
+        v-if="lastError && showErrorDetails" 
+        :error="lastError"
+        @close="showErrorDetails = false"
+        @report="handleErrorReport"
+      />
+      
+      <!-- Auto-save Error (Clickable) -->
+      <div 
+        v-if="autoSaveStatus === 'error' && lastError && !showErrorDetails"
+        @click="showErrorDetails = true"
+        class="bg-red-50 border border-red-200 rounded-lg p-3 mb-4 cursor-pointer hover:bg-red-100 transition-colors"
+      >
+        <div class="flex items-center">
+          <ExclamationTriangleIcon class="h-4 w-4 text-red-400 mr-2" />
+          <span class="text-sm text-red-700">{{ lastError.message }}</span>
+          <span class="text-xs text-red-500 ml-2">(Click for details)</span>
+        </div>
+      </div>
+      
       <!-- Navigation Tabs -->
       <div class="bg-gradient-to-r from-gray-50 to-gray-100 border-b border-gray-200 mb-6 p-2 rounded-t-lg">
         <nav class="flex space-x-2" aria-label="Tabs">
@@ -435,6 +456,7 @@ import EmployeeInformationSection from '@/Components/EmployeeInformationSection.
 import ProjectDetailsSection from '@/Components/ProjectDetailsSection.vue'
 import AssetDetailsSection from '@/Components/AssetDetailsSection.vue'
 import ExpensesManagementSection from '@/Components/ExpensesManagementSection.vue'
+import ErrorDisplay from '@/Components/ErrorDisplay.vue'
 
 // Icons
 import { 
@@ -445,7 +467,8 @@ import {
   CurrencyDollarIcon, 
   ReceiptPercentIcon,
   CheckCircleIcon,
-  QuestionMarkCircleIcon
+  QuestionMarkCircleIcon,
+  ExclamationTriangleIcon
 } from '@heroicons/vue/24/outline'
 
 // Props
@@ -494,7 +517,7 @@ const form = useForm({
     mobileNumber: '',
     workNumber: '',
     visaStatus: '',
-    date_of_entry_us: ''
+    dateOfEntryUs: ''
   },
   spouse: {
     firstName: '',
@@ -558,11 +581,15 @@ const reviewSections = [
 
 // Computed properties
 
+// Error handling
+const lastError = ref(null)
+const showErrorDetails = ref(false)
+
 const autoSaveStatusText = computed(() => {
   switch (autoSaveStatus.value) {
     case 'saving': return 'Saving...'
     case 'saved': return 'All changes saved'
-    case 'error': return 'Save failed'
+    case 'error': return lastError.value?.message || 'Save failed - click for details'
     default: return 'Auto-save enabled'
   }
 })
@@ -805,8 +832,25 @@ const autoSave = async () => {
         'X-Requested-With': 'XMLHttpRequest',
       },
       body: JSON.stringify({
-        personal: toSnakeCase(form.personal),
-        spouse: toSnakeCase(form.spouse),
+        personal: (() => {
+          const personalData = toSnakeCase(form.personal)
+          // Ensure dates are properly formatted
+          if (personalData.date_of_birth) {
+            personalData.date_of_birth = formatDateForBackend(personalData.date_of_birth)
+          }
+          if (personalData.date_of_entry_us) {
+            personalData.date_of_entry_us = formatDateForBackend(personalData.date_of_entry_us)
+          }
+          return personalData
+        })(),
+        spouse: (() => {
+          const spouseData = toSnakeCase(form.spouse)
+          // Ensure date is properly formatted
+          if (spouseData.date_of_birth) {
+            spouseData.date_of_birth = formatDateForBackend(spouseData.date_of_birth)
+          }
+          return spouseData
+        })(),
         employee: Array.isArray(form.employee) ? form.employee.map(emp => toSnakeCase(emp)) : [],
         projects: form.projects,
         assets: Array.isArray(form.assets) ? form.assets.map((asset, index) => {
@@ -834,11 +878,17 @@ const autoSave = async () => {
       }, 3000)
     } else {
       autoSaveStatus.value = 'error'
-      console.error('Auto-save failed:', result.error || 'Unknown error')
+      lastError.value = result.error || { message: 'Unknown error occurred' }
+      console.error('Auto-save failed:', lastError.value)
     }
     
   } catch (error) {
     autoSaveStatus.value = 'error'
+    lastError.value = { 
+      message: 'Network error - please check your connection',
+      code: 'ERR_NETWORK_001',
+      error_id: 'NET_' + Date.now()
+    }
     console.error('Auto-save failed:', error)
   }
 }
@@ -846,8 +896,25 @@ const autoSave = async () => {
 const saveInformation = () => {
   // Convert form data to snake_case for backend
   const backendData = {
-    personal: toSnakeCase(form.personal),
-    spouse: toSnakeCase(form.spouse),
+    personal: (() => {
+      const personalData = toSnakeCase(form.personal)
+      // Ensure dates are properly formatted
+      if (personalData.date_of_birth) {
+        personalData.date_of_birth = formatDateForBackend(personalData.date_of_birth)
+      }
+      if (personalData.date_of_entry_us) {
+        personalData.date_of_entry_us = formatDateForBackend(personalData.date_of_entry_us)
+      }
+      return personalData
+    })(),
+    spouse: (() => {
+      const spouseData = toSnakeCase(form.spouse)
+      // Ensure date is properly formatted
+      if (spouseData.date_of_birth) {
+        spouseData.date_of_birth = formatDateForBackend(spouseData.date_of_birth)
+      }
+      return spouseData
+    })(),
     employee: Array.isArray(form.employee) ? form.employee : [], // Don't convert employee field names - backend handles this
     projects: form.projects,
     assets: Array.isArray(form.assets) ? form.assets.map(asset => {
@@ -988,6 +1055,12 @@ const loadInitialData = () => {
       form.expenses = props.clientData.expenses
     }
   }
+}
+
+// Error handling methods
+const handleErrorReport = (errorData) => {
+  console.log('Error reported:', errorData)
+  // You could send this to an error reporting service
 }
 
 // Lifecycle

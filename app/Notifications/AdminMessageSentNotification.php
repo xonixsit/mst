@@ -8,9 +8,8 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
 
-class AdminMessageSentNotification extends Notification implements ShouldQueue
+class AdminMessageSentNotification extends Notification
 {
-    use Queueable;
 
     public function __construct(
         public Message $message

@@ -11,12 +11,39 @@
   }
   
   body {
-    @apply text-neutral-800 bg-neutral-50;
+    @apply text-gray-900 bg-neutral-50;
     line-height: 1.6;
   }
   
   h1, h2, h3, h4, h5, h6 {
     @apply text-neutral-900 font-semibold;
+  }
+  
+  input, textarea, select {
+    @apply text-gray-900 !important;
+  }
+  
+  input::placeholder, textarea::placeholder {
+    @apply text-gray-500 !important;
+  }
+  
+  /* Ensure all form controls have proper text color */
+  input[type="text"], 
+  input[type="email"], 
+  input[type="password"], 
+  input[type="number"], 
+  input[type="search"], 
+  input[type="tel"], 
+  input[type="url"], 
+  input[type="date"], 
+  input[type="datetime-local"], 
+  input[type="month"], 
+  input[type="time"], 
+  input[type="week"],
+  textarea, 
+  select {
+    @apply text-gray-900 !important;
+    color: #111827 !important;
   }
   
   h1 { @apply text-3xl; }
@@ -30,7 +57,7 @@
 @layer components {
   /* Professional Form Styles */
   .form-input {
-    @apply w-full px-3 py-2 border border-neutral-300 rounded-md text-sm transition-colors duration-200 bg-white;
+    @apply w-full px-3 py-2 border border-neutral-300 rounded-md text-sm transition-colors duration-200 bg-white text-gray-900;
     @apply focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500;
     @apply disabled:bg-neutral-100 disabled:text-neutral-500 disabled:cursor-not-allowed;
   }

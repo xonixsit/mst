@@ -269,14 +269,14 @@ const formData = reactive({
 })
 
 const inputClasses = (fieldName) => {
-  const baseClasses = 'block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm'
+  const baseClasses = 'block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm text-gray-900 placeholder-gray-500'
   const errorClasses = 'border-red-300 text-red-900 placeholder-red-300 focus:border-red-500 focus:ring-red-500'
   
   return props.errors[fieldName] ? `${baseClasses} ${errorClasses}` : baseClasses
 }
 
 const amountInputClasses = computed(() => {
-  const baseClasses = 'block w-full pl-7 rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm'
+  const baseClasses = 'block w-full pl-7 rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm text-gray-900 placeholder-gray-500'
   const errorClasses = 'border-red-300 text-red-900 placeholder-red-300 focus:border-red-500 focus:ring-red-500'
   
   return props.errors.amount ? `${baseClasses} ${errorClasses}` : baseClasses

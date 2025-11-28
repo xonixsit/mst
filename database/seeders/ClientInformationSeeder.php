@@ -19,8 +19,8 @@ class ClientInformationSeeder extends Seeder
     public function run(): void
     {
         // Get existing admin users
-        $admin = User::where('email', 'admin@taxconsulting.com')->first();
-        $taxProfessional = User::where('email', 'taxpro@taxconsulting.com')->first();
+        $admin = User::where('role', 'admin')->first();
+        $taxProfessional = User::where('role', 'tax_professional')->first();
 
         // Create clients with comprehensive information
         $clients = Client::factory(10)->create([

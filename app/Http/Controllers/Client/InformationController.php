@@ -6,6 +6,8 @@ use App\Http\Controllers\Controller;
 use App\Models\Client;
 use App\Models\User;
 use App\Services\ClientInformationService;
+use App\Services\ErrorHandlingService;
+use App\Services\AdminNotificationService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Gate;
@@ -20,7 +22,8 @@ use Inertia\Inertia;
 class InformationController extends Controller
 {
     public function __construct(
-        private ClientInformationService $clientInformationService
+        private ClientInformationService $clientInformationService,
+        private AdminNotificationService $adminNotificationService
     ) {}
 
     /**
@@ -100,6 +103,43 @@ class InformationController extends Controller
     }
 
     /**
+     * Mask SSN for security (show only last 4 digits)
+     */
+    private function maskSSN(?string $ssn): string
+    {
+        if (!$ssn) {
+            return '';
+        }
+        
+        // Remove any non-digit characters
+        $digits = preg_replace('/\D/', '', $ssn);
+        
+        if (strlen($digits) === 9) {
+            // Show only last 4 digits: ***-**-1234
+            return '***-**-' . substr($digits, -4);
+        } elseif (strlen($digits) >= 4) {
+            // For partial SSNs, mask what we can
+            $lastFour = substr($digits, -4);
+            $maskedLength = max(0, strlen($digits) - 4);
+            $masked = str_repeat('*', $maskedLength);
+            
+            if (strlen($digits) >= 7) {
+                // Format as ***-**-1234
+                return substr($masked, 0, 3) . '-' . substr($masked, 3, 2) . '-' . $lastFour;
+            } elseif (strlen($digits) >= 5) {
+                // Format as ***-**
+                return substr($masked, 0, 3) . '-' . substr($masked, 3) . $lastFour;
+            } else {
+                // Just show masked + last digits
+                return $masked . $lastFour;
+            }
+        }
+        
+        // For very short inputs, don't mask
+        return $ssn;
+    }
+
+    /**
      * Prepare client data for form with enhanced structure
      */
     private function prepareClientDataForForm(Client $client): array
@@ -111,7 +151,7 @@ class InformationController extends Controller
                 'last_name' => $client->user->last_name ?? '',
                 'email' => $client->user->email ?? '',
                 'phone' => $client->phone ?? '',
-                'ssn' => $client->ssn ?? '',
+                'ssn' => $this->maskSSN($client->ssn),
                 'date_of_birth' => $client->date_of_birth ?? '',
                 'marital_status' => $client->marital_status ?? 'single',
                 'occupation' => $client->occupation ?? '',
@@ -133,8 +173,8 @@ class InformationController extends Controller
                 'last_name' => $client->spouse->last_name,
                 'email' => $client->spouse->email,
                 'phone' => $client->spouse->phone,
-                'ssn' => $client->spouse->ssn,
-                'date_of_birth' => $client->spouse->date_of_birth ?? '',
+                'ssn' => $this->maskSSN($client->spouse->ssn),
+                'date_of_birth' => $client->spouse->date_of_birth ? $client->spouse->date_of_birth->format('Y-m-d') : '',
                 'occupation' => $client->spouse->occupation,
             ] : [],
             'employee' => $client->employees->map(function ($employee) {
@@ -371,15 +411,15 @@ class InformationController extends Controller
             return redirect()->back()->with('success', 'Your information has been saved successfully!');
             
         } catch (ValidationException $e) {
-            return redirect()->back()->withErrors($e->errors());
+            $errorData = \App\Services\ErrorHandlingService::formatValidationErrors($e);
+            return redirect()->back()->withErrors($e->errors())->with('error_details', $errorData['error']);
         } catch (\Exception $e) {
-            Log::error('Failed to save client information', [
+            $errorData = \App\Services\ErrorHandlingService::handleWebError($e, [
                 'client_id' => $client->id,
                 'user_id' => Auth::id(),
-                'error' => $e->getMessage(),
-                'trace' => $e->getTraceAsString()
+                'action' => 'save_client_information'
             ]);
-            return redirect()->back()->withErrors(['error' => 'Failed to save information. Please try again.']);
+            return redirect()->back()->withErrors($errorData);
         }
     }
 
@@ -756,11 +796,14 @@ class InformationController extends Controller
      */
     private function createReviewNotification(Client $client, array $requestData): void
     {
-        // Find the assigned tax professional or default admin
-        $taxProfessional = $client->user ?? User::where('email', 'admin@mysupertax.com')->first();
+        // Notify all admins about the review request
+        $this->adminNotificationService->notifyReviewRequested($client, $requestData);
+        
+        // Also send individual notification to assigned tax professional if exists
+        $taxProfessional = $client->user ?? User::where('role', 'admin')->first();
         
         if ($taxProfessional) {
-            // Send notification
+            // Send individual notification
             $taxProfessional->notify(new \App\Notifications\ClientReviewRequestNotification(
                 $client,
                 $requestData['sections'] ?? [],
@@ -777,7 +820,7 @@ class InformationController extends Controller
                 'priority' => $requestData['priority'] ?? 'normal'
             ]);
         } else {
-            Log::warning('No tax professional found for review notification', [
+            Log::warning('No assigned tax professional found, but admin notifications sent', [
                 'client_id' => $client->id,
                 'client_name' => $client->full_name
             ]);
@@ -943,18 +986,15 @@ class InformationController extends Controller
             ]);
             
         } catch (ValidationException $e) {
-            return response()->json([
-                'error' => 'Validation failed',
-                'errors' => $e->errors()
-            ], 422);
+            $errorData = \App\Services\ErrorHandlingService::formatValidationErrors($e);
+            return response()->json($errorData, 422);
         } catch (\Exception $e) {
-            Log::error('Auto-save failed', [
+            $errorData = \App\Services\ErrorHandlingService::handleApiError($e, [
                 'client_id' => $client->id,
                 'user_id' => $user->id,
-                'error' => $e->getMessage(),
-                'trace' => $e->getTraceAsString()
+                'action' => 'auto_save_client_information'
             ]);
-            return response()->json(['error' => 'Auto-save failed'], 500);
+            return response()->json($errorData, 500);
         }
     }
 

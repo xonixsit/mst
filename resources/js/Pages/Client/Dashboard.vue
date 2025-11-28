@@ -4,7 +4,7 @@
       <div class="flex justify-between items-center">
         <div>
           <h1 class="text-2xl font-bold text-gray-900">Dashboard</h1>
-          <p class="mt-1 text-sm text-gray-600">Welcome back, {{ $page.props.auth.user?.name }}</p>
+          <p class="mt-1 text-sm text-gray-600">Welcome back, {{ $page.props.auth.user?.name || $page.props.auth.user?.first_name || 'User' }}</p>
         </div>
         <div class="text-sm text-gray-500">
           {{ new Date().toLocaleDateString('en-US', { 

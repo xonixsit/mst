@@ -12,7 +12,7 @@
             <!-- Category Filter -->
             <select
               v-model="selectedCategory"
-              class="rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
+              class="rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm text-gray-900"
               @change="filterByCategory"
             >
               <option value="">All Categories</option>

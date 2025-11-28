@@ -8,9 +8,8 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
 
-class AdminInvoicePaidNotification extends Notification implements ShouldQueue
+class AdminInvoicePaidNotification extends Notification
 {
-    use Queueable;
 
     public function __construct(
         public Invoice $invoice

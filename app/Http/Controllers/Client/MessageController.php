@@ -6,11 +6,18 @@ use App\Http\Controllers\Controller;
 use App\Models\Message;
 use App\Models\User;
 use App\Models\Client;
+use App\Services\AdminNotificationService;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 
 class MessageController extends Controller
 {
+    protected $adminNotificationService;
+
+    public function __construct(AdminNotificationService $adminNotificationService)
+    {
+        $this->adminNotificationService = $adminNotificationService;
+    }
     public function index(Request $request)
     {
         $client = Client::where('user_id', auth()->id())->first();
@@ -78,7 +85,7 @@ class MessageController extends Controller
             'priority' => 'required|in:low,normal,high'
         ]);
 
-        Message::create([
+        $message = Message::create([
             'client_id' => $client->id,
             'sender_id' => auth()->id(),
             'recipient_id' => $request->recipient_id,
@@ -86,6 +93,9 @@ class MessageController extends Controller
             'body' => $request->body,
             'priority' => $request->priority
         ]);
+
+        // Notify admins about new message from client
+        $this->adminNotificationService->notifyMessageSent($message);
 
         return back()->with('success', 'Message sent successfully.');
     }

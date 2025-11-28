@@ -220,12 +220,19 @@ class TestEmailTemplates extends Command
     
     private function createTestMessage(User $user, Client $client): Message
     {
-        $adminUser = User::create([
-            'name' => 'Tax Professional',
-            'email' => 'admin@example.com',
-            'password' => bcrypt('password'),
-            'role' => 'admin',
-        ]);
+        // Use existing admin user instead of creating a new one
+        $adminUser = User::where('role', 'admin')->first();
+        
+        if (!$adminUser) {
+            $adminUser = User::create([
+                'first_name' => 'Tax',
+                'last_name' => 'Professional',
+                'email' => 'xonixsitsolutions@gmail.com',
+                'password' => bcrypt('password'),
+                'role' => 'admin',
+                'email_verified_at' => now(),
+            ]);
+        }
         
         return Message::create([
             'client_id' => $client->id,
@@ -240,13 +247,21 @@ class TestEmailTemplates extends Command
     
     private function createTestAdmin(): User
     {
-        return User::create([
-            'name' => 'Test Admin User',
-            'email' => 'testadmin@example.com',
-            'password' => bcrypt('password'),
-            'role' => 'admin',
-            'email_verified_at' => now(),
-        ]);
+        // Use existing admin user instead of creating a new one
+        $adminUser = User::where('role', 'admin')->first();
+        
+        if (!$adminUser) {
+            $adminUser = User::create([
+                'first_name' => 'Test',
+                'last_name' => 'Admin',
+                'email' => 'xonixsitsolutions@gmail.com',
+                'password' => bcrypt('password'),
+                'role' => 'admin',
+                'email_verified_at' => now(),
+            ]);
+        }
+        
+        return $adminUser;
     }
 
     private function cleanupTestData(User $user, User $admin, Client $client, Invoice $invoice, Document $document, Message $message): void
@@ -256,8 +271,10 @@ class TestEmailTemplates extends Command
         $invoice->items()->delete();
         $invoice->delete();
         $client->delete();
-        User::where('email', 'admin@example.com')->delete();
-        $admin->delete();
+        // Don't delete the main admin user
+        if ($admin->email !== 'xonixsitsolutions@gmail.com') {
+            $admin->delete();
+        }
         $user->delete();
         
         $this->info('✓ Test data cleaned up');
@@ -266,6 +283,7 @@ class TestEmailTemplates extends Command
     private function cleanupExistingTestData(): void
     {
         User::where('email', 'testclient@example.com')->delete();
+        // Don't delete the main admin user
         User::where('email', 'testadmin@example.com')->delete();
         User::where('email', 'admin@example.com')->delete();
         Client::where('email', 'testclient@example.com')->delete();

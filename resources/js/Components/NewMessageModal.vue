@@ -22,7 +22,7 @@
                             v-model="form.client_id" 
                             @change="updateRecipient"
                             required
-                            class="w-full border-gray-300 rounded-md shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+                            class="w-full border-gray-300 rounded-md shadow-sm focus:border-indigo-500 focus:ring-indigo-500 text-gray-900"
                         >
                             <option value="">Select client</option>
                             <option v-for="client in clients" :key="client.id" :value="client.id">
@@ -38,7 +38,7 @@
                             v-model="form.subject"
                             type="text"
                             required
-                            class="w-full border-gray-300 rounded-md shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+                            class="w-full border-gray-300 rounded-md shadow-sm focus:border-indigo-500 focus:ring-indigo-500 text-gray-900 placeholder-gray-500"
                             placeholder="Enter message subject"
                         >
                     </div>
@@ -48,7 +48,7 @@
                         <label class="block text-sm font-medium text-gray-700 mb-1">Priority</label>
                         <select 
                             v-model="form.priority"
-                            class="w-full border-gray-300 rounded-md shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+                            class="w-full border-gray-300 rounded-md shadow-sm focus:border-indigo-500 focus:ring-indigo-500 text-gray-900"
                         >
                             <option value="low">Low</option>
                             <option value="normal">Normal</option>
@@ -63,7 +63,7 @@
                             v-model="form.body"
                             rows="6"
                             required
-                            class="w-full border-gray-300 rounded-md shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+                            class="w-full border-gray-300 rounded-md shadow-sm focus:border-indigo-500 focus:ring-indigo-500 text-gray-900 placeholder-gray-500"
                             placeholder="Enter your message"
                         ></textarea>
                     </div>

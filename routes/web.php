@@ -84,17 +84,80 @@ Route::prefix('client')->name('client.')->group(function () {
 Route::middleware(['auth', 'auth.session', 'session.timeout', 'admin'])->prefix('admin')->name('admin.')->group(function () {
     // Admin dashboard
     Route::get('/dashboard', function () {
+        // Current month stats
+        $currentClients = \App\Models\Client::count();
+        $currentRevenue = \App\Models\Invoice::where('status', 'paid')
+            ->whereMonth('paid_at', now()->month)
+            ->whereYear('paid_at', now()->year)
+            ->sum('total_amount');
+        $currentReturns = \App\Models\Document::where('document_type', 'tax_returns')
+            ->where('status', 'approved')
+            ->count();
+        $currentEfficiency = round((\App\Models\Document::where('status', 'approved')->count() / 
+            max(\App\Models\Document::count(), 1)) * 100, 1);
+
+        // Previous month stats for comparison
+        $lastMonth = now()->subMonth();
+        $previousClients = \App\Models\Client::whereDate('created_at', '<', now()->startOfMonth())->count();
+        $previousRevenue = \App\Models\Invoice::where('status', 'paid')
+            ->whereMonth('paid_at', $lastMonth->month)
+            ->whereYear('paid_at', $lastMonth->year)
+            ->sum('total_amount');
+        
+        // Previous season returns (3 months ago)
+        $previousSeasonReturns = \App\Models\Document::where('document_type', 'tax_returns')
+            ->where('status', 'approved')
+            ->whereDate('created_at', '<', now()->subMonths(3))
+            ->count();
+        
+        // Previous efficiency (last month)
+        $previousEfficiency = round((\App\Models\Document::where('status', 'approved')
+            ->whereDate('created_at', '<', now()->startOfMonth())->count() / 
+            max(\App\Models\Document::whereDate('created_at', '<', now()->startOfMonth())->count(), 1)) * 100, 1);
+
+        // Calculate percentage changes
+        $clientsChange = $previousClients > 0 ? round((($currentClients - $previousClients) / $previousClients) * 100, 1) : 0;
+        $revenueChange = $previousRevenue > 0 ? round((($currentRevenue - $previousRevenue) / $previousRevenue) * 100, 1) : 0;
+        $returnsChange = $previousSeasonReturns > 0 ? round((($currentReturns - $previousSeasonReturns) / $previousSeasonReturns) * 100, 1) : 0;
+        $efficiencyChange = $previousEfficiency > 0 ? round($currentEfficiency - $previousEfficiency, 1) : 0;
+
+        // Client status distribution (based on actual data)
+        $activeReturns = \App\Models\Document::where('document_type', 'tax_returns')
+            ->where('status', 'pending')
+            ->distinct('client_id')
+            ->count();
+        $inReview = \App\Models\Document::where('status', 'under_review')
+            ->distinct('client_id')
+            ->count();
+        $completed = \App\Models\Document::where('document_type', 'tax_returns')
+            ->where('status', 'approved')
+            ->distinct('client_id')
+            ->count();
+        $pendingDocs = \App\Models\Client::whereDoesntHave('documents')
+            ->orWhereHas('documents', function($query) {
+                $query->where('status', 'rejected');
+            })
+            ->count();
+        $newClients = \App\Models\Client::whereDate('created_at', '>=', now()->subDays(30))->count();
+
         $stats = [
-            'totalClients' => \App\Models\Client::count(),
-            'monthlyRevenue' => \App\Models\Invoice::where('status', 'paid')
-                ->whereMonth('paid_at', now()->month)
-                ->whereYear('paid_at', now()->year)
-                ->sum('total_amount'),
-            'returnsFiled' => \App\Models\Document::where('document_type', 'tax_returns')
-                ->where('status', 'approved')
-                ->count(),
-            'efficiencyScore' => round((\App\Models\Document::where('status', 'approved')->count() / 
-                max(\App\Models\Document::count(), 1)) * 100, 1)
+            'totalClients' => $currentClients,
+            'monthlyRevenue' => $currentRevenue,
+            'returnsFiled' => $currentReturns,
+            'efficiencyScore' => $currentEfficiency,
+            'changes' => [
+                'clients' => $clientsChange,
+                'revenue' => $revenueChange,
+                'returns' => $returnsChange,
+                'efficiency' => $efficiencyChange
+            ],
+            'clientStatus' => [
+                'activeReturns' => $activeReturns,
+                'inReview' => $inReview,
+                'completed' => $completed,
+                'pendingDocs' => $pendingDocs,
+                'newClients' => $newClients
+            ]
         ];
 
         return inertia('Admin/Dashboard', [

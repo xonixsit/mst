@@ -422,14 +422,14 @@ const fieldErrors = reactive({})
 
 // Computed properties
 const inputClasses = (fieldName) => {
-  const baseClasses = 'block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm disabled:bg-gray-50 disabled:text-gray-500'
+  const baseClasses = 'block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm text-gray-900 placeholder-gray-500 disabled:bg-gray-50 disabled:text-gray-500'
   const errorClasses = 'border-red-300 text-red-900 placeholder-red-300 focus:border-red-500 focus:ring-red-500'
   
   return fieldErrors[fieldName] ? `${baseClasses} ${errorClasses}` : baseClasses
 }
 
 const salaryInputClasses = computed(() => {
-  const baseClasses = 'block w-full pl-7 pr-12 rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm disabled:bg-gray-50 disabled:text-gray-500'
+  const baseClasses = 'block w-full pl-7 pr-12 rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm text-gray-900 placeholder-gray-500 disabled:bg-gray-50 disabled:text-gray-500'
   const errorClasses = 'border-red-300 text-red-900 placeholder-red-300 focus:border-red-500 focus:ring-red-500'
   
   return fieldErrors.salary ? `${baseClasses} ${errorClasses}` : baseClasses

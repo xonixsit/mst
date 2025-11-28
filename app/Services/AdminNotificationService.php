@@ -7,6 +7,7 @@ use App\Notifications\AdminClientRegisteredNotification;
 use App\Notifications\AdminDocumentUploadedNotification;
 use App\Notifications\AdminInvoicePaidNotification;
 use App\Notifications\AdminMessageSentNotification;
+use App\Notifications\AdminReviewRequestNotification;
 use Illuminate\Support\Facades\Notification;
 
 class AdminNotificationService
@@ -63,6 +64,7 @@ class AdminNotificationService
         $admins = $this->getAdminUsers();
         
         if ($admins->isNotEmpty()) {
+            $message->load('sender', 'recipient');
             Notification::send($admins, new AdminMessageSentNotification($message));
         }
     }
@@ -74,6 +76,18 @@ class AdminNotificationService
     {
         if ($admin->isTaxProfessional()) {
             $admin->notify($notification);
+        }
+    }
+
+    /**
+     * Notify admins about review request
+     */
+    public function notifyReviewRequested($client, array $reviewData = []): void
+    {
+        $admins = $this->getAdminUsers();
+        
+        if ($admins->isNotEmpty()) {
+            Notification::send($admins, new AdminReviewRequestNotification($client, $reviewData));
         }
     }
 

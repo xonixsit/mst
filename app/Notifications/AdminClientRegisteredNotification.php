@@ -8,9 +8,8 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
 
-class AdminClientRegisteredNotification extends Notification implements ShouldQueue
+class AdminClientRegisteredNotification extends Notification
 {
-    use Queueable;
 
     public function __construct(
         public User $user
