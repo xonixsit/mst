@@ -323,12 +323,12 @@
           icon: CalculatorIcon,
           current: currentPath.startsWith('/admin/invoices')
         },
-        {
+        ...(user?.role === 'admin' ? [{
           name: 'Tax Professionals',
           href: '/admin/tax-professionals',
           icon: UsersIcon,
           current: currentPath.startsWith('/admin/tax-professionals')
-        }
+        }] : [])
       ]
     } else {
       // Client Navigation

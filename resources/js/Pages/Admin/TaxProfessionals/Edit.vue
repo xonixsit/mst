@@ -79,9 +79,9 @@
                       type="text"
                       required
                       class="w-full px-4 py-3 border-2 border-blue-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200"
-                      :class="{ 'border-red-300': errors.first_name }"
+                      :class="{ 'border-red-300': form.errors.first_name }"
                     />
-                    <div v-if="errors.first_name" class="text-red-600 text-sm">{{ errors.first_name }}</div>
+                    <div v-if="form.errors.first_name" class="text-red-600 text-sm">{{ form.errors.first_name }}</div>
                   </div>
 
                   <div class="space-y-2">
@@ -100,9 +100,9 @@
                       type="text"
                       required
                       class="w-full px-4 py-3 border-2 border-blue-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200"
-                      :class="{ 'border-red-300': errors.last_name }"
+                      :class="{ 'border-red-300': form.errors.last_name }"
                     />
-                    <div v-if="errors.last_name" class="text-red-600 text-sm">{{ errors.last_name }}</div>
+                    <div v-if="form.errors.last_name" class="text-red-600 text-sm">{{ form.errors.last_name }}</div>
                   </div>
                 </div>
               </div>
@@ -124,9 +124,9 @@
                       type="email"
                       required
                       class="w-full px-4 py-3 border-2 border-green-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500 transition-all duration-200"
-                      :class="{ 'border-red-300': errors.email }"
+                      :class="{ 'border-red-300': form.errors.email }"
                     />
-                    <div v-if="errors.email" class="text-red-600 text-sm">{{ errors.email }}</div>
+                    <div v-if="form.errors.email" class="text-red-600 text-sm">{{ form.errors.email }}</div>
                   </div>
 
                   <div class="space-y-2">
@@ -253,9 +253,9 @@
                       v-model="form.password"
                       type="password"
                       class="w-full px-4 py-3 border-2 border-red-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-red-500 transition-all duration-200"
-                      :class="{ 'border-red-300': errors.password }"
+                      :class="{ 'border-red-300': form.errors.password }"
                     />
-                    <div v-if="errors.password" class="text-red-600 text-sm">{{ errors.password }}</div>
+                    <div v-if="form.errors.password" class="text-red-600 text-sm">{{ form.errors.password }}</div>
                   </div>
 
                   <div class="space-y-2">
@@ -281,7 +281,7 @@
               </Link>
               <button
                 type="submit"
-                :disabled="processing"
+                :disabled="form.processing"
 
                 class="bg-gradient-to-r from-emerald-600 to-green-600 hover:from-emerald-700 hover:to-green-700 text-white px-6 py-3 rounded-xl font-semibold transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none flex items-center"
               >
@@ -290,7 +290,7 @@
                   <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                 </svg>
                 <CheckIcon v-else class="w-4 h-4 mr-2" />
-                <span v-if="processing">Updating Professional...</span>
+                <span v-if="form.processing">Updating Professional...</span>
                 <span v-else>Update Professional</span>
               </button>
             </div>
@@ -336,7 +336,7 @@ const availableSpecializations = [
   'Financial Planning'
 ]
 
-const { data: form, put, processing, errors } = useForm({
+const form = useForm({
   first_name: '',
   middle_name: '',
   last_name: '',
@@ -357,7 +357,7 @@ const { data: form, put, processing, errors } = useForm({
 
 // Populate form data when component mounts or props change
 watch(() => props.taxProfessional, (newVal) => {
-  if (newVal) {
+  if (newVal && typeof newVal === 'object') {
     form.first_name = newVal.first_name || ''
     form.middle_name = newVal.middle_name || ''
     form.last_name = newVal.last_name || ''
@@ -376,9 +376,9 @@ watch(() => props.taxProfessional, (newVal) => {
       form.specializations = []
     }
   }
-}, { immediate: true })
+}, { immediate: true, deep: true })
 
 const submit = () => {
-  put(`/admin/tax-professionals/${props.taxProfessional.id}`)
+  form.put(`/admin/tax-professionals/${props.taxProfessional.id}`)
 }
 </script>

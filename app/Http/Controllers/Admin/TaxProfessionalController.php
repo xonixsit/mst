@@ -11,6 +11,16 @@ use Inertia\Inertia;
 
 class TaxProfessionalController extends Controller
 {
+    public function __construct()
+    {
+        $this->middleware(function ($request, $next) {
+            if (!auth()->user() || auth()->user()->role !== 'admin') {
+                abort(403, 'Access denied. Admin privileges required.');
+            }
+            return $next($request);
+        });
+    }
+
     public function index(Request $request)
     {
         $query = User::where('role', 'tax_professional');
