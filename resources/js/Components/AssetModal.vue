@@ -1,227 +1,299 @@
 <template>
-  <div v-if="show" class="fixed inset-0 z-50 overflow-y-auto" aria-labelledby="modal-title" role="dialog" aria-modal="true">
-    <div class="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
-      <!-- Background overlay -->
-      <div class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" @click="closeModal"></div>
-
-      <!-- Modal panel -->
-      <div class="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-2xl sm:w-full">
-        <div class="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
-          <div class="sm:flex sm:items-start">
-            <div class="w-full">
-              <h3 class="text-lg leading-6 font-medium text-gray-900 mb-4" id="modal-title">
+  <div v-if="show" class="fixed inset-0 bg-gray-900 bg-opacity-75 z-50 flex items-start justify-center p-4 pt-8 overflow-y-auto">
+    <div class="relative w-full max-w-3xl bg-white shadow-2xl rounded-2xl border border-gray-100 overflow-hidden transform transition-all flex flex-col mb-8">
+      <!-- Enhanced Header -->
+      <div class="bg-gradient-to-r from-slate-50 via-green-50 to-emerald-50 px-6 py-5 border-b border-gray-200 relative overflow-hidden">
+        <div class="absolute top-0 right-0 w-32 h-16 bg-gradient-to-bl from-green-100/40 to-transparent rounded-bl-full"></div>
+        <div class="relative flex items-center justify-between">
+          <div class="flex items-center space-x-3">
+            <div class="w-10 h-10 bg-gradient-to-br from-green-500 to-emerald-600 rounded-xl flex items-center justify-center shadow-lg">
+              <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1"></path>
+              </svg>
+            </div>
+            <div>
+              <h3 class="text-xl font-bold bg-gradient-to-r from-gray-900 via-green-900 to-emerald-900 bg-clip-text text-transparent">
                 {{ isEditing ? 'Edit Asset' : 'Add New Asset' }}
               </h3>
-              
-              <form @submit.prevent="handleSubmit" class="space-y-4">
-                <!-- Asset Name and Type -->
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div>
-                    <label for="asset_name" class="block text-sm font-medium text-gray-700 mb-1">
-                      Asset Name <span class="text-red-500">*</span>
-                    </label>
-                    <input
-                      id="asset_name"
-                      v-model="formData.asset_name"
-                      type="text"
-                      :class="inputClasses('asset_name')"
-                      placeholder="Enter asset name"
-                      required
-                    />
-                    <p v-if="errors.asset_name" class="mt-1 text-sm text-red-600">{{ errors.asset_name }}</p>
-                  </div>
-
-                  <div>
-                    <label for="asset_type" class="block text-sm font-medium text-gray-700 mb-1">
-                      Asset Type
-                    </label>
-                    <select
-                      id="asset_type"
-                      v-model="formData.asset_type"
-                      :class="inputClasses('asset_type')"
-                    >
-                      <option value="">Select asset type</option>
-                      <option value="equipment">Equipment</option>
-                      <option value="vehicle">Vehicle</option>
-                      <option value="furniture">Furniture</option>
-                      <option value="computer">Computer/Technology</option>
-                      <option value="machinery">Machinery</option>
-                      <option value="building">Building</option>
-                      <option value="land">Land</option>
-                      <option value="other">Other</option>
-                    </select>
-                    <p v-if="errors.asset_type" class="mt-1 text-sm text-red-600">{{ errors.asset_type }}</p>
-                  </div>
-                </div>
-
-                <!-- Purchase Date and Business Use -->
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div>
-                    <label for="date_of_purchase" class="block text-sm font-medium text-gray-700 mb-1">
-                      Purchase Date <span class="text-red-500">*</span>
-                    </label>
-                    <input
-                      id="date_of_purchase"
-                      v-model="formData.date_of_purchase"
-                      type="date"
-                      :class="inputClasses('date_of_purchase')"
-                      required
-                    />
-                    <p v-if="errors.date_of_purchase" class="mt-1 text-sm text-red-600">{{ errors.date_of_purchase }}</p>
-                  </div>
-
-                  <div>
-                    <label for="percentage_used_in_business" class="block text-sm font-medium text-gray-700 mb-1">
-                      Business Use % <span class="text-red-500">*</span>
-                    </label>
-                    <div class="relative">
-                      <input
-                        id="percentage_used_in_business"
-                        v-model="formData.percentage_used_in_business"
-                        type="number"
-                        min="0"
-                        max="100"
-                        step="0.01"
-                        :class="inputClasses('percentage_used_in_business')"
-                        placeholder="0.00"
-                        required
-                      />
-                      <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
-                        <span class="text-gray-500 sm:text-sm">%</span>
-                      </div>
-                    </div>
-                    <p v-if="errors.percentage_used_in_business" class="mt-1 text-sm text-red-600">{{ errors.percentage_used_in_business }}</p>
-                  </div>
-                </div>
-
-                <!-- Cost and Reimbursement -->
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div>
-                    <label for="cost_of_acquisition" class="block text-sm font-medium text-gray-700 mb-1">
-                      Cost of Acquisition <span class="text-red-500">*</span>
-                    </label>
-                    <div class="relative">
-                      <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                        <span class="text-gray-500 sm:text-sm">$</span>
-                      </div>
-                      <input
-                        id="cost_of_acquisition"
-                        v-model="formData.cost_of_acquisition"
-                        type="number"
-                        min="0"
-                        step="0.01"
-                        :class="inputClasses('cost_of_acquisition') + ' pl-7'"
-                        placeholder="0.00"
-                        required
-                      />
-                    </div>
-                    <p v-if="errors.cost_of_acquisition" class="mt-1 text-sm text-red-600">{{ errors.cost_of_acquisition }}</p>
-                  </div>
-
-                  <div>
-                    <label for="any_reimbursement" class="block text-sm font-medium text-gray-700 mb-1">
-                      Reimbursement
-                    </label>
-                    <div class="relative">
-                      <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                        <span class="text-gray-500 sm:text-sm">$</span>
-                      </div>
-                      <input
-                        id="any_reimbursement"
-                        v-model="formData.any_reimbursement"
-                        type="number"
-                        min="0"
-                        step="0.01"
-                        :class="inputClasses('any_reimbursement') + ' pl-7'"
-                        placeholder="0.00"
-                      />
-                    </div>
-                    <p v-if="errors.any_reimbursement" class="mt-1 text-sm text-red-600">{{ errors.any_reimbursement }}</p>
-                  </div>
-                </div>
-
-                <!-- Current Value and Depreciation -->
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div>
-                    <label for="current_value" class="block text-sm font-medium text-gray-700 mb-1">
-                      Current Value
-                    </label>
-                    <div class="relative">
-                      <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                        <span class="text-gray-500 sm:text-sm">$</span>
-                      </div>
-                      <input
-                        id="current_value"
-                        v-model="formData.current_value"
-                        type="number"
-                        min="0"
-                        step="0.01"
-                        :class="inputClasses('current_value') + ' pl-7'"
-                        placeholder="0.00"
-                      />
-                    </div>
-                    <p v-if="errors.current_value" class="mt-1 text-sm text-red-600">{{ errors.current_value }}</p>
-                  </div>
-
-                  <div>
-                    <label for="depreciation_rate" class="block text-sm font-medium text-gray-700 mb-1">
-                      Depreciation Rate
-                    </label>
-                    <div class="relative">
-                      <input
-                        id="depreciation_rate"
-                        v-model="formData.depreciation_rate"
-                        type="number"
-                        min="0"
-                        max="100"
-                        step="0.01"
-                        :class="inputClasses('depreciation_rate')"
-                        placeholder="0.00"
-                      />
-                      <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
-                        <span class="text-gray-500 sm:text-sm">%</span>
-                      </div>
-                    </div>
-                    <p v-if="errors.depreciation_rate" class="mt-1 text-sm text-red-600">{{ errors.depreciation_rate }}</p>
-                  </div>
-                </div>
-
-                <!-- Description -->
-                <div>
-                  <label for="description" class="block text-sm font-medium text-gray-700 mb-1">
-                    Description
-                  </label>
-                  <textarea
-                    id="description"
-                    v-model="formData.description"
-                    rows="3"
-                    :class="inputClasses('description')"
-                    placeholder="Additional details about the asset..."
-                  ></textarea>
-                  <p v-if="errors.description" class="mt-1 text-sm text-red-600">{{ errors.description }}</p>
-                </div>
-              </form>
+              <p class="text-sm text-gray-600 font-medium">{{ isEditing ? 'Update asset details and information' : 'Add a new business or personal asset' }}</p>
             </div>
           </div>
-        </div>
-        
-        <!-- Modal footer -->
-        <div class="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
           <button
-            type="button"
-            @click="handleSubmit"
-            class="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-blue-600 text-base font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 sm:ml-3 sm:w-auto sm:text-sm"
-          >
-            {{ isEditing ? 'Update' : 'Add' }} Asset
-          </button>
-          <button
-            type="button"
             @click="closeModal"
-            class="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm"
+            class="p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-lg transition-all duration-200"
           >
-            Cancel
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+            </svg>
           </button>
         </div>
+      </div>
+
+      <!-- Enhanced Form -->
+      <div class="p-8 max-h-[70vh] overflow-y-auto">
+        <form @submit.prevent="handleSubmit" class="space-y-8">
+              
+          <!-- Basic Information Section -->
+          <div class="bg-gradient-to-br from-blue-50 to-indigo-100 rounded-xl p-6 border border-blue-200">
+            <div class="flex items-center mb-6">
+              <div class="w-10 h-10 bg-blue-500 rounded-lg flex items-center justify-center mr-3">
+                <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                </svg>
+              </div>
+              <h4 class="text-lg font-bold text-blue-900">Basic Information</h4>
+            </div>
+            
+            <div class="space-y-6">
+              <!-- Asset Name and Type -->
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="space-y-2">
+                  <label for="asset_name" class="block text-sm font-semibold text-blue-700">
+                    Asset Name <span class="text-red-500">*</span>
+                  </label>
+                  <input
+                    id="asset_name"
+                    v-model="formData.asset_name"
+                    type="text"
+                    class="w-full px-4 py-3 border-2 border-blue-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 text-gray-900 placeholder-gray-500"
+                    placeholder="Enter asset name"
+                    required
+                  />
+                  <p v-if="errors.asset_name" class="mt-1 text-sm text-red-600">{{ errors.asset_name }}</p>
+                </div>
+
+                <div class="space-y-2">
+                  <label for="asset_type" class="block text-sm font-semibold text-blue-700">
+                    Asset Type
+                  </label>
+                  <select
+                    id="asset_type"
+                    v-model="formData.asset_type"
+                    class="w-full px-4 py-3 border-2 border-blue-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 bg-white text-gray-900"
+                  >
+                    <option value="">Select asset type</option>
+                    <option value="equipment">Equipment</option>
+                    <option value="vehicle">Vehicle</option>
+                    <option value="furniture">Furniture</option>
+                    <option value="computer">Computer/Technology</option>
+                    <option value="machinery">Machinery</option>
+                    <option value="building">Building</option>
+                    <option value="land">Land</option>
+                    <option value="other">Other</option>
+                  </select>
+                  <p v-if="errors.asset_type" class="mt-1 text-sm text-red-600">{{ errors.asset_type }}</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Purchase Information Section -->
+          <div class="bg-gradient-to-br from-green-50 to-emerald-100 rounded-xl p-6 border border-green-200">
+            <div class="flex items-center mb-6">
+              <div class="w-10 h-10 bg-green-500 rounded-lg flex items-center justify-center mr-3">
+                <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                </svg>
+              </div>
+              <h4 class="text-lg font-bold text-green-900">Purchase Information</h4>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div class="space-y-2">
+                <label for="date_of_purchase" class="block text-sm font-semibold text-green-700">
+                  Purchase Date <span class="text-red-500">*</span>
+                </label>
+                <input
+                  id="date_of_purchase"
+                  v-model="formData.date_of_purchase"
+                  type="date"
+                  class="w-full px-4 py-3 border-2 border-green-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500 transition-all duration-200 text-gray-900"
+                  required
+                />
+                <p v-if="errors.date_of_purchase" class="mt-1 text-sm text-red-600">{{ errors.date_of_purchase }}</p>
+              </div>
+
+              <div class="space-y-2">
+                <label for="percentage_used_in_business" class="block text-sm font-semibold text-green-700">
+                  Business Use % <span class="text-red-500">*</span>
+                </label>
+                <div class="relative">
+                  <input
+                    id="percentage_used_in_business"
+                    v-model="formData.percentage_used_in_business"
+                    type="number"
+                    min="0"
+                    max="100"
+                    step="0.01"
+                    class="w-full px-4 py-3 pr-8 border-2 border-green-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500 transition-all duration-200 text-gray-900"
+                    placeholder="0.00"
+                    required
+                  />
+                  <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+                    <span class="text-gray-500 sm:text-sm">%</span>
+                  </div>
+                </div>
+                <p v-if="errors.percentage_used_in_business" class="mt-1 text-sm text-red-600">{{ errors.percentage_used_in_business }}</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Financial Information Section -->
+          <div class="bg-gradient-to-br from-purple-50 to-violet-100 rounded-xl p-6 border border-purple-200">
+            <div class="flex items-center mb-6">
+              <div class="w-10 h-10 bg-purple-500 rounded-lg flex items-center justify-center mr-3">
+                <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1"></path>
+                </svg>
+              </div>
+              <h4 class="text-lg font-bold text-purple-900">Financial Information</h4>
+            </div>
+            
+            <div class="space-y-6">
+              <!-- Cost and Reimbursement -->
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="space-y-2">
+                  <label for="cost_of_acquisition" class="block text-sm font-semibold text-purple-700">
+                    Cost of Acquisition <span class="text-red-500">*</span>
+                  </label>
+                  <div class="relative">
+                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                      <span class="text-gray-500 sm:text-sm">$</span>
+                    </div>
+                    <input
+                      id="cost_of_acquisition"
+                      v-model="formData.cost_of_acquisition"
+                      type="number"
+                      min="0"
+                      step="0.01"
+                      class="w-full pl-8 pr-4 py-3 border-2 border-purple-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition-all duration-200 text-gray-900"
+                      placeholder="0.00"
+                      required
+                    />
+                  </div>
+                  <p v-if="errors.cost_of_acquisition" class="mt-1 text-sm text-red-600">{{ errors.cost_of_acquisition }}</p>
+                </div>
+
+                <div class="space-y-2">
+                  <label for="any_reimbursement" class="block text-sm font-semibold text-purple-700">
+                    Reimbursement
+                  </label>
+                  <div class="relative">
+                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                      <span class="text-gray-500 sm:text-sm">$</span>
+                    </div>
+                    <input
+                      id="any_reimbursement"
+                      v-model="formData.any_reimbursement"
+                      type="number"
+                      min="0"
+                      step="0.01"
+                      class="w-full pl-8 pr-4 py-3 border-2 border-purple-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition-all duration-200 text-gray-900"
+                      placeholder="0.00"
+                    />
+                  </div>
+                  <p v-if="errors.any_reimbursement" class="mt-1 text-sm text-red-600">{{ errors.any_reimbursement }}</p>
+                </div>
+              </div>
+
+              <!-- Current Value and Depreciation -->
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="space-y-2">
+                  <label for="current_value" class="block text-sm font-semibold text-purple-700">
+                    Current Value
+                  </label>
+                  <div class="relative">
+                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                      <span class="text-gray-500 sm:text-sm">$</span>
+                    </div>
+                    <input
+                      id="current_value"
+                      v-model="formData.current_value"
+                      type="number"
+                      min="0"
+                      step="0.01"
+                      class="w-full pl-8 pr-4 py-3 border-2 border-purple-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition-all duration-200 text-gray-900"
+                      placeholder="0.00"
+                    />
+                  </div>
+                  <p v-if="errors.current_value" class="mt-1 text-sm text-red-600">{{ errors.current_value }}</p>
+                </div>
+
+                <div class="space-y-2">
+                  <label for="depreciation_rate" class="block text-sm font-semibold text-purple-700">
+                    Depreciation Rate
+                  </label>
+                  <div class="relative">
+                    <input
+                      id="depreciation_rate"
+                      v-model="formData.depreciation_rate"
+                      type="number"
+                      min="0"
+                      max="100"
+                      step="0.01"
+                      class="w-full px-4 py-3 pr-8 border-2 border-purple-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition-all duration-200 text-gray-900"
+                      placeholder="0.00"
+                    />
+                    <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+                      <span class="text-gray-500 sm:text-sm">%</span>
+                    </div>
+                  </div>
+                  <p v-if="errors.depreciation_rate" class="mt-1 text-sm text-red-600">{{ errors.depreciation_rate }}</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Additional Details Section -->
+          <div class="bg-gradient-to-br from-gray-50 to-slate-100 rounded-xl p-6 border border-gray-200">
+            <div class="flex items-center mb-6">
+              <div class="w-10 h-10 bg-gray-500 rounded-lg flex items-center justify-center mr-3">
+                <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
+                </svg>
+              </div>
+              <h4 class="text-lg font-bold text-gray-900">Additional Details</h4>
+            </div>
+            
+            <div class="space-y-2">
+              <label for="description" class="block text-sm font-semibold text-gray-700">
+                Description
+              </label>
+              <textarea
+                id="description"
+                v-model="formData.description"
+                rows="3"
+                class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-gray-500 focus:border-gray-500 transition-all duration-200 text-gray-900 placeholder-gray-500 resize-none"
+                placeholder="Additional details about the asset..."
+              ></textarea>
+              <p v-if="errors.description" class="mt-1 text-sm text-red-600">{{ errors.description }}</p>
+            </div>
+          </div>
+        </form>
+      </div>
+
+      <!-- Enhanced Actions -->
+      <div class="flex justify-end gap-3 pt-6 border-t border-gray-200 bg-white px-8 pb-8">
+        <button
+          type="button"
+          @click="closeModal"
+          class="bg-gradient-to-r from-gray-500 to-slate-600 hover:from-gray-600 hover:to-slate-700 text-white px-6 py-3 rounded-xl font-semibold transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105 flex items-center"
+        >
+          <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+          </svg>
+          Cancel
+        </button>
+        <button
+          type="button"
+          @click="handleSubmit"
+          class="bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white px-6 py-3 rounded-xl font-semibold transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105 flex items-center"
+        >
+          <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+          </svg>
+          {{ isEditing ? 'Update' : 'Add' }} Asset
+        </button>
       </div>
     </div>
   </div>
@@ -262,12 +334,7 @@ const formData = reactive({
   description: ''
 })
 
-const inputClasses = (fieldName) => {
-  const baseClasses = 'block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm'
-  const errorClasses = 'border-red-300 text-red-900 placeholder-red-300 focus:border-red-500 focus:ring-red-500'
-  
-  return props.errors[fieldName] ? `${baseClasses} ${errorClasses}` : baseClasses
-}
+
 
 const resetForm = () => {
   Object.assign(formData, {

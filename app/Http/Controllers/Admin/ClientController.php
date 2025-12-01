@@ -128,6 +128,17 @@ class ClientController extends Controller
             abort(404, 'Client not found');
         }
 
+        // Handle SSN masking for security
+        if ($client->ssn) {
+            $client->ssn_masked = '***-**-' . substr($client->ssn, -4);
+            $client->has_ssn = true;
+            // Don't send actual SSN to frontend
+            $client->ssn = null;
+        } else {
+            $client->ssn_masked = null;
+            $client->has_ssn = false;
+        }
+
         return Inertia::render('Admin/Clients/Edit', [
             'client' => $client,
             'visaStatusOptions' => VisaStatus::options(),

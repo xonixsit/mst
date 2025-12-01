@@ -9,26 +9,26 @@
       <button
         @click="addRow"
         :disabled="readonly"
-        class="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
+        class="bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white px-4 py-2 rounded-xl font-semibold transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none flex items-center"
       >
-        <PlusIcon class="w-4 h-4 mr-1" />
+        <PlusIcon class="w-4 h-4 mr-2" />
         Add {{ rowLabel || 'Row' }}
       </button>
     </div>
 
     <!-- Empty State -->
-    <div v-if="localData.length === 0" class="text-center py-8 bg-gray-50 rounded-lg border-2 border-dashed border-gray-300">
+    <div v-if="localData.length === 0" class="text-center py-12">
       <component :is="emptyIcon" class="mx-auto h-12 w-12 text-gray-400" />
-      <h3 class="mt-2 text-sm font-medium text-gray-900">No {{ rowLabel?.toLowerCase() || 'items' }}</h3>
-      <p class="mt-1 text-sm text-gray-500">Get started by adding your first {{ rowLabel?.toLowerCase() || 'item' }}.</p>
-      <div class="mt-6">
+      <h3 class="mt-2 text-sm font-medium text-gray-900">{{ emptyTitle || `No ${rowLabel?.toLowerCase() || 'items'}` }}</h3>
+      <p class="mt-1 text-sm text-gray-500">{{ emptyDescription || `Get started by adding your first ${rowLabel?.toLowerCase() || 'item'}.` }}</p>
+      <div class="mt-6 flex justify-center">
         <button
           @click="addRow"
           :disabled="readonly"
-          class="inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
+          class="bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white px-6 py-3 rounded-xl font-semibold transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none inline-flex items-center"
         >
           <PlusIcon class="w-4 h-4 mr-2" />
-          Add {{ rowLabel || 'Row' }}
+          {{ addButtonText || `Add ${rowLabel || 'Row'}` }}
         </button>
       </div>
     </div>
@@ -238,6 +238,18 @@ const props = defineProps({
   emptyIcon: {
     type: [String, Object],
     default: () => TrashIcon
+  },
+  emptyTitle: {
+    type: String,
+    default: ''
+  },
+  emptyDescription: {
+    type: String,
+    default: ''
+  },
+  addButtonText: {
+    type: String,
+    default: ''
   },
   errors: {
     type: Object,

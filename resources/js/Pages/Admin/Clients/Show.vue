@@ -28,7 +28,7 @@
               <div class="flex items-center space-x-4 mt-3">
                 <div class="flex items-center space-x-2">
                   <div :class="getStatusDotClass(client.status)" class="w-2 h-2 rounded-full"></div>
-                  <span :class="getStatusTextClass(client.status)" class="text-xs font-semibold capitalize">{{ client.status }}</span>
+                  <span :class="getStatusTextClass(client.status)" class="text-xs font-semibold capitalize">{{ client.status.replace('_', ' ') }}</span>
                 </div>
                 <div class="flex items-center space-x-2">
                   <div class="w-2 h-2 bg-blue-400 rounded-full"></div>
@@ -84,7 +84,7 @@
               <div class="flex items-center justify-between">
                 <div class="flex-1">
                   <p class="text-sm font-semibold text-cyan-700 uppercase tracking-wide">Status</p>
-                  <p class="text-3xl font-bold text-cyan-900 mt-2 capitalize">{{ client.status }}</p>
+                  <p class="text-xl font-bold text-cyan-900 mt-2 capitalize">{{ client.status.replace('_', ' ') }}</p>
                 </div>
                 <div class="p-4 bg-cyan-500 rounded-xl shadow-lg group-hover:bg-cyan-600 transition-colors duration-300">
                   <UserIcon class="w-8 h-8 text-white" />
@@ -704,7 +704,16 @@ import AppLayout from '@/Layouts/AppLayout.vue'
 export default {
   name: 'AdminClientShow',
   components: {
-    AppLayout
+    AppLayout,
+    UserIcon,
+    PencilIcon,
+    DocumentTextIcon,
+    CurrencyDollarIcon,
+    TrashIcon,
+    ClipboardDocumentListIcon,
+    BuildingOfficeIcon,
+    CreditCardIcon,
+    MapPinIcon
   },
   props: {
     client: Object
@@ -837,11 +846,11 @@ export default {
     }
 
     const viewDocuments = () => {
-      router.visit(`/admin/clients/${props.client.user_id}/documents`)
+      router.visit(`/admin/documents?client_id=${props.client.id}`)
     }
 
     const viewInvoices = () => {
-      router.visit(`/admin/clients/${props.client.user_id}/invoices`)
+      router.visit(`/admin/invoices?client_id=${props.client.id}`)
     }
 
     const deleteClient = () => {
@@ -872,6 +881,7 @@ export default {
       loading,
       showDeleteModal,
       deleting,
+      router,
       formatDate,
       formatDateTime,
       formatCurrency,

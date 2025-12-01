@@ -147,6 +147,7 @@
               <PersonalDetailsSection
                 v-if="activeSection === 'personal'"
                 v-model="form.personal"
+                :data="client"
                 :errors="form.errors"
                 :visa-status-options="visaStatusOptions"
                 @update="handleSectionUpdate"
@@ -655,16 +656,62 @@ const handleSave = () => {
   const backendData = {
     personal: toSnakeCase(form.personal),
     spouse: toSnakeCase(form.spouse),
-    employee: Array.isArray(form.employee) ? form.employee : [],
-    projects: form.projects,
+    employee: Array.isArray(form.employee) ? form.employee.map(emp => {
+      const processedEmployee = { ...emp }
+      
+      // Remove auto-managed timestamp fields
+      delete processedEmployee.created_at
+      delete processedEmployee.updated_at
+      
+      return processedEmployee
+    }) : [],
+    projects: Array.isArray(form.projects) ? form.projects.map(project => {
+      const processedProject = { ...project }
+      
+      // Remove fields that don't exist in database or are auto-managed
+      delete processedProject.taxYear
+      delete processedProject.priority
+      delete processedProject.created_at
+      delete processedProject.updated_at
+      
+      // Format dates
+      if (processedProject.start_date) {
+        processedProject.start_date = formatDateForBackend(processedProject.start_date)
+      }
+      if (processedProject.due_date) {
+        processedProject.due_date = formatDateForBackend(processedProject.due_date)
+      }
+      if (processedProject.completion_date) {
+        processedProject.completion_date = formatDateForBackend(processedProject.completion_date)
+      }
+      return processedProject
+    }) : [],
     assets: Array.isArray(form.assets) ? form.assets.map(asset => {
       const processedAsset = { ...asset }
+      
+      // Remove auto-managed timestamp fields
+      delete processedAsset.created_at
+      delete processedAsset.updated_at
+      
       if (processedAsset.date_of_purchase) {
         processedAsset.date_of_purchase = formatDateForBackend(processedAsset.date_of_purchase)
       }
       return processedAsset
     }) : [],
-    expenses: form.expenses
+    expenses: Array.isArray(form.expenses) ? form.expenses.map(expense => {
+      const processedExpense = { ...expense }
+      
+      // Remove auto-managed timestamp fields
+      delete processedExpense.created_at
+      delete processedExpense.updated_at
+      
+      // Format date fields
+      if (processedExpense.expense_date) {
+        processedExpense.expense_date = formatDateForBackend(processedExpense.expense_date)
+      }
+      
+      return processedExpense
+    }) : []
   }
   
   form.transform(() => backendData).put(route('admin.clients.update', props.client.id), {
@@ -819,9 +866,25 @@ const autoSave = async () => {
     const backendData = {
       personal: form.personal,
       spouse: form.spouse,
-      employee: Array.isArray(form.employee) ? form.employee : [],
+      employee: Array.isArray(form.employee) ? form.employee.map(emp => {
+        const processedEmployee = { ...emp }
+        
+        // Remove auto-managed timestamp fields
+        delete processedEmployee.created_at
+        delete processedEmployee.updated_at
+        
+        return processedEmployee
+      }) : [],
       projects: Array.isArray(form.projects) ? form.projects.map(project => {
         const processedProject = { ...project }
+        
+        // Remove fields that don't exist in database or are auto-managed
+        delete processedProject.taxYear
+        delete processedProject.priority
+        delete processedProject.created_at
+        delete processedProject.updated_at
+        
+        // Format dates
         if (processedProject.start_date) {
           processedProject.start_date = formatDateForBackend(processedProject.start_date)
         }
@@ -835,12 +898,30 @@ const autoSave = async () => {
       }) : [],
       assets: Array.isArray(form.assets) ? form.assets.map(asset => {
         const processedAsset = { ...asset }
+        
+        // Remove auto-managed timestamp fields
+        delete processedAsset.created_at
+        delete processedAsset.updated_at
+        
         if (processedAsset.date_of_purchase) {
           processedAsset.date_of_purchase = formatDateForBackend(processedAsset.date_of_purchase)
         }
         return processedAsset
       }) : [],
-      expenses: Array.isArray(form.expenses) ? form.expenses : []
+      expenses: Array.isArray(form.expenses) ? form.expenses.map(expense => {
+        const processedExpense = { ...expense }
+        
+        // Remove auto-managed timestamp fields
+        delete processedExpense.created_at
+        delete processedExpense.updated_at
+        
+        // Format date fields
+        if (processedExpense.expense_date) {
+          processedExpense.expense_date = formatDateForBackend(processedExpense.expense_date)
+        }
+        
+        return processedExpense
+      }) : []
     }
     
     await axios.put(route('admin.clients.update', props.client.id), backendData)
@@ -853,6 +934,9 @@ const autoSave = async () => {
 }
 
 const scheduleAutoSave = () => {
+  // Temporarily disabled auto-save due to authentication issues
+  return
+  
   if (autoSaveTimer.value) {
     clearTimeout(autoSaveTimer.value)
   }

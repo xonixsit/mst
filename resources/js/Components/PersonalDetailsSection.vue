@@ -119,7 +119,7 @@
                 input-id="ssn"
                 v-model="localData.ssn"
                 :input-classes="inputClasses('ssn')"
-                placeholder="123-45-6789"
+                :placeholder="data?.has_ssn && data?.ssn_masked ? `Current: ${data.ssn_masked} (leave empty to keep current)` : '123-45-6789'"
                 :is-pre-masked="true"
                 @blur="validateField('ssn')"
                 @input="handleSSNInputChange"
@@ -442,6 +442,10 @@ const props = defineProps({
     type: Object,
     default: () => ({})
   },
+  data: {
+    type: Object,
+    default: () => ({})
+  },
   errors: {
     type: Object,
     default: () => ({})
@@ -604,9 +608,9 @@ const validateField = (fieldName) => {
       break
 
     case 'ssn':
-      if (!value) {
+      if (!value && !props.data?.has_ssn) {
         error = 'Social Security Number is required'
-      } else if (!/^\d{3}-\d{2}-\d{4}$/.test(value)) {
+      } else if (value && !/^\d{3}-\d{2}-\d{4}$/.test(value)) {
         error = 'SSN must be in format 123-45-6789'
       }
       break
@@ -677,8 +681,11 @@ const handleInput = (fieldName, value) => {
 }
 
 const handleSSNInputChange = (value) => {
-  localData.ssn = value
-  handleInput('ssn', value)
+  // Only update if user is actually entering a new SSN (not just the masked placeholder)
+  if (value && value !== props.data?.ssn_masked) {
+    localData.ssn = value
+    handleInput('ssn', value)
+  }
 }
 
 const handlePhoneInputMask = (fieldName, event) => {
@@ -746,7 +753,17 @@ const initializeData = () => {
           value = getPhoneDisplayFormat(value)
         }
         
-        localData[key] = value
+        // Handle SSN masking - show masked value as placeholder
+        if (key === 'ssn') {
+          if (props.data?.has_ssn && props.data?.ssn_masked) {
+            // Show masked value as placeholder, keep actual value empty to prevent overwriting
+            localData[key] = ''
+          } else {
+            localData[key] = value
+          }
+        } else {
+          localData[key] = value
+        }
       }
     })
   }

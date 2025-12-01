@@ -9,8 +9,8 @@
             <p class="text-sm text-gray-600 mt-1">Business and personal assets for tax purposes</p>
           </div>
           <button @click="addAsset" :disabled="readonly"
-            class="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed">
-            <PlusIcon class="w-4 h-4 mr-1" />
+            class="bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white px-4 py-2 rounded-xl font-semibold transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none flex items-center">
+            <PlusIcon class="w-4 h-4 mr-2" />
             Add Asset
           </button>
         </div>
@@ -46,7 +46,7 @@
           <p class="mt-1 text-sm text-gray-500">Get started by adding your first business or personal asset.</p>
           <div class="mt-6">
             <button @click="addAsset" :disabled="readonly"
-              class="inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed">
+              class="bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white px-6 py-3 rounded-xl font-semibold transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none inline-flex items-center">
               <PlusIcon class="w-4 h-4 mr-2" />
               Add Asset
             </button>

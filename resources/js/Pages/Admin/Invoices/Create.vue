@@ -326,31 +326,31 @@
               </div>
             </div>
 
+            <!-- Enhanced Submit Buttons -->
+            <div class="flex flex-wrap justify-end gap-3 pt-8 border-t border-gray-200">
+              <Link href="/admin/invoices"
+                class="bg-gradient-to-r from-gray-500 to-slate-600 hover:from-gray-600 hover:to-slate-700 text-white px-6 py-3 rounded-xl flex items-center transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105 group">
+              <XMarkIcon class="w-5 h-5 mr-2" />
+              <span class="font-semibold">Cancel</span>
+              </Link>
+              <button type="submit" :disabled="form.processing"
+                class="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white px-6 py-3 rounded-xl flex items-center transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105 group disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none">
+                <CheckIcon class="w-5 h-5 mr-2" />
+                <span class="font-semibold">
+                  <span v-if="form.processing">Creating...</span>
+                  <span v-else>Create Invoice</span>
+                </span>
+              </button>
+              <button type="button" @click="saveAndEmail" :disabled="form.processing"
+                class="bg-gradient-to-r from-orange-600 to-amber-600 hover:from-orange-700 hover:to-amber-700 text-white px-6 py-3 rounded-xl flex items-center transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105 group disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none">
+                <PaperAirplaneIcon class="w-5 h-5 mr-2" />
+                <span class="font-semibold">
+                  <span v-if="form.processing">Creating...</span>
+                  <span v-else">Create & Email</span>
+                </span>
+              </button>
+            </div>
           </form>
-          <!-- Enhanced Submit Buttons -->
-          <div class="flex flex-wrap justify-end gap-3 pt-8 border-t border-gray-200">
-            <Link href="/admin/invoices"
-              class="bg-gradient-to-r from-gray-500 to-slate-600 hover:from-gray-600 hover:to-slate-700 text-white px-6 py-3 rounded-xl flex items-center transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105 group">
-            <XMarkIcon class="w-5 h-5 mr-2" />
-            <span class="font-semibold">Cancel</span>
-            </Link>
-            <button type="submit" :disabled="form.processing"
-              class="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white px-6 py-3 rounded-xl flex items-center transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105 group disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none">
-              <CheckIcon class="w-5 h-5 mr-2" />
-              <span class="font-semibold">
-                <span v-if="form.processing">Creating...</span>
-                <span v-else>Create Invoice</span>
-              </span>
-            </button>
-            <button type="button" @click="saveAndEmail" :disabled="form.processing"
-              class="bg-gradient-to-r from-orange-600 to-amber-600 hover:from-orange-700 hover:to-amber-700 text-white px-6 py-3 rounded-xl flex items-center transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105 group disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none">
-              <PaperAirplaneIcon class="w-5 h-5 mr-2" />
-              <span class="font-semibold">
-                <span v-if="form.processing">Creating...</span>
-                <span v-else">Create & Email</span>
-              </span>
-            </button>
-          </div>
         </div>
       </div>
     </div>

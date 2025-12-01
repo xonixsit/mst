@@ -9,8 +9,8 @@
             <p class="text-sm text-gray-600 mt-1">Tax-related projects and their current status</p>
           </div>
           <button @click="addProject" :disabled="readonly"
-            class="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed">
-            <PlusIcon class="w-4 h-4 mr-1" />
+            class="bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white px-4 py-2 rounded-xl font-semibold transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none flex items-center">
+            <PlusIcon class="w-4 h-4 mr-2" />
             Add Project
           </button>
         </div>
@@ -23,9 +23,9 @@
           <FolderIcon class="mx-auto h-12 w-12 text-gray-400" />
           <h3 class="mt-2 text-sm font-medium text-gray-900">No projects</h3>
           <p class="mt-1 text-sm text-gray-500">Get started by adding your first tax project.</p>
-          <div class="mt-6">
+          <div class="mt-6 flex justify-center">
             <button @click="addProject" :disabled="readonly"
-              class="inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed">
+              class="bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white px-6 py-3 rounded-xl font-semibold transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none inline-flex items-center">
               <PlusIcon class="w-4 h-4 mr-2" />
               Add Project
             </button>
@@ -594,14 +594,15 @@
   input:focus,
   select:focus,
   textarea:focus {
-    @apply ring-2 ring-blue-500 ring-opacity-50;
+    ring-width: 2px;
+    ring-color: rgb(59 130 246 / 0.5);
   }
 
   /* Disabled state styling */
   input:disabled,
   select:disabled,
   textarea:disabled {
-    @apply cursor-not-allowed;
+    cursor: not-allowed;
   }
 
   /* Project card styling */
@@ -610,6 +611,6 @@
   }
 
   .project-card:hover {
-    @apply shadow-md;
+    box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
   }
 </style>

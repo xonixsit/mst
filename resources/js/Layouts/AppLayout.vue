@@ -1,9 +1,18 @@
 <template>
   <div class="h-screen bg-gradient-to-br from-neutral-50 to-neutral-100 flex overflow-hidden">
     <!-- Sidebar -->
-    <div class="hidden lg:flex lg:flex-shrink-0">
-      <div class="flex flex-col w-64 h-screen">
-        <div class="flex flex-col flex-grow relative pt-6 pb-4 overflow-y-auto shadow-xl backdrop-blur-sm">
+    <div :class="[
+      'hidden lg:flex lg:flex-shrink-0 transition-all duration-300',
+      sidebarCollapsed ? 'lg:w-16' : 'lg:w-64'
+    ]">
+      <div :class="[
+        'flex flex-col h-screen transition-all duration-300',
+        sidebarCollapsed ? 'w-16' : 'w-64'
+      ]">
+        <div :class="[
+          'flex flex-col flex-grow relative pt-6 pb-4 overflow-y-auto overflow-x-hidden shadow-xl backdrop-blur-sm transition-all duration-300',
+          sidebarCollapsed ? 'scrollbar-none' : 'scrollbar-thin scrollbar-thumb-gray-600 scrollbar-track-transparent'
+        ]">
           <!-- Cohesive Theme Background -->
           <div class="absolute inset-0 bg-gradient-to-br from-slate-800 via-slate-900 to-gray-900"></div>
 
@@ -28,8 +37,14 @@
           <!-- Content Container -->
           <div class="relative z-10 flex flex-col flex-grow">
             <!-- Logo -->
-            <div class="flex items-center flex-shrink-0 px-6 mb-10">
-              <div class="flex items-center space-x-3">
+            <div :class="[
+              'flex items-center flex-shrink-0 mb-10 transition-all duration-300',
+              sidebarCollapsed ? 'px-3 justify-center' : 'px-6'
+            ]">
+              <div :class="[
+                'flex items-center transition-all duration-300',
+                sidebarCollapsed ? 'space-x-0' : 'space-x-3'
+              ]">
                 <div
                   class="w-10 h-10 bg-gradient-to-br from-primary-600 via-primary-700 to-primary-800 rounded-xl flex items-center justify-center shadow-lg ring-2 ring-white/20">
                   <svg class="w-6 h-6 text-white" fill="currentColor" viewBox="0 0 24 24">
@@ -37,7 +52,7 @@
                       d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
                   </svg>
                 </div>
-                <div>
+                <div v-if="!sidebarCollapsed" class="transition-opacity duration-300">
                   <h1 class="text-xl font-bold text-white drop-shadow-sm">MySuperTax</h1>
                   <p class="text-xs text-gray-300 font-medium">Professional Services</p>
                 </div>
@@ -50,21 +65,45 @@
                 item.current
                   ? 'bg-white/15 text-white shadow-md border-l-4 border-primary-400'
                   : 'text-gray-300 hover:bg-white/10 hover:text-white hover:shadow-md',
-                'group flex items-center px-4 py-3 text-sm font-medium rounded-lg transition-all duration-300 ease-in-out transform hover:scale-[1.02]'
-              ]">
+                'group flex items-center text-sm font-medium rounded-lg transition-all duration-300 ease-in-out transform hover:scale-[1.02]',
+                sidebarCollapsed ? 'px-2 py-3 justify-center' : 'px-4 py-3'
+              ]" :title="sidebarCollapsed ? item.name : ''">
                 <div :class="[
                 item.current ? 'bg-white/20 text-white' : 'bg-white/10 text-gray-400 group-hover:bg-white/20 group-hover:text-white',
-                'p-2 rounded-lg mr-3 transition-all duration-300'
+                'p-2 rounded-lg transition-all duration-300',
+                sidebarCollapsed ? 'mr-0' : 'mr-3'
               ]">
                   <component :is="item.icon" class="h-5 w-5" />
                 </div>
-                <span class="flex-1">{{ item.name }}</span>
-                <span v-if="item.badge"
+                <span v-if="!sidebarCollapsed" class="flex-1">{{ item.name }}</span>
+                <span v-if="item.badge && !sidebarCollapsed"
                   class="inline-flex items-center px-2.5 py-1 text-xs font-semibold rounded-full bg-red-500 text-white shadow-sm animate-pulse">
                   {{ item.badge }}
                 </span>
               </a>
             </nav>
+            
+            <!-- Toggle Button -->
+            <div class="px-3 pb-4">
+              <button
+                @click="sidebarCollapsed = !sidebarCollapsed"
+                :class="[
+                  'w-full flex items-center text-gray-300 hover:bg-white/10 hover:text-white text-sm font-medium rounded-lg transition-all duration-300',
+                  sidebarCollapsed ? 'px-2 py-3 justify-center' : 'px-4 py-3'
+                ]"
+                :title="sidebarCollapsed ? 'Expand sidebar' : 'Collapse sidebar'"
+              >
+                <div class="bg-white/10 hover:bg-white/20 p-2 rounded-lg transition-all duration-300">
+                  <svg v-if="!sidebarCollapsed" class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 19l-7-7 7-7m8 14l-7-7 7-7" />
+                  </svg>
+                  <svg v-else class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 5l7 7-7 7M5 5l7 7-7 7" />
+                  </svg>
+                </div>
+                <span v-if="!sidebarCollapsed" class="ml-3">Collapse</span>
+              </button>
+            </div>
           </div>
         </div>
       </div>
@@ -234,6 +273,9 @@
 
 <script setup>
   import { ref, computed } from 'vue'
+  
+  // Sidebar toggle state
+  const sidebarCollapsed = ref(false)
   import { router, usePage, Link } from '@inertiajs/vue3'
   import {
     HomeIcon,
@@ -386,7 +428,7 @@
     if (user?.role === 'admin' || user?.role === 'tax_professional') {
       return [
         {
-          name: 'Admin Profile',
+          name: user?.role === 'tax_professional' ? 'Tax Professional Profile' : 'Admin Profile',
           href: '/admin/profile',
           icon: UserCircleIcon
         },
@@ -438,3 +480,31 @@
     }
   })
 </script>
+<style
+ scoped>
+.scrollbar-none {
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* Internet Explorer 10+ */
+}
+
+.scrollbar-none::-webkit-scrollbar {
+  display: none; /* WebKit */
+}
+
+.scrollbar-thin {
+  scrollbar-width: thin;
+}
+
+.scrollbar-thin::-webkit-scrollbar {
+  width: 6px;
+}
+
+.scrollbar-thumb-gray-600::-webkit-scrollbar-thumb {
+  background-color: rgba(75, 85, 99, 0.6);
+  border-radius: 3px;
+}
+
+.scrollbar-track-transparent::-webkit-scrollbar-track {
+  background: transparent;
+}
+</style>
