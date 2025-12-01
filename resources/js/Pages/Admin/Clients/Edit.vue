@@ -67,8 +67,18 @@
                 <h3 class="text-xl font-bold text-gray-900">Client Information Sections</h3>
                 <p class="text-sm text-gray-600 mt-1">Update client profile sections as needed</p>
               </div>
-              <div class="bg-white px-4 py-2 rounded-lg border border-gray-200 shadow-sm">
-                <span class="text-sm font-semibold text-blue-600">{{ Math.round(overallProgress) }}% Complete</span>
+              <div class="flex items-center space-x-3">
+                <div class="bg-white px-4 py-2 rounded-lg border border-gray-200 shadow-sm">
+                  <span class="text-sm font-semibold text-blue-600">{{ Math.round(overallProgress) }}% Complete</span>
+                </div>
+                <div v-if="autoSaving" class="flex items-center space-x-2 bg-yellow-50 px-3 py-2 rounded-lg border border-yellow-200">
+                  <div class="w-3 h-3 bg-yellow-400 rounded-full animate-pulse"></div>
+                  <span class="text-xs font-medium text-yellow-700">Auto-saving...</span>
+                </div>
+                <div v-else-if="lastSaved" class="flex items-center space-x-2 bg-green-50 px-3 py-2 rounded-lg border border-green-200">
+                  <div class="w-3 h-3 bg-green-400 rounded-full"></div>
+                  <span class="text-xs font-medium text-green-700">Saved {{ formatTimeAgo(lastSaved) }}</span>
+                </div>
               </div>
             </div>
           </div>
@@ -329,7 +339,8 @@
 </template>
 
 <script setup>
-import { ref, computed, watch } from 'vue'
+import { ref, computed, watch, onUnmounted } from 'vue'
+import axios from 'axios'
 import { useForm, router } from '@inertiajs/vue3'
 import AppLayout from '@/Layouts/AppLayout.vue'
 import PersonalDetailsSection from '@/Components/PersonalDetailsSection.vue'
@@ -680,6 +691,16 @@ const toSnakeCase = (obj) => {
   return result
 }
 
+const formatTimeAgo = (date) => {
+  const now = new Date()
+  const diff = Math.floor((now - date) / 1000)
+  
+  if (diff < 60) return 'just now'
+  if (diff < 3600) return `${Math.floor(diff / 60)}m ago`
+  if (diff < 86400) return `${Math.floor(diff / 3600)}h ago`
+  return `${Math.floor(diff / 86400)}d ago`
+}
+
 const formatDateForBackend = (date) => {
   if (!date) return null
   
@@ -784,9 +805,62 @@ const getSectionIconBgClasses = (sectionId) => {
   return bgMap[sectionId] || (isActive ? 'bg-gray-500' : 'bg-gray-100')
 }
 
-// Watch form changes to trigger completion recalculation
+// Auto-save functionality
+const autoSaveTimer = ref(null)
+const lastSaved = ref(null)
+const autoSaving = ref(false)
+
+const autoSave = async () => {
+  if (autoSaving.value || form.processing) return
+  
+  try {
+    autoSaving.value = true
+    
+    const backendData = {
+      personal: form.personal,
+      spouse: form.spouse,
+      employee: Array.isArray(form.employee) ? form.employee : [],
+      projects: form.projects,
+      assets: Array.isArray(form.assets) ? form.assets.map(asset => {
+        const processedAsset = { ...asset }
+        if (processedAsset.date_of_purchase) {
+          processedAsset.date_of_purchase = formatDateForBackend(processedAsset.date_of_purchase)
+        }
+        return processedAsset
+      }) : [],
+      expenses: Array.isArray(form.expenses) ? form.expenses : []
+    }
+    
+    await axios.put(route('admin.clients.update', props.client.id), backendData)
+    lastSaved.value = new Date()
+  } catch (error) {
+    console.error('Auto-save failed:', error)
+  } finally {
+    autoSaving.value = false
+  }
+}
+
+const scheduleAutoSave = () => {
+  if (autoSaveTimer.value) {
+    clearTimeout(autoSaveTimer.value)
+  }
+  
+  autoSaveTimer.value = setTimeout(() => {
+    autoSave()
+  }, 3000) // Auto-save after 3 seconds of inactivity
+}
+
+// Watch form changes to trigger completion recalculation and auto-save
 watch(() => form.data(), () => {
   // This will trigger reactivity for completion calculations
+  scheduleAutoSave()
 }, { deep: true })
+
+// Cleanup timer on unmount
+onUnmounted(() => {
+  if (autoSaveTimer.value) {
+    clearTimeout(autoSaveTimer.value)
+  }
+})
 </script>
 

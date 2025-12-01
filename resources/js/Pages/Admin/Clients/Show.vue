@@ -877,6 +877,7 @@ export default {
       formatCurrency,
       getStatusBgClass,
       getStatusTextClass,
+      getStatusDotClass,
       getProjectStatusClass,
       getDocumentStatusClass,
       loadFinancialSummary,
