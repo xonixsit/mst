@@ -820,7 +820,19 @@ const autoSave = async () => {
       personal: form.personal,
       spouse: form.spouse,
       employee: Array.isArray(form.employee) ? form.employee : [],
-      projects: form.projects,
+      projects: Array.isArray(form.projects) ? form.projects.map(project => {
+        const processedProject = { ...project }
+        if (processedProject.start_date) {
+          processedProject.start_date = formatDateForBackend(processedProject.start_date)
+        }
+        if (processedProject.due_date) {
+          processedProject.due_date = formatDateForBackend(processedProject.due_date)
+        }
+        if (processedProject.completion_date) {
+          processedProject.completion_date = formatDateForBackend(processedProject.completion_date)
+        }
+        return processedProject
+      }) : [],
       assets: Array.isArray(form.assets) ? form.assets.map(asset => {
         const processedAsset = { ...asset }
         if (processedAsset.date_of_purchase) {
