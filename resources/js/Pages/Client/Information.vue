@@ -1,25 +1,75 @@
 <template>
   <AppLayout>
     <template #header>
-      <div class="flex items-center justify-between">
-        <div>
-          <h1 class="text-2xl font-bold text-gray-900">My Information</h1>
-          <p class="mt-1 text-sm text-gray-600">Manage your comprehensive tax information and personal details</p>
-        </div>
-        <div class="flex items-center space-x-3">
-
-          <!-- Auto-save Status -->
-          <div class="flex items-center space-x-2">
-            <div 
-              :class="[
-                'w-2 h-2 rounded-full',
-                autoSaveStatus === 'saving' ? 'bg-yellow-500' : 
-                autoSaveStatus === 'saved' ? 'bg-green-500' : 'bg-gray-300'
-              ]"
-            ></div>
-            <span class="text-xs text-gray-500">
-              {{ autoSaveStatusText }}
-            </span>
+      <div class="relative overflow-hidden">
+        <!-- Background Pattern -->
+        <div class="absolute inset-0 bg-gradient-to-r from-slate-50 via-emerald-50 to-blue-50"></div>
+        <div class="absolute top-0 right-0 w-64 h-32 bg-gradient-to-bl from-emerald-100/40 to-transparent rounded-bl-full"></div>
+        <div class="absolute bottom-0 left-0 w-48 h-24 bg-gradient-to-tr from-blue-100/30 to-transparent rounded-tr-full"></div>
+        
+        <!-- Content -->
+        <div class="relative flex flex-col lg:flex-row lg:justify-between lg:items-center space-y-6 lg:space-y-0 py-2">
+          <div class="flex items-center space-x-4">
+            <!-- Information Management Icon -->
+            <div class="w-16 h-16 bg-gradient-to-br from-emerald-500 via-emerald-600 to-blue-600 rounded-2xl flex items-center justify-center shadow-lg ring-4 ring-emerald-100">
+              <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
+              </svg>
+            </div>
+            
+            <!-- Title Section -->
+            <div>
+              <h1 class="text-3xl font-bold bg-gradient-to-r from-gray-900 via-emerald-900 to-blue-900 bg-clip-text text-transparent">
+                My Information
+              </h1>
+              <p class="mt-2 text-sm text-gray-600 font-medium">Manage your comprehensive tax information and personal details</p>
+              
+              <!-- Status Indicators -->
+              <div class="flex items-center space-x-4 mt-3">
+                <div class="flex items-center space-x-2">
+                  <div 
+                    :class="[
+                      'w-2 h-2 rounded-full',
+                      autoSaveStatus === 'saving' ? 'bg-yellow-400 animate-pulse' : 
+                      autoSaveStatus === 'saved' ? 'bg-green-400' : 'bg-gray-300'
+                    ]"
+                  ></div>
+                  <span class="text-xs font-semibold" :class="[
+                    autoSaveStatus === 'saving' ? 'text-yellow-700' : 
+                    autoSaveStatus === 'saved' ? 'text-green-700' : 'text-gray-500'
+                  ]">
+                    {{ autoSaveStatusText }}
+                  </span>
+                </div>
+                <div class="flex items-center space-x-2">
+                  <div class="w-2 h-2 bg-blue-400 rounded-full"></div>
+                  <span class="text-xs font-semibold text-blue-700">Secure Form</span>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Action Buttons -->
+          <div class="flex flex-col sm:flex-row items-start sm:items-center space-y-3 sm:space-y-0 sm:space-x-4">
+            <Link
+              href="/client/documents"
+              class="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white px-6 py-3 rounded-xl flex items-center transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105 group"
+            >
+              <svg class="w-5 h-5 mr-2 transition-transform duration-300 group-hover:-translate-y-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path>
+              </svg>
+              <span class="font-semibold">Upload Documents</span>
+            </Link>
+            
+            <Link
+              href="/client/dashboard"
+              class="bg-gradient-to-r from-emerald-600 to-green-600 hover:from-emerald-700 hover:to-green-700 text-white px-6 py-3 rounded-xl flex items-center transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105 group"
+            >
+              <svg class="w-5 h-5 mr-2 transition-transform duration-300 group-hover:rotate-12" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2H5a2 2 0 00-2-2z"></path>
+              </svg>
+              <span class="font-semibold">Back to Dashboard</span>
+            </Link>
           </div>
         </div>
       </div>

@@ -9,8 +9,8 @@
 
 <div class="info-box">
     <h3 style="margin-top: 0; color: #2d3748;">Document Details</h3>
-    <p><strong>Client:</strong> {{ $document->client->first_name }} {{ $document->client->last_name }}</p>
-    <p><strong>Client Email:</strong> {{ $document->client->email }}</p>
+    <p><strong>Client:</strong> {{ $document->client->user->first_name ?? '' }} {{ $document->client->user->last_name ?? '' }}</p>
+    <p><strong>Client Email:</strong> {{ $document->client->user->email ?? 'Not provided' }}</p>
     <p><strong>Document Name:</strong> {{ $document->name }}</p>
     <p><strong>Document Type:</strong> {{ ucfirst(str_replace('_', ' ', $document->document_type)) }}</p>
     <p><strong>Upload Date:</strong> {{ $document->created_at->format('F j, Y g:i A') }}</p>
@@ -32,7 +32,7 @@
 </div>
 
 <div style="text-align: center; margin: 30px 0;">
-    <a href="{{ url('/admin/clients/' . $document->client->id) }}" class="button">Review Document</a>
+    <a href="{{ url('/admin/clients/' . $document->client->user_id) }}" class="button">Review Document</a>
 </div>
 
 <h3>Client Information</h3>

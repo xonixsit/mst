@@ -21,7 +21,11 @@ class DocumentController extends Controller
 
     public function index(Request $request)
     {
-        $query = Document::with(['client:id,phone,status,user_id', 'client.user:id,first_name,last_name,email', 'uploader:id,first_name,last_name,email']);
+        $query = Document::with([
+            'client:id,phone,status,user_id', 
+            'client.user:id,first_name,last_name,email', 
+            'uploader:id,first_name,last_name,email'
+        ]);
 
         // Filter by client
         if ($request->filled('client_id')) {
@@ -55,7 +59,8 @@ class DocumentController extends Controller
                 $q->where('name', 'like', "%{$search}%")
                   ->orWhere('original_name', 'like', "%{$search}%")
                   ->orWhereHas('client.user', function ($userQuery) use ($search) {
-                      $userQuery->where('first_name', 'like', "%{$search}%")
+                      $userQuery->whereNotNull('first_name')
+                                ->where('first_name', 'like', "%{$search}%")
                                 ->orWhere('last_name', 'like', "%{$search}%")
                                 ->orWhere('email', 'like', "%{$search}%");
                   });
@@ -80,12 +85,12 @@ class DocumentController extends Controller
                 
                 return [
                     'id' => $client->user_id, // Use user_id instead of client id
-                    'first_name' => $client->user->first_name ?? '',
-                    'last_name' => $client->user->last_name ?? '',
-                    'email' => $client->user->email ?? '',
+                    'first_name' => $client->user?->first_name ?? '',
+                    'last_name' => $client->user?->last_name ?? '',
+                    'email' => $client->user?->email ?? '',
                     'status' => $client->status,
                     'documents_count' => $documentsCount,
-                    'name' => trim(($client->user->first_name ?? '') . ' ' . ($client->user->last_name ?? ''))
+                    'name' => trim(($client->user?->first_name ?? '') . ' ' . ($client->user?->last_name ?? ''))
                 ];
             })
             ->sortBy('first_name')
@@ -120,7 +125,16 @@ class DocumentController extends Controller
 
     public function show(Document $document)
     {
-        $document->load(['client:id,phone,status,user_id', 'client.user:id,first_name,last_name,email', 'uploader:id,first_name,last_name,email']);
+        $document->load([
+            'client:id,phone,status,user_id', 
+            'client.user:id,first_name,last_name,email', 
+            'uploader:id,first_name,last_name,email'
+        ]);
+
+        // Ensure client and user exist before rendering
+        if (!$document->client || !$document->client->user) {
+            return back()->with('error', 'Document client information is incomplete.');
+        }
 
         return Inertia::render('Admin/DocumentDetail', [
             'document' => $document
@@ -148,11 +162,20 @@ class DocumentController extends Controller
             
             $clientUser = $document->client?->user;
             
-            if ($clientUser) {
-                if ($request->status === 'approved') {
-                    $clientUser->notify(new DocumentApprovedNotification($document));
-                } elseif ($request->status === 'rejected') {
-                    $clientUser->notify(new DocumentRejectedNotification($document));
+            if ($clientUser && ($clientUser->first_name || $clientUser->last_name || $clientUser->email)) {
+                try {
+                    if ($request->status === 'approved') {
+                        $clientUser->notify(new DocumentApprovedNotification($document));
+                    } elseif ($request->status === 'rejected') {
+                        $clientUser->notify(new DocumentRejectedNotification($document));
+                    }
+                } catch (\Exception $e) {
+                    \Log::warning('Failed to send document status notification', [
+                        'document_id' => $document->id,
+                        'user_id' => $clientUser->id,
+                        'status' => $request->status,
+                        'error' => $e->getMessage()
+                    ]);
                 }
             }
         }
@@ -277,10 +300,96 @@ class DocumentController extends Controller
     /**
      * Show documents for a specific client (secure route)
      */
-    public function clientDocuments(Request $request, int $userId)
+    public function clientDocuments(Request $request, Client $client)
     {
-        // Redirect to documents index with client filter
-        return redirect()->route('admin.documents', ['client_id' => $userId]);
+        $documents = $client->documents()->with('uploader:id,first_name,last_name,email')->get();
+        
+        return response()->json(['documents' => $documents]);
+    }
+
+    /**
+     * Upload documents for a client (admin upload)
+     */
+    public function upload(Request $request)
+    {
+        try {
+            $request->validate([
+                'files.*' => 'required|file|max:10240|mimes:pdf,doc,docx,jpg,jpeg,png,gif,txt,xls,xlsx',
+                'client_id' => 'required|exists:users,id',
+                'document_type' => 'required|string|in:w2,1099,receipts,bank_statements,tax_returns,id_documents,other',
+                'tax_year' => 'nullable|integer|min:2000|max:' . (date('Y') + 1),
+                'notes' => 'nullable|string|max:500'
+            ]);
+
+            $uploadedDocuments = [];
+            $client = Client::findOrFail($request->client_id);
+
+            // Ensure the private storage directory exists
+            if (!Storage::disk('private')->exists('documents')) {
+                Storage::disk('private')->makeDirectory('documents');
+            }
+
+            foreach ($request->file('files') as $file) {
+                $originalName = $file->getClientOriginalName();
+                $fileName = time() . '_' . uniqid() . '_' . $originalName;
+                $filePath = $file->storeAs('documents', $fileName, 'private');
+
+                $document = Document::create([
+                    'client_id' => $request->client_id,
+                    'name' => $originalName,
+                    'original_name' => $originalName,
+                    'file_path' => $filePath,
+                    'file_size' => $file->getSize(),
+                    'mime_type' => $file->getMimeType(),
+                    'document_type' => $request->document_type,
+                    'tax_year' => $request->tax_year,
+                    'notes' => $request->notes,
+                    'status' => 'pending',
+                    'uploaded_by' => auth()->id()
+                ]);
+
+                $uploadedDocuments[] = $document;
+            }
+
+            // Send notification to client about new documents
+            if ($client && $client->user && !empty($uploadedDocuments)) {
+                try {
+                    // Ensure user has required properties before sending notification
+                    if ($client->user->first_name || $client->user->last_name || $client->user->email) {
+                        foreach ($uploadedDocuments as $document) {
+                            $client->user->notify(new \App\Notifications\AdminDocumentUploadedNotification($document));
+                        }
+                    }
+                } catch (\Exception $e) {
+                    \Log::warning('Failed to send document upload notification', [
+                        'client_id' => $client->id,
+                        'user_id' => $client->user->id ?? 'null',
+                        'error' => $e->getMessage()
+                    ]);
+                }
+            }
+
+            return response()->json([
+                'message' => 'Documents uploaded successfully',
+                'documents' => $uploadedDocuments
+            ]);
+
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            return response()->json([
+                'message' => 'Validation failed',
+                'errors' => $e->errors()
+            ], 422);
+        } catch (\Exception $e) {
+            \Log::error('Document upload failed', [
+                'client_id' => $request->client_id ?? 'unknown',
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ]);
+
+            return response()->json([
+                'message' => 'Upload failed: ' . $e->getMessage()
+            ], 500);
+        }
     }
 
     /**

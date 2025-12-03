@@ -142,6 +142,18 @@ class ClientController extends Controller
         return Inertia::render('Admin/Clients/Edit', [
             'client' => $client,
             'visaStatusOptions' => VisaStatus::options(),
+            'documentTypes' => [
+                'tax_return' => 'Tax Return',
+                'w2' => 'W-2 Form',
+                '1099' => '1099 Form',
+                'bank_statement' => 'Bank Statement',
+                'receipt' => 'Receipt',
+                'invoice' => 'Invoice',
+                'contract' => 'Contract',
+                'identification' => 'Identification',
+                'other' => 'Other'
+            ],
+            'taxYears' => range(date('Y'), date('Y') - 10)
         ]);
     }
 

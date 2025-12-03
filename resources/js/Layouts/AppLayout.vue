@@ -354,6 +354,12 @@
           badge: page.props.navigationCounts?.unread_messages > 0 ? page.props.navigationCounts.unread_messages.toString() : null
         },
         {
+          name: 'Services',
+          href: '/admin/services',
+          icon: CogIcon,
+          current: currentPath.startsWith('/admin/services')
+        },
+        {
           name: 'Reports',
           href: '/admin/reports',
           icon: ChartBarIcon,
@@ -401,11 +407,12 @@
           badge: (page.props.navigationCounts?.unread_messages || 0) > 0 ? (page.props.navigationCounts.unread_messages || 0).toString() : null
         },
         {
-          name: 'Tax Returns',
-          href: '/client/tax-returns',
-          icon: DocumentTextIcon,
-          current: currentPath.startsWith('/client/tax-returns')
+          name: 'Services',
+          href: '/client/services',
+          icon: CogIcon,
+          current: currentPath.startsWith('/client/services')
         },
+
         {
           name: 'Invoices',
           href: '/client/invoices',

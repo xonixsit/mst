@@ -42,6 +42,16 @@ Route::post('/login', function () {
     return redirect('/admin/login');
 });
 
+// Global forgot password route (redirect to client)
+Route::get('/forgot-password', function () {
+    return redirect('/client/forgot-password');
+});
+
+// Global password reset route (redirect to client)
+Route::get('/reset-password/{token}', function ($token) {
+    return redirect("/client/reset-password/{$token}");
+})->name('password.reset');
+
 // Admin Authentication Routes
 Route::prefix('admin')->name('admin.')->group(function () {
     Route::get('/login', [LoginController::class, 'showLoginForm'])->name('login');
@@ -279,6 +289,7 @@ Route::middleware(['auth', 'auth.session', 'session.timeout', 'admin'])->prefix(
     
     // Admin document management routes
     Route::get('/documents', [App\Http\Controllers\Admin\DocumentController::class, 'index'])->name('documents');
+    Route::post('/documents/upload', [App\Http\Controllers\Admin\DocumentController::class, 'upload'])->name('documents.upload');
     Route::get('/documents/{document}', [App\Http\Controllers\Admin\DocumentController::class, 'show'])->name('documents.show');
     Route::get('/documents/{document}/download', [App\Http\Controllers\Admin\DocumentController::class, 'download'])->name('documents.download');
     Route::patch('/documents/{document}/status', [App\Http\Controllers\Admin\DocumentController::class, 'updateStatus'])->name('documents.update-status');
@@ -293,6 +304,9 @@ Route::middleware(['auth', 'auth.session', 'session.timeout', 'admin'])->prefix(
     // Admin tax professional management routes
     Route::resource('tax-professionals', App\Http\Controllers\Admin\TaxProfessionalController::class)->names('tax-professionals')->parameters(['tax-professionals' => 'taxProfessional']);
     Route::post('tax-professionals/{taxProfessional}/restore', [App\Http\Controllers\Admin\TaxProfessionalController::class, 'restore'])->name('tax-professionals.restore');
+    
+    // Admin services routes
+    Route::get('services', [App\Http\Controllers\Admin\ServiceController::class, 'index'])->name('services.index');
 
     // Admin reports routes
     Route::get('reports', [App\Http\Controllers\Admin\ReportController::class, 'index'])->name('reports.index');
@@ -303,7 +317,7 @@ Route::middleware(['auth', 'auth.session', 'session.timeout', 'admin'])->prefix(
     Route::get('reports/communication', [App\Http\Controllers\Admin\ReportController::class, 'communication'])->name('reports.communication');
     
     // Secure client-specific routes (using route parameters instead of query strings)
-    Route::get('clients/{userId}/documents', [App\Http\Controllers\Admin\DocumentController::class, 'clientDocuments'])->name('clients.documents');
+    Route::get('clients/{client}/documents', [App\Http\Controllers\Admin\DocumentController::class, 'clientDocuments'])->name('clients.documents');
     Route::get('clients/{userId}/invoices', [InvoiceController::class, 'clientInvoices'])->name('clients.invoices');
     Route::get('clients/{userId}/invoices/create', [InvoiceController::class, 'createForClient'])->name('clients.invoices.create');
     
@@ -465,10 +479,10 @@ Route::middleware(['auth', 'auth.session', 'session.timeout', 'client'])->prefix
     Route::delete('/notifications', [App\Http\Controllers\Client\NotificationController::class, 'destroyAll'])->name('notifications.destroy-all');
     Route::get('/communication-history', [App\Http\Controllers\Client\CommunicationController::class, 'getHistory'])->name('communication.history');
     
-    // Tax returns routes
-    Route::get('/tax-returns', function () {
-        return inertia('Client/TaxReturns');
-    })->name('tax-returns');
+    // Services routes
+    Route::get('/services', function () {
+        return inertia('Client/Services');
+    })->name('services');
     
     // Invoice routes
     Route::get('/invoices', [App\Http\Controllers\Client\InvoiceController::class, 'index'])->name('invoices');

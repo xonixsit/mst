@@ -1,71 +1,100 @@
 <template>
   <div class="personal-details-section">
-    <div class="bg-white rounded-lg shadow-sm border border-gray-200">
-      <!-- Section Header -->
-      <div class="px-6 py-4 border-b border-gray-200">
-        <h2 class="text-lg font-semibold text-gray-900">Personal Details</h2>
-        <p class="text-sm text-gray-600 mt-1">Basic personal information and contact details</p>
+    <div class="bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden">
+      <!-- Enhanced Section Header -->
+      <div class="bg-gradient-to-r from-blue-50 via-indigo-50 to-blue-50 px-8 py-6 border-b border-blue-200 relative overflow-hidden">
+        <div class="absolute top-0 right-0 w-32 h-16 bg-gradient-to-bl from-blue-100/40 to-transparent rounded-bl-full"></div>
+        <div class="relative flex items-center space-x-4">
+          <div class="w-12 h-12 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-xl flex items-center justify-center shadow-lg ring-4 ring-blue-100">
+            <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
+            </svg>
+          </div>
+          <div>
+            <h2 class="text-2xl font-bold bg-gradient-to-r from-gray-900 via-blue-900 to-indigo-900 bg-clip-text text-transparent">Personal Details</h2>
+            <p class="text-sm text-gray-600 font-medium mt-1">Complete your basic personal information and contact details</p>
+          </div>
+        </div>
       </div>
 
       <!-- Form Content -->
-      <div class="p-6">
-        <form @submit.prevent="handleSubmit" class="space-y-6">
-          <!-- Name Information -->
-          <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div>
-              <label for="firstName" class="flex items-center text-sm font-medium text-gray-700 mb-1">
-                First Name
-                <span class="text-xs text-gray-500 ml-1">(Update in Profile)</span>
-              </label>
-              <input
-                id="firstName"
-                v-model="localData.firstName"
-                type="text"
-                class="mt-1 block w-full border-gray-300 rounded-md shadow-sm bg-gray-50 cursor-not-allowed"
-                placeholder="Enter first name"
-                readonly
-                disabled
-              />
-              <p class="mt-1 text-xs text-gray-500">
-                Name fields can be updated in your <a href="/client/profile" class="text-blue-600 hover:text-blue-800 underline">Profile</a> section.
-              </p>
+      <div class="p-8">
+        <form @submit.prevent="handleSubmit" class="space-y-8">
+          <!-- Name Information Section -->
+          <div class="bg-gradient-to-br from-gray-50 to-slate-100 rounded-xl p-6 border border-gray-200">
+            <div class="flex items-center mb-6">
+              <div class="w-10 h-10 bg-gray-500 rounded-lg flex items-center justify-center mr-3">
+                <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"></path>
+                </svg>
+              </div>
+              <h4 class="text-lg font-bold text-gray-900">Name Information</h4>
             </div>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+              <div class="space-y-2">
+                <label for="firstName" class="flex items-center text-sm font-semibold text-gray-700">
+                  First Name
+                  <span class="text-xs text-gray-500 ml-1">(Update in Profile)</span>
+                </label>
+                <input
+                  id="firstName"
+                  v-model="localData.firstName"
+                  type="text"
+                  class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl bg-gray-50 cursor-not-allowed text-gray-900"
+                  placeholder="Enter first name"
+                  readonly
+                  disabled
+                />
+                <p class="text-xs text-gray-500">
+                  Name fields can be updated in your <a href="/client/profile" class="text-blue-600 hover:text-blue-800 underline font-medium">Profile</a> section.
+                </p>
+              </div>
 
-            <div>
-              <label for="middleName" class="block text-sm font-medium text-gray-700 mb-1">
-                Middle Name
-                <span class="text-xs text-gray-500 ml-1">(Update in Profile)</span>
-              </label>
-              <input
-                id="middleName"
-                v-model="localData.middleName"
-                type="text"
-                class="mt-1 block w-full border-gray-300 rounded-md shadow-sm bg-gray-50 cursor-not-allowed"
-                placeholder="Enter middle name"
-                readonly
-                disabled
-              />
-            </div>
+              <div class="space-y-2">
+                <label for="middleName" class="block text-sm font-semibold text-gray-700">
+                  Middle Name
+                  <span class="text-xs text-gray-500 ml-1">(Update in Profile)</span>
+                </label>
+                <input
+                  id="middleName"
+                  v-model="localData.middleName"
+                  type="text"
+                  class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl bg-gray-50 cursor-not-allowed text-gray-900"
+                  placeholder="Enter middle name"
+                  readonly
+                  disabled
+                />
+              </div>
 
-            <div>
-              <label for="lastName" class="flex items-center text-sm font-medium text-gray-700 mb-1">
-                Last Name
-                <span class="text-xs text-gray-500 ml-1">(Update in Profile)</span>
-              </label>
-              <input
-                id="lastName"
-                v-model="localData.lastName"
-                type="text"
-                class="mt-1 block w-full border-gray-300 rounded-md shadow-sm bg-gray-50 cursor-not-allowed"
-                placeholder="Enter last name"
-                readonly
-                disabled
-              />
+              <div class="space-y-2">
+                <label for="lastName" class="flex items-center text-sm font-semibold text-gray-700">
+                  Last Name
+                  <span class="text-xs text-gray-500 ml-1">(Update in Profile)</span>
+                </label>
+                <input
+                  id="lastName"
+                  v-model="localData.lastName"
+                  type="text"
+                  class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl bg-gray-50 cursor-not-allowed text-gray-900"
+                  placeholder="Enter last name"
+                  readonly
+                  disabled
+                />
+              </div>
             </div>
           </div>
 
-          <!-- Contact Information -->
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <!-- Contact Information Section -->
+          <div class="bg-gradient-to-br from-green-50 to-emerald-100 rounded-xl p-6 border border-green-200">
+            <div class="flex items-center mb-6">
+              <div class="w-10 h-10 bg-green-500 rounded-lg flex items-center justify-center mr-3">
+                <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 4.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
+                </svg>
+              </div>
+              <h4 class="text-lg font-bold text-green-900">Contact Information</h4>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
               <label for="email" class="block text-sm font-medium text-gray-700 mb-1">
                 Email Address <span class="text-red-500">*</span>
@@ -84,7 +113,6 @@
                 Your email address is used for account login and cannot be changed here. Contact your tax professional to update this information.
               </p>
             </div>
-
             <div>
               <label for="phone" class="block text-sm font-medium text-gray-700 mb-1">
                 Phone Number <span class="text-red-500">*</span>
@@ -104,7 +132,7 @@
               </p>
             </div>
           </div>
-
+          </div>
           <!-- Personal Information -->
           <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div>

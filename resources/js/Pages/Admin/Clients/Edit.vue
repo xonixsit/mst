@@ -84,7 +84,7 @@
           </div>
           
           <div class="p-6">
-            <nav class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3" aria-label="Tabs">
+            <nav class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-7 gap-3" aria-label="Tabs">
               <button
                 v-for="section in sections"
                 :key="section.id"
@@ -191,6 +191,15 @@
                 v-if="activeSection === 'expenses'"
                 v-model="form.expenses"
                 :errors="form.errors"
+                @update="handleSectionUpdate"
+              />
+
+              <!-- Document Management Section -->
+              <DocumentManagementSection
+                v-if="activeSection === 'documents'"
+                :client-id="client.id"
+                :document-types="documentTypes"
+                :tax-years="taxYears"
                 @update="handleSectionUpdate"
               />
             </div>
@@ -350,6 +359,7 @@ import EmployeeInformationSection from '@/Components/EmployeeInformationSection.
 import ProjectDetailsSection from '@/Components/ProjectDetailsSection.vue'
 import AssetDetailsSection from '@/Components/AssetDetailsSection.vue'
 import ExpensesManagementSection from '@/Components/ExpensesManagementSection.vue'
+import DocumentManagementSection from '@/Components/DocumentManagementSection.vue'
 
 // Icons
 import { 
@@ -359,6 +369,7 @@ import {
   FolderIcon, 
   CurrencyDollarIcon, 
   ReceiptPercentIcon,
+  DocumentTextIcon,
   CheckCircleIcon,
   PencilSquareIcon,
   ArrowLeftIcon,
@@ -372,6 +383,14 @@ import {
 const props = defineProps({
   client: Object,
   visaStatusOptions: {
+    type: Array,
+    default: () => []
+  },
+  documentTypes: {
+    type: Object,
+    default: () => ({})
+  },
+  taxYears: {
     type: Array,
     default: () => []
   }
@@ -457,6 +476,12 @@ const sections = computed(() => [
     name: 'Expenses',
     icon: ReceiptPercentIcon,
     description: 'Deductible expenses and tax-related costs'
+  },
+  {
+    id: 'documents',
+    name: 'Documents',
+    icon: DocumentTextIcon,
+    description: 'Upload and manage client documents'
   }
 ])
 
@@ -481,6 +506,8 @@ const getSectionProgress = (sectionId) => {
       return null
     case 'expenses':
       return null
+    case 'documents':
+      return null
     default:
       return 0
   }
@@ -502,7 +529,8 @@ const getSectionThemeColor = (sectionId) => {
     employee: 'bg-indigo-500',
     projects: 'bg-purple-500',
     assets: 'bg-emerald-500',
-    expenses: 'bg-orange-500'
+    expenses: 'bg-orange-500',
+    documents: 'bg-purple-500'
   }
   return colors[sectionId] || 'bg-gray-500'
 }
@@ -534,6 +562,10 @@ const getSectionTabClasses = (sectionId) => {
     expenses: {
       active: 'bg-orange-500 text-white shadow-lg transform scale-105 border-2 border-orange-600',
       inactive: 'bg-orange-100 text-orange-700 hover:bg-orange-200 hover:shadow-md hover:transform hover:scale-102 border border-orange-200'
+    },
+    documents: {
+      active: 'bg-purple-500 text-white shadow-lg transform scale-105 border-2 border-purple-600',
+      inactive: 'bg-purple-100 text-purple-700 hover:bg-purple-200 hover:shadow-md hover:transform hover:scale-102 border border-purple-200'
     }
   }
   
@@ -547,7 +579,8 @@ const getSectionBackgroundClasses = (sectionId) => {
     employee: 'bg-gradient-to-br from-indigo-50 to-white',
     projects: 'bg-gradient-to-br from-purple-50 to-white',
     assets: 'bg-gradient-to-br from-emerald-50 to-white',
-    expenses: 'bg-gradient-to-br from-orange-50 to-white'
+    expenses: 'bg-gradient-to-br from-orange-50 to-white',
+    documents: 'bg-gradient-to-br from-purple-50 to-white'
   }
   
   return backgroundMap[sectionId] || 'bg-white'
@@ -562,7 +595,8 @@ const getSidebarSectionClasses = (sectionId) => {
     employee: isActive ? 'bg-indigo-100 border border-indigo-200' : 'bg-gray-50 hover:bg-indigo-50',
     projects: isActive ? 'bg-purple-100 border border-purple-200' : 'bg-gray-50 hover:bg-purple-50',
     assets: isActive ? 'bg-emerald-100 border border-emerald-200' : 'bg-gray-50 hover:bg-emerald-50',
-    expenses: isActive ? 'bg-orange-100 border border-orange-200' : 'bg-gray-50 hover:bg-orange-50'
+    expenses: isActive ? 'bg-orange-100 border border-orange-200' : 'bg-gray-50 hover:bg-orange-50',
+    documents: isActive ? 'bg-purple-100 border border-purple-200' : 'bg-gray-50 hover:bg-purple-50'
   }
   
   return colorMap[sectionId] || 'bg-gray-50 hover:bg-gray-100'
@@ -577,7 +611,8 @@ const getSectionIconClasses = (sectionId) => {
     employee: isActive ? 'text-indigo-600' : 'text-gray-500',
     projects: isActive ? 'text-purple-600' : 'text-gray-500',
     assets: isActive ? 'text-emerald-600' : 'text-gray-500',
-    expenses: isActive ? 'text-orange-600' : 'text-gray-500'
+    expenses: isActive ? 'text-orange-600' : 'text-gray-500',
+    documents: isActive ? 'text-purple-600' : 'text-gray-500'
   }
   
   return colorMap[sectionId] || 'text-gray-500'
@@ -592,7 +627,8 @@ const getSectionTextClasses = (sectionId) => {
     employee: isActive ? 'text-indigo-900' : 'text-gray-900',
     projects: isActive ? 'text-purple-900' : 'text-gray-900',
     assets: isActive ? 'text-emerald-900' : 'text-gray-900',
-    expenses: isActive ? 'text-orange-900' : 'text-gray-900'
+    expenses: isActive ? 'text-orange-900' : 'text-gray-900',
+    documents: isActive ? 'text-purple-900' : 'text-gray-900'
   }
   
   return colorMap[sectionId] || 'text-gray-900'
@@ -611,7 +647,8 @@ const getTabIconClasses = (sectionId) => {
     employee: 'text-indigo-600',
     projects: 'text-purple-600',
     assets: 'text-emerald-600',
-    expenses: 'text-orange-600'
+    expenses: 'text-orange-600',
+    documents: 'text-purple-600'
   }
   
   return colorMap[sectionId] || 'text-gray-600'
@@ -630,7 +667,8 @@ const getTabStatusDotClasses = (sectionId) => {
     employee: 'bg-indigo-400',
     projects: 'bg-purple-400',
     assets: 'bg-emerald-400',
-    expenses: 'bg-orange-400'
+    expenses: 'bg-orange-400',
+    documents: 'bg-purple-400'
   }
   
   return colorMap[sectionId] || 'bg-gray-400'
@@ -822,7 +860,8 @@ const getTabIconBgClasses = (sectionId) => {
     employee: isActive ? 'bg-indigo-500' : 'bg-indigo-100',
     projects: isActive ? 'bg-purple-500' : 'bg-purple-100',
     assets: isActive ? 'bg-emerald-500' : 'bg-emerald-100',
-    expenses: isActive ? 'bg-orange-500' : 'bg-orange-100'
+    expenses: isActive ? 'bg-orange-500' : 'bg-orange-100',
+    documents: isActive ? 'bg-purple-500' : 'bg-purple-100'
   }
   return bgMap[sectionId] || (isActive ? 'bg-gray-500' : 'bg-gray-100')
 }
@@ -847,7 +886,8 @@ const getSectionIconBgClasses = (sectionId) => {
     employee: isActive ? 'bg-indigo-500' : 'bg-indigo-100',
     projects: isActive ? 'bg-purple-500' : 'bg-purple-100',
     assets: isActive ? 'bg-emerald-500' : 'bg-emerald-100',
-    expenses: isActive ? 'bg-orange-500' : 'bg-orange-100'
+    expenses: isActive ? 'bg-orange-500' : 'bg-orange-100',
+    documents: isActive ? 'bg-purple-500' : 'bg-purple-100'
   }
   return bgMap[sectionId] || (isActive ? 'bg-gray-500' : 'bg-gray-100')
 }

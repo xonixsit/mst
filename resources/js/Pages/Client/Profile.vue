@@ -1,10 +1,57 @@
 <template>
   <AppLayout>
     <template #header>
-      <div class="flex items-center justify-between">
-        <div>
-          <h1 class="text-2xl font-bold text-gray-900">My Profile</h1>
-          <p class="mt-1 text-sm text-gray-600">Manage your personal information and account settings</p>
+      <div class="relative overflow-hidden">
+        <!-- Background Pattern -->
+        <div class="absolute inset-0 bg-gradient-to-r from-slate-50 via-blue-50 to-cyan-50"></div>
+        <div class="absolute top-0 right-0 w-64 h-32 bg-gradient-to-bl from-blue-100/40 to-transparent rounded-bl-full"></div>
+        <div class="absolute bottom-0 left-0 w-48 h-24 bg-gradient-to-tr from-cyan-100/30 to-transparent rounded-tr-full"></div>
+        
+        <!-- Content -->
+        <div class="relative flex flex-col lg:flex-row lg:justify-between lg:items-center space-y-6 lg:space-y-0 py-2">
+          <div class="flex items-center space-x-4">
+            <!-- Profile Icon -->
+            <div class="w-16 h-16 bg-gradient-to-br from-blue-500 via-blue-600 to-cyan-600 rounded-2xl flex items-center justify-center shadow-lg ring-4 ring-blue-100">
+              <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5.121 17.804A13.937 13.937 0 0112 16c2.5 0 4.847.655 6.879 1.804M15 10a3 3 0 11-6 0 3 3 0 016 0zm6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+              </svg>
+            </div>
+            
+            <!-- Title Section -->
+            <div>
+              <h1 class="text-3xl font-bold bg-gradient-to-r from-gray-900 via-blue-900 to-cyan-900 bg-clip-text text-transparent">
+                My Profile
+              </h1>
+              <p class="mt-2 text-sm text-gray-600 font-medium">Manage your personal information and account settings</p>
+              
+              <!-- Status Indicators -->
+              <div class="flex items-center space-x-4 mt-3">
+                <div class="flex items-center space-x-2">
+                  <div class="w-2 h-2 bg-blue-400 rounded-full animate-pulse"></div>
+                  <span class="text-xs font-semibold text-blue-700">Account Settings</span>
+                </div>
+                <div class="flex items-center space-x-2">
+                  <div class="w-2 h-2 bg-cyan-400 rounded-full"></div>
+                  <span class="text-xs font-semibold text-cyan-700">Secure Profile</span>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Action Buttons -->
+          <div class="flex flex-col sm:flex-row items-start sm:items-center space-y-3 sm:space-y-0 sm:space-x-4">
+
+            
+            <Link
+              href="/client/dashboard"
+              class="bg-gradient-to-r from-emerald-600 to-green-600 hover:from-emerald-700 hover:to-green-700 text-white px-6 py-3 rounded-xl flex items-center transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105 group"
+            >
+              <svg class="w-5 h-5 mr-2 transition-transform duration-300 group-hover:rotate-12" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2H5a2 2 0 00-2-2z"></path>
+              </svg>
+              <span class="font-semibold">Back to Dashboard</span>
+            </Link>
+          </div>
         </div>
       </div>
     </template>
@@ -190,7 +237,7 @@
 
 <script setup>
 import { ref } from 'vue'
-import { useForm, usePage } from '@inertiajs/vue3'
+import { useForm, usePage, Link } from '@inertiajs/vue3'
 import AppLayout from '@/Layouts/AppLayout.vue'
 import CommunicationPreferences from '@/Components/CommunicationPreferences.vue'
 

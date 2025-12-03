@@ -629,7 +629,7 @@ export default {
     }
 
     const viewTaxDocs = (userId) => {
-      router.visit(`/admin/clients/${userId}/documents`)
+      router.visit(`/admin/documents?user_id=${userId}`)
     }
 
     const viewInvoices = (userId) => {
