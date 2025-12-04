@@ -494,13 +494,14 @@ const uploadDocument = async () => {
 
 const loadDocuments = async () => {
   try {
+    // First try to get documents by client ID
     const response = await axios.get(`/admin/clients/${props.clientId}/documents`)
     documents.value = response.data.documents || []
   } catch (error) {
-    console.error('Failed to load documents:', error)
-    // Fallback: try to load from documents endpoint with client filter
+    console.error('Failed to load documents by client:', error)
+    // Fallback: try to load from documents endpoint with user_id filter
     try {
-      const fallbackResponse = await axios.get(`/admin/documents?client_id=${props.clientId}`)
+      const fallbackResponse = await axios.get(`/admin/documents?user_id=${props.clientId}`)
       documents.value = fallbackResponse.data.documents || []
     } catch (fallbackError) {
       console.error('Fallback load also failed:', fallbackError)

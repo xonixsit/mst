@@ -302,7 +302,10 @@ class DocumentController extends Controller
      */
     public function clientDocuments(Request $request, Client $client)
     {
-        $documents = $client->documents()->with('uploader:id,first_name,last_name,email')->get();
+        // Documents are stored with user_id in the client_id column
+        $documents = Document::where('client_id', $client->user_id)
+            ->with('uploader:id,first_name,last_name,email')
+            ->get();
         
         return response()->json(['documents' => $documents]);
     }
