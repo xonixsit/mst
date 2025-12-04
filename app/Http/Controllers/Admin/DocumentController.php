@@ -334,8 +334,11 @@ class DocumentController extends Controller
                 $fileName = time() . '_' . uniqid() . '_' . $originalName;
                 $filePath = $file->storeAs('documents', $fileName, 'private');
 
+                // Use user_id from the client's relationship instead of client_id
+                $userId = $client->user_id ?? $request->client_id;
+
                 $document = Document::create([
-                    'client_id' => $request->client_id,
+                    'client_id' => $userId,
                     'name' => $originalName,
                     'original_name' => $originalName,
                     'file_path' => $filePath,

@@ -134,35 +134,6 @@
         </div>
       </div>
 
-      <!-- Services Menu Section -->
-      <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-8">
-
-        <!-- Services Menu -->
-        <div class="bg-white shadow-xl rounded-2xl border border-gray-100 overflow-hidden">
-          <div class="bg-gradient-to-r from-slate-50 to-gray-50 px-6 py-5 border-b border-gray-200">
-            <h3 class="text-xl font-bold text-gray-900">ALL SERVICES</h3>
-          </div>
-          <div class="p-6">
-            <div class="space-y-3">
-              <a
-                v-for="service in services"
-                :key="service.id"
-                :href="service.link"
-                class="flex items-center justify-between p-4 rounded-xl border border-gray-200 hover:border-emerald-300 hover:bg-emerald-50 transition-all duration-200 group"
-              >
-                <div class="flex items-center space-x-3">
-                  <div class="w-8 h-8 bg-emerald-100 rounded-lg flex items-center justify-center group-hover:bg-emerald-200 transition-colors duration-200">
-                    <component :is="service.icon" class="w-4 h-4 text-emerald-600" />
-                  </div>
-                  <span class="text-sm font-semibold text-gray-700 group-hover:text-emerald-800">{{ service.name }}</span>
-                </div>
-                <ChevronRightIcon class="w-4 h-4 text-gray-400 group-hover:text-emerald-600 transition-colors duration-200" />
-              </a>
-            </div>
-          </div>
-        </div>
-      </div>
-
       <!-- Service Categories -->
       <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         <div
