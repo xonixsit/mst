@@ -315,7 +315,7 @@ class DocumentController extends Controller
         try {
             $request->validate([
                 'files.*' => 'required|file|max:10240|mimes:pdf,doc,docx,jpg,jpeg,png,gif,txt,xls,xlsx',
-                'client_id' => 'required|exists:users,id',
+                'client_id' => 'required|exists:clients,id',
                 'document_type' => 'required|string|in:w2,1099,receipts,bank_statements,tax_returns,id_documents,other',
                 'tax_year' => 'nullable|integer|min:2000|max:' . (date('Y') + 1),
                 'notes' => 'nullable|string|max:500'
