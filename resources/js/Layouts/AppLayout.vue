@@ -11,7 +11,7 @@
         'flex flex-col h-screen transition-all duration-300',
         (sidebarCollapsed && !sidebarHovered) ? 'w-16' : 'w-64'
       ]">
-        <div :class="[y
+        <div :class="[
           'flex flex-col flex-grow relative pt-6 pb-4 overflow-y-auto overflow-x-hidden shadow-xl backdrop-blur-sm transition-all duration-300',
           sidebarCollapsed ? 'scrollbar-none' : 'scrollbar-thin scrollbar-thumb-gray-600 scrollbar-track-transparent'
         ]">
