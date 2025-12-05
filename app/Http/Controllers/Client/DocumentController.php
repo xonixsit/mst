@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Client;
 use App\Http\Controllers\Controller;
 use App\Models\Document;
 use App\Models\Client;
+use App\Rules\ValidDocumentFile;
 use App\Services\AdminNotificationService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
@@ -75,7 +76,7 @@ class DocumentController extends Controller
         $clientId = $user->id;
 
         $request->validate([
-            'file' => 'required|file|max:10240|mimes:pdf,jpg,jpeg,png,doc,docx,xls,xlsx',
+            'file' => ['required', 'file', 'max:10240', new ValidDocumentFile()],
             'document_type' => 'required|in:w2,1099,receipts,bank_statements,tax_returns,id_documents,other',
             'tax_year' => 'nullable|integer|min:2000|max:' . (date('Y') + 1),
             'notes' => 'nullable|string|max:500'

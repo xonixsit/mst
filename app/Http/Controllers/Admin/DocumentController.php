@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Document;
 use App\Models\Client;
 use App\Models\User;
+use App\Rules\ValidDocumentFile;
 use App\Notifications\DocumentApprovedNotification;
 use App\Notifications\DocumentRejectedNotification;
 use App\Services\AdminNotificationService;
@@ -317,7 +318,7 @@ class DocumentController extends Controller
     {
         try {
             $request->validate([
-                'files.*' => 'required|file|max:10240|mimes:pdf,doc,docx,jpg,jpeg,png,gif,txt,xls,xlsx',
+                'files.*' => ['required', 'file', 'max:10240', new ValidDocumentFile()],
                 'client_id' => 'required|exists:clients,id',
                 'document_type' => 'required|string|in:w2,1099,receipts,bank_statements,tax_returns,id_documents,other',
                 'tax_year' => 'nullable|integer|min:2000|max:' . (date('Y') + 1),

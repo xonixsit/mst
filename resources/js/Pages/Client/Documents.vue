@@ -259,7 +259,6 @@
                     ref="fileInput"
                     type="file"
                     @change="handleFileSelect"
-                    accept=".pdf,.jpg,.jpeg,.png,.doc,.docx,.xls,.xlsx"
                     class="w-full px-4 py-3 border-2 border-blue-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-blue-100 file:text-blue-700 hover:file:bg-blue-200"
                     required
                   />
@@ -268,7 +267,7 @@
                   <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                   </svg>
-                  <span class="font-medium">Max 10MB. PDF, images, Word, Excel files allowed.</span>
+                  <span class="font-medium">Max 10MB. All file formats supported (PDF, images, Word, Excel, etc.)</span>
                 </div>
               </div>
             </div>
