@@ -207,9 +207,9 @@
                 </td>
                 <td class="px-6 py-5 whitespace-nowrap">
                   <div class="text-sm font-semibold text-gray-900">
-                    {{ document.client?.user?.first_name }} {{ document.client?.user?.last_name }}
+                    {{ document.uploader?.first_name }} {{ document.uploader?.last_name }}
                   </div>
-                  <div class="text-xs text-gray-500 font-medium">{{ document.client?.user?.email }}</div>
+                  <div class="text-xs text-gray-500 font-medium">{{ document.uploader?.email }}</div>
                 </td>
                 <td class="px-6 py-5 whitespace-nowrap">
                   <span class="text-sm font-medium text-gray-900">{{ documentTypes[document.document_type] }}</span>
@@ -238,9 +238,9 @@
                 <td class="px-6 py-5 text-center">
                   <div class="flex justify-center space-x-2">
                     <button
-                      @click="viewDocument(document)"
+                      @click="viewDocumentModal(document)"
                       class="bg-gradient-to-r from-slate-500 to-gray-600 hover:from-slate-600 hover:to-gray-700 text-white px-3 py-1.5 rounded-lg text-xs font-semibold transition-all duration-200 shadow-sm hover:shadow-md transform hover:scale-105"
-                      title="View Details"
+                      title="View Document"
                     >
                       <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
@@ -372,6 +372,7 @@ import { router } from '@inertiajs/vue3'
 import { DocumentTextIcon } from '@heroicons/vue/24/outline'
 import AppLayout from '@/Layouts/AppLayout.vue'
 import DocumentViewModal from '@/Components/DocumentViewModal.vue'
+import PdfViewer from '@/Components/PdfViewer.vue'
 
 const props = defineProps({
   documents: Object,
@@ -386,7 +387,13 @@ const showDocumentModal = ref(false)
 const updating = ref(false)
 const selectedDocument = ref(null)
 const selectedDocumentForView = ref(null)
-const filters = ref({ ...props.filters })
+const filters = ref({
+  search: props.filters?.search || '',
+  client_id: props.filters?.client_id || '',
+  type: props.filters?.type || '',
+  year: props.filters?.year || '',
+  status: props.filters?.status || ''
+})
 
 const statusForm = ref({
   status: '',

@@ -174,6 +174,96 @@
                 :errors="form.errors"
                 @update="handleSectionUpdate"
               />
+
+              <!-- Account Creation Section -->
+              <div v-if="activeSection === 'account'" class="space-y-6">
+                <div class="bg-gradient-to-r from-blue-50 to-indigo-50 p-6 rounded-xl border border-blue-200">
+                  <div class="flex items-center mb-4">
+                    <div class="w-10 h-10 bg-blue-500 rounded-lg flex items-center justify-center mr-3">
+                      <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"></path>
+                      </svg>
+                    </div>
+                    <div>
+                      <h3 class="text-lg font-bold text-blue-900">Client Account Setup</h3>
+                      <p class="text-sm text-blue-700">Create login credentials for the client</p>
+                    </div>
+                  </div>
+
+                  <div class="space-y-4">
+                    <!-- Create Account Toggle -->
+                    <div class="flex items-center justify-between p-4 bg-white rounded-lg border border-blue-200">
+                      <div>
+                        <label class="text-sm font-semibold text-gray-700">Create Client Account</label>
+                        <p class="text-xs text-gray-500 mt-1">Allow client to login and manage their information</p>
+                      </div>
+                      <input
+                        v-model="form.createAccount"
+                        type="checkbox"
+                        class="h-5 w-5 text-blue-600 rounded focus:ring-blue-500 border-gray-300 cursor-pointer"
+                      />
+                    </div>
+
+                    <!-- Username Field -->
+                    <div v-if="form.createAccount" class="space-y-2">
+                      <label class="block text-sm font-semibold text-gray-700">
+                        Username <span class="text-red-500">*</span>
+                      </label>
+                      <div class="relative">
+                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                          <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
+                          </svg>
+                        </div>
+                        <input
+                          v-model="form.username"
+                          type="text"
+                          placeholder="Enter username (e.g., john.doe)"
+                          class="block w-full pl-10 pr-4 py-3 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 border-gray-300"
+                        />
+                      </div>
+                      <p v-if="form.errors.username" class="text-sm text-red-600 flex items-center font-medium">
+                        <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                        </svg>
+                        {{ form.errors.username }}
+                      </p>
+                      <p class="text-xs text-gray-500">Username must be unique and contain only letters, numbers, and dots</p>
+                    </div>
+
+                    <!-- Send Credentials Toggle -->
+                    <div v-if="form.createAccount" class="flex items-center justify-between p-4 bg-white rounded-lg border border-blue-200">
+                      <div>
+                        <label class="text-sm font-semibold text-gray-700">Send Credentials via Email</label>
+                        <p class="text-xs text-gray-500 mt-1">Auto-generate password and send login details to client email</p>
+                      </div>
+                      <input
+                        v-model="form.sendCredentials"
+                        type="checkbox"
+                        class="h-5 w-5 text-blue-600 rounded focus:ring-blue-500 border-gray-300 cursor-pointer"
+                      />
+                    </div>
+
+                    <!-- Info Box -->
+                    <div class="bg-blue-100 border border-blue-300 rounded-lg p-4">
+                      <div class="flex items-start">
+                        <svg class="w-5 h-5 text-blue-600 mr-3 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                          <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"></path>
+                        </svg>
+                        <div class="text-sm text-blue-800">
+                          <p class="font-semibold">Account Creation Details:</p>
+                          <ul class="list-disc list-inside mt-2 space-y-1 text-xs">
+                            <li>A secure password will be auto-generated</li>
+                            <li>Client will receive login credentials via email</li>
+                            <li>Client can change password on first login</li>
+                            <li>Account will be active immediately</li>
+                          </ul>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
         </div>
@@ -401,7 +491,11 @@ const form = useForm({
   employee: [{}], // Initialize with one empty employee object
   projects: [],
   assets: [],
-  expenses: []
+  expenses: [],
+  // Account creation fields
+  createAccount: false,
+  username: '',
+  sendCredentials: true
 })
 
 // Section configuration
@@ -435,6 +529,11 @@ const sections = computed(() => [
     id: 'expenses',
     name: 'Expenses',
     icon: ReceiptPercentIcon
+  },
+  {
+    id: 'account',
+    name: 'Account',
+    icon: UserIcon
   }
 ])
 
@@ -480,7 +579,8 @@ const getSectionThemeColor = (sectionId) => {
     employee: 'bg-indigo-500',    // Corporate, professional, stability
     projects: 'bg-purple-500',    // Creativity, planning, innovation
     assets: 'bg-emerald-500',     // Money, growth, prosperity
-    expenses: 'bg-orange-500'     // Energy, attention, caution
+    expenses: 'bg-orange-500',    // Energy, attention, caution
+    account: 'bg-cyan-500'        // Security, access, technology
   }
   return colors[sectionId] || 'bg-gray-500'
 }
@@ -512,6 +612,10 @@ const getSectionTabClasses = (sectionId) => {
     expenses: {
       active: 'bg-orange-500 text-white shadow-lg transform scale-105 border-2 border-orange-600',
       inactive: 'bg-orange-100 text-orange-700 hover:bg-orange-200 hover:shadow-md hover:transform hover:scale-102 border border-orange-200'
+    },
+    account: {
+      active: 'bg-cyan-500 text-white shadow-lg transform scale-105 border-2 border-cyan-600',
+      inactive: 'bg-cyan-100 text-cyan-700 hover:bg-cyan-200 hover:shadow-md hover:transform hover:scale-102 border border-cyan-200'
     }
   }
   
@@ -525,7 +629,8 @@ const getSectionBackgroundClasses = (sectionId) => {
     employee: 'bg-gradient-to-br from-indigo-50 to-white',
     projects: 'bg-gradient-to-br from-purple-50 to-white',
     assets: 'bg-gradient-to-br from-emerald-50 to-white',
-    expenses: 'bg-gradient-to-br from-orange-50 to-white'
+    expenses: 'bg-gradient-to-br from-orange-50 to-white',
+    account: 'bg-gradient-to-br from-cyan-50 to-white'
   }
   
   return backgroundMap[sectionId] || 'bg-white'
@@ -540,7 +645,8 @@ const getSidebarSectionClasses = (sectionId) => {
     employee: isActive ? 'bg-indigo-100 border border-indigo-200' : 'bg-gray-50 hover:bg-indigo-50',
     projects: isActive ? 'bg-purple-100 border border-purple-200' : 'bg-gray-50 hover:bg-purple-50',
     assets: isActive ? 'bg-emerald-100 border border-emerald-200' : 'bg-gray-50 hover:bg-emerald-50',
-    expenses: isActive ? 'bg-orange-100 border border-orange-200' : 'bg-gray-50 hover:bg-orange-50'
+    expenses: isActive ? 'bg-orange-100 border border-orange-200' : 'bg-gray-50 hover:bg-orange-50',
+    account: isActive ? 'bg-cyan-100 border border-cyan-200' : 'bg-gray-50 hover:bg-cyan-50'
   }
   
   return colorMap[sectionId] || 'bg-gray-50 hover:bg-gray-100'
@@ -555,7 +661,8 @@ const getSectionIconClasses = (sectionId) => {
     employee: isActive ? 'text-indigo-600' : 'text-gray-500',
     projects: isActive ? 'text-purple-600' : 'text-gray-500',
     assets: isActive ? 'text-emerald-600' : 'text-gray-500',
-    expenses: isActive ? 'text-orange-600' : 'text-gray-500'
+    expenses: isActive ? 'text-orange-600' : 'text-gray-500',
+    account: isActive ? 'text-cyan-600' : 'text-gray-500'
   }
   
   return colorMap[sectionId] || 'text-gray-500'
@@ -570,7 +677,8 @@ const getSectionTextClasses = (sectionId) => {
     employee: isActive ? 'text-indigo-900' : 'text-gray-900',
     projects: isActive ? 'text-purple-900' : 'text-gray-900',
     assets: isActive ? 'text-emerald-900' : 'text-gray-900',
-    expenses: isActive ? 'text-orange-900' : 'text-gray-900'
+    expenses: isActive ? 'text-orange-900' : 'text-gray-900',
+    account: isActive ? 'text-cyan-900' : 'text-gray-900'
   }
   
   return colorMap[sectionId] || 'text-gray-900'
@@ -589,7 +697,8 @@ const getTabIconClasses = (sectionId) => {
     employee: 'text-indigo-600',
     projects: 'text-purple-600',
     assets: 'text-emerald-600',
-    expenses: 'text-orange-600'
+    expenses: 'text-orange-600',
+    account: 'text-cyan-600'
   }
   
   return colorMap[sectionId] || 'text-gray-600'
@@ -608,7 +717,8 @@ const getTabStatusDotClasses = (sectionId) => {
     employee: 'bg-indigo-400',
     projects: 'bg-purple-400',
     assets: 'bg-emerald-400',
-    expenses: 'bg-orange-400'
+    expenses: 'bg-orange-400',
+    account: 'bg-cyan-400'
   }
   
   return colorMap[sectionId] || 'bg-gray-400'
@@ -621,7 +731,8 @@ const getSectionHelp = (sectionId) => {
     employee: 'Enter employment details including employer name, position, and salary information.',
     projects: 'Add any tax-related projects or business activities the client is involved in.',
     assets: 'List client assets including purchase dates and business usage percentages.',
-    expenses: 'Track client deductible expenses by category for tax preparation.'
+    expenses: 'Track client deductible expenses by category for tax preparation.',
+    account: 'Create a login account for the client to access their information and documents.'
   }
   return helpTexts[sectionId] || ''
 }
@@ -634,7 +745,8 @@ const getTabIconBgClasses = (sectionId) => {
     employee: isActive ? 'bg-purple-500' : 'bg-purple-100',
     projects: isActive ? 'bg-indigo-500' : 'bg-indigo-100',
     assets: isActive ? 'bg-emerald-500' : 'bg-emerald-100',
-    expenses: isActive ? 'bg-orange-500' : 'bg-orange-100'
+    expenses: isActive ? 'bg-orange-500' : 'bg-orange-100',
+    account: isActive ? 'bg-cyan-500' : 'bg-cyan-100'
   }
   return bgMap[sectionId] || (isActive ? 'bg-gray-500' : 'bg-gray-100')
 }
@@ -659,7 +771,8 @@ const getSectionIconBgClasses = (sectionId) => {
     employee: isActive ? 'bg-purple-500' : 'bg-purple-100',
     projects: isActive ? 'bg-indigo-500' : 'bg-indigo-100',
     assets: isActive ? 'bg-emerald-500' : 'bg-emerald-100',
-    expenses: isActive ? 'bg-orange-500' : 'bg-orange-100'
+    expenses: isActive ? 'bg-orange-500' : 'bg-orange-100',
+    account: isActive ? 'bg-cyan-500' : 'bg-cyan-100'
   }
   return bgMap[sectionId] || (isActive ? 'bg-gray-500' : 'bg-gray-100')
 }

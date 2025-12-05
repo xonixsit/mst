@@ -3,11 +3,13 @@
     <!-- Sidebar -->
     <div :class="[
       'hidden lg:flex lg:flex-shrink-0 transition-all duration-300',
-      sidebarCollapsed ? 'lg:w-16' : 'lg:w-64'
-    ]">
+      (sidebarCollapsed && !sidebarHovered) ? 'lg:w-16' : 'lg:w-64'
+    ]"
+      @mouseenter="sidebarHovered = true"
+      @mouseleave="sidebarHovered = false">
       <div :class="[
         'flex flex-col h-screen transition-all duration-300',
-        sidebarCollapsed ? 'w-16' : 'w-64'
+        (sidebarCollapsed && !sidebarHovered) ? 'w-16' : 'w-64'
       ]">
         <div :class="[
           'flex flex-col flex-grow relative pt-6 pb-4 overflow-y-auto overflow-x-hidden shadow-xl backdrop-blur-sm transition-all duration-300',
@@ -43,18 +45,21 @@
             ]">
               <div :class="[
                 'flex items-center transition-all duration-300',
-                sidebarCollapsed ? 'space-x-0' : 'space-x-3'
+                (!sidebarCollapsed || sidebarHovered) ? 'space-x-3' : 'space-x-0'
               ]">
                 <div
-                  class="w-10 h-10 bg-gradient-to-br from-primary-600 via-primary-700 to-primary-800 rounded-xl flex items-center justify-center shadow-lg ring-2 ring-white/20">
+                  class="w-10 h-10 bg-gradient-to-br from-primary-600 via-primary-700 to-primary-800 rounded-xl flex items-center justify-center shadow-lg ring-2 ring-white/20 flex-shrink-0">
                   <svg class="w-6 h-6 text-white" fill="currentColor" viewBox="0 0 24 24">
                     <path
                       d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
                   </svg>
                 </div>
-                <div v-if="!sidebarCollapsed" class="transition-opacity duration-300">
-                  <h1 class="text-xl font-bold text-white drop-shadow-sm">MySuperTax</h1>
-                  <p class="text-xs text-gray-300 font-medium">Professional Services</p>
+                <div :class="[
+                  'transition-all duration-300 min-w-0 overflow-hidden',
+                  (!sidebarCollapsed || sidebarHovered) ? 'opacity-100 w-auto' : 'opacity-0 w-0'
+                ]">
+                  <h1 class="text-xl font-bold text-white drop-shadow-sm whitespace-nowrap">MySuperTax</h1>
+                  <p class="text-xs text-gray-300 font-medium whitespace-nowrap">Professional Services</p>
                 </div>
               </div>
             </div>
@@ -75,7 +80,10 @@
               ]">
                   <component :is="item.icon" class="h-5 w-5" />
                 </div>
-                <span v-if="!sidebarCollapsed" class="flex-1">{{ item.name }}</span>
+                <span :class="[
+                  'flex-1 ml-3 transition-all duration-300 overflow-hidden whitespace-nowrap',
+                  (!sidebarCollapsed || sidebarHovered) ? 'opacity-100 w-auto' : 'opacity-0 w-0'
+                ]">{{ item.name }}</span>
                 <span v-if="item.badge && !sidebarCollapsed"
                   class="inline-flex items-center px-2.5 py-1 text-xs font-semibold rounded-full bg-red-500 text-white shadow-sm animate-pulse">
                   {{ item.badge }}
@@ -86,12 +94,12 @@
             <!-- Toggle Button -->
             <div class="px-3 pb-4">
               <button
-                @click="sidebarCollapsed = !sidebarCollapsed"
+                @click="sidebarCollapsed = true; sidebarHovered = false"
                 :class="[
                   'w-full flex items-center text-gray-300 hover:bg-white/10 hover:text-white text-sm font-medium rounded-lg transition-all duration-300',
-                  sidebarCollapsed ? 'px-2 py-3 justify-center' : 'px-4 py-3'
+                  (sidebarCollapsed && !sidebarHovered) ? 'px-2 py-3 justify-center' : 'px-4 py-3'
                 ]"
-                :title="sidebarCollapsed ? 'Expand sidebar' : 'Collapse sidebar'"
+                :title="sidebarCollapsed ? 'Collapse sidebar' : 'Collapse sidebar'"
               >
                 <div class="bg-white/10 hover:bg-white/20 p-2 rounded-lg transition-all duration-300">
                   <svg v-if="!sidebarCollapsed" class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -202,7 +210,7 @@
         <!-- Page Header -->
         <header v-if="$slots.header"
           class="bg-gradient-to-r from-white via-neutral-50 to-white shadow-sm border-b border-neutral-200/60 flex-shrink-0 backdrop-blur-sm w-full">
-          <div class="px-4 sm:px-6 lg:px-8 py-8 overflow-hidden w-full">
+          <div class="px-4 sm:px-6 lg:px-8 py-8 overflow-hidden w-full pr-12 lg:pr-16">
             <slot name="header" />
           </div>
         </header>
@@ -274,8 +282,9 @@
 <script setup>
   import { ref, computed } from 'vue'
   
-  // Sidebar toggle state
-  const sidebarCollapsed = ref(false)
+  // Sidebar toggle state - collapsed by default
+  const sidebarCollapsed = ref(true)
+  const sidebarHovered = ref(false)
   import { router, usePage, Link } from '@inertiajs/vue3'
   import {
     HomeIcon,

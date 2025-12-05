@@ -8,12 +8,17 @@ use App\Models\ClientEmployee;
 use App\Models\ClientProject;
 use App\Models\ClientAsset;
 use App\Models\ClientExpense;
+use App\Models\User;
 use App\Services\BulkEmailService;
 use App\Services\BulkExportService;
 use App\Services\CommunicationService;
+use App\Mail\ClientCredentialsMail;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Str;
 use Exception;
 
 class ClientInformationService
@@ -39,6 +44,11 @@ class ClientInformationService
 
                 // Create related records if provided
                 $this->createRelatedRecords($client, $clientData);
+
+                // Create user account if requested
+                if (!empty($clientData['createAccount']) && !empty($clientData['username'])) {
+                    $this->createClientAccount($client, $clientData);
+                }
 
                 // Load all relationships for the response
                 return $this->loadClientWithRelationships($client);
@@ -619,6 +629,57 @@ class ClientInformationService
         }
 
         return $changes;
+    }
+
+    /**
+     * Create a user account for the client with auto-generated password.
+     *
+     * @param Client $client
+     * @param array $clientData
+     * @return void
+     */
+    private function createClientAccount(Client $client, array $clientData): void
+    {
+        try {
+            // Generate a secure password
+            $password = Str::random(12);
+            
+            // Create the user account
+            $user = User::create([
+                'first_name' => $client->first_name,
+                'last_name' => $client->last_name,
+                'email' => $client->email,
+                'username' => $clientData['username'],
+                'password' => Hash::make($password),
+                'role' => 'client',
+                'email_verified_at' => now(),
+            ]);
+
+            // Link user to client
+            $client->update(['user_id' => $user->id]);
+
+            // Send credentials email if requested
+            if (!empty($clientData['sendCredentials'])) {
+                Mail::send(new ClientCredentialsMail(
+                    $client,
+                    $clientData['username'],
+                    $password
+                ));
+            }
+
+            Log::info('Client account created successfully', [
+                'client_id' => $client->id,
+                'user_id' => $user->id,
+                'username' => $clientData['username'],
+                'credentials_sent' => !empty($clientData['sendCredentials']),
+            ]);
+        } catch (Exception $e) {
+            Log::error('Failed to create client account', [
+                'client_id' => $client->id,
+                'error' => $e->getMessage(),
+            ]);
+            throw $e;
+        }
     }
 
     /**

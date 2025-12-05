@@ -90,12 +90,17 @@ class ClientController extends Controller
     /**
      * Store a newly created client
      */
-    public function store(Request $request)
+    public function store(\App\Http\Requests\StoreClientRequest $request)
     {
-        $client = $this->clientService->createClient($request->all());
+        $client = $this->clientService->createClient($request->validated());
+        
+        $message = 'Client created successfully.';
+        if ($request->createAccount) {
+            $message .= ' Account credentials have been sent to ' . $client->email;
+        }
         
         return redirect()->route('admin.clients.show', $client->id)
-            ->with('success', 'Client created successfully.');
+            ->with('success', $message);
     }
 
     /**

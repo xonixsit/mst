@@ -246,6 +246,36 @@
       </div>
     </div>
 
+    <!-- PDF Viewer Modal -->
+    <div v-if="showPdfViewer" class="fixed inset-0 bg-gray-900 bg-opacity-75 z-50 flex items-center justify-center p-4">
+      <div class="relative w-full max-w-4xl bg-white shadow-2xl rounded-2xl border border-gray-100 overflow-hidden flex flex-col max-h-[90vh]">
+        <!-- Modal Header -->
+        <div class="bg-gradient-to-r from-slate-50 to-gray-50 px-6 py-4 border-b border-gray-200 flex items-center justify-between">
+          <div>
+            <h3 class="text-lg font-bold text-gray-900">{{ selectedDocumentForView?.name }}</h3>
+            <p class="text-sm text-gray-600 mt-1">{{ selectedDocumentForView?.formatted_file_size }}</p>
+          </div>
+          <button
+            @click="closePdfViewer"
+            class="p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-lg transition-all duration-200"
+          >
+            <XMarkIcon class="w-5 h-5" />
+          </button>
+        </div>
+        
+        <!-- PDF Viewer -->
+        <div class="flex-1 overflow-hidden">
+          <PdfViewer
+            v-if="selectedDocumentForView"
+            :pdf-url="`/admin/documents/${selectedDocumentForView.id}/download`"
+            :document-id="selectedDocumentForView.id.toString()"
+            :document-name="selectedDocumentForView.name"
+            :height="600"
+          />
+        </div>
+      </div>
+    </div>
+
     <!-- Document View Modal -->
     <DocumentViewModal
       :show="showDocumentModal"
@@ -324,6 +354,7 @@ import {
   PencilIcon,
   TrashIcon
 } from '@heroicons/vue/24/outline'
+import PdfViewer from '@/Components/PdfViewer.vue'
 
 
 const props = defineProps({
@@ -357,7 +388,9 @@ const selectedFiles = ref([])
 const uploading = ref(false)
 const showDocumentModal = ref(false)
 const showStatusModal = ref(false)
+const showPdfViewer = ref(false)
 const selectedDocument = ref(null)
+const selectedDocumentForView = ref(null)
 const updatingStatus = ref(false)
 
 const uploadForm = ref({
@@ -515,8 +548,21 @@ const refreshDocuments = () => {
 }
 
 const viewDocument = (document) => {
-  // Navigate to document detail page
-  router.visit(`/admin/documents/${document.id}`)
+  // Open document in PDF viewer modal
+  if (!document || !document.id) {
+    console.error('Invalid document:', document)
+    alert('Unable to view document. Invalid document data.')
+    return
+  }
+  
+  console.log('Viewing document:', document.id, document.file_path)
+  selectedDocumentForView.value = document
+  showPdfViewer.value = true
+}
+
+const closePdfViewer = () => {
+  showPdfViewer.value = false
+  selectedDocumentForView.value = null
 }
 
 const closeDocumentModal = () => {
