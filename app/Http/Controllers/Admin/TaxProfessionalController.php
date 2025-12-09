@@ -99,17 +99,17 @@ class TaxProfessionalController extends Controller
             'email' => $validated['email'],
             'password' => Hash::make($validated['password']),
             'role' => 'tax_professional',
-            'phone' => $validated['phone'],
-            'address' => $validated['address'],
-            'city' => $validated['city'],
-            'state' => $validated['state'],
-            'zip_code' => $validated['zip_code'],
         ];
 
         $taxProfessionalData = [
             'license_number' => $validated['license_number'],
             'specializations' => $validated['specializations'] ?? [],
             'bio' => $validated['bio'],
+            'phone' => $validated['phone'],
+            'address' => $validated['address'],
+            'city' => $validated['city'],
+            'state' => $validated['state'],
+            'zip_code' => $validated['zip_code'],
         ];
 
         // Create user and tax professional in transaction
@@ -129,7 +129,19 @@ class TaxProfessionalController extends Controller
             abort(404);
         }
 
-        $taxProfessional->load(['taxProfessional', 'clients.invoices']);
+        $taxProfessional->load(['taxProfessional', 'clients.user', 'clients.invoices']);
+        
+        // Merge tax professional data into user object for easier access in Vue
+        if ($taxProfessional->taxProfessional) {
+            $taxProfessional->phone = $taxProfessional->taxProfessional->phone;
+            $taxProfessional->address = $taxProfessional->taxProfessional->address;
+            $taxProfessional->city = $taxProfessional->taxProfessional->city;
+            $taxProfessional->state = $taxProfessional->taxProfessional->state;
+            $taxProfessional->zip_code = $taxProfessional->taxProfessional->zip_code;
+            $taxProfessional->license_number = $taxProfessional->taxProfessional->license_number;
+            $taxProfessional->specializations = json_encode($taxProfessional->taxProfessional->specializations ?? []);
+            $taxProfessional->bio = $taxProfessional->taxProfessional->bio;
+        }
         
         // Calculate stats for this professional
         $stats = [
@@ -157,6 +169,18 @@ class TaxProfessionalController extends Controller
         }
 
         $taxProfessional->load('taxProfessional');
+        
+        // Merge tax professional data into user object for easier access in Vue
+        if ($taxProfessional->taxProfessional) {
+            $taxProfessional->phone = $taxProfessional->taxProfessional->phone;
+            $taxProfessional->address = $taxProfessional->taxProfessional->address;
+            $taxProfessional->city = $taxProfessional->taxProfessional->city;
+            $taxProfessional->state = $taxProfessional->taxProfessional->state;
+            $taxProfessional->zip_code = $taxProfessional->taxProfessional->zip_code;
+            $taxProfessional->license_number = $taxProfessional->taxProfessional->license_number;
+            $taxProfessional->specializations = json_encode($taxProfessional->taxProfessional->specializations ?? []);
+            $taxProfessional->bio = $taxProfessional->taxProfessional->bio;
+        }
 
         return Inertia::render('Admin/TaxProfessionals/Edit', [
             'taxProfessional' => $taxProfessional,
@@ -191,11 +215,6 @@ class TaxProfessionalController extends Controller
             'middle_name' => $validated['middle_name'],
             'last_name' => $validated['last_name'],
             'email' => $validated['email'],
-            'phone' => $validated['phone'],
-            'address' => $validated['address'],
-            'city' => $validated['city'],
-            'state' => $validated['state'],
-            'zip_code' => $validated['zip_code'],
         ];
 
         if (!empty($validated['password'])) {
@@ -206,6 +225,11 @@ class TaxProfessionalController extends Controller
             'license_number' => $validated['license_number'],
             'specializations' => $validated['specializations'] ?? [],
             'bio' => $validated['bio'],
+            'phone' => $validated['phone'],
+            'address' => $validated['address'],
+            'city' => $validated['city'],
+            'state' => $validated['state'],
+            'zip_code' => $validated['zip_code'],
         ];
 
         // Update user and tax professional in transaction

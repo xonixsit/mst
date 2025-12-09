@@ -16,7 +16,12 @@ class TaxProfessional extends Model
         'user_id',
         'license_number',
         'specializations',
-        'bio'
+        'bio',
+        'phone',
+        'address',
+        'city',
+        'state',
+        'zip_code'
     ];
 
     protected $casts = [

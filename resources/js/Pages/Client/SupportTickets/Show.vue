@@ -205,11 +205,17 @@
   }
 
   const submitReply = () => {
-    if (!props.ticket || !props.ticket.id) {
+    console.log('Ticket object:', props.ticket)
+    console.log('Ticket ID:', props.ticket?.id)
+    console.log('All ticket keys:', Object.keys(props.ticket || {}))
+    
+    const ticketId = props.ticket?.id
+    if (!ticketId) {
       console.error('Ticket ID is missing:', props.ticket)
+      alert('Error: Unable to submit reply. Ticket ID not found.')
       return
     }
-    replyForm.post(`/client/support-tickets/${props.ticket.id}/reply`, {
+    replyForm.post(`/client/support-tickets/${ticketId}/reply`, {
       onSuccess: () => {
         replyForm.reset()
         window.location.reload()

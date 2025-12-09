@@ -370,9 +370,16 @@ watch(() => props.taxProfessional, (newVal) => {
     form.license_number = newVal.license_number || ''
     form.bio = newVal.bio || ''
     
-    try {
-      form.specializations = JSON.parse(newVal.specializations || '[]')
-    } catch (e) {
+    // Handle specializations - could be array or JSON string
+    if (Array.isArray(newVal.specializations)) {
+      form.specializations = newVal.specializations
+    } else if (typeof newVal.specializations === 'string') {
+      try {
+        form.specializations = JSON.parse(newVal.specializations || '[]')
+      } catch (e) {
+        form.specializations = []
+      }
+    } else {
       form.specializations = []
     }
   }
