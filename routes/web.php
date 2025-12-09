@@ -245,7 +245,7 @@ Route::middleware(['auth', 'auth.session', 'session.timeout', 'admin'])->prefix(
     });
     
     // Client management routes
-    Route::resource('clients', ClientController::class);
+    Route::resource('clients', ClientController::class)->whereNumber('client');
     Route::post('clients/bulk-operation', [ClientController::class, 'bulkOperation'])->name('clients.bulk-operation');
     Route::get('clients/export', [ClientController::class, 'export'])->name('clients.export');
     Route::get('clients/stats', [ClientController::class, 'getStats'])->name('clients.stats');
@@ -329,6 +329,16 @@ Route::middleware(['auth', 'auth.session', 'session.timeout', 'admin'])->prefix(
     Route::post('messages/{message}/mark-read', [App\Http\Controllers\Admin\MessageController::class, 'markAsRead'])->name('messages.mark-read');
     Route::post('messages/bulk-action', [App\Http\Controllers\Admin\MessageController::class, 'bulkAction'])->name('messages.bulk-action');
     Route::delete('messages/{message}', [App\Http\Controllers\Admin\MessageController::class, 'destroy'])->name('messages.destroy');
+    
+    // Admin support ticket management routes
+    Route::get('support-tickets', [App\Http\Controllers\Admin\SupportTicketController::class, 'index'])->name('support-tickets.index');
+    Route::get('support-tickets/create', [App\Http\Controllers\Admin\SupportTicketController::class, 'create'])->name('support-tickets.create');
+    Route::post('support-tickets', [App\Http\Controllers\Admin\SupportTicketController::class, 'store'])->name('support-tickets.store');
+    Route::get('support-tickets/{supportTicket}', [App\Http\Controllers\Admin\SupportTicketController::class, 'show'])->name('support-tickets.show');
+    Route::patch('support-tickets/{supportTicket}/status', [App\Http\Controllers\Admin\SupportTicketController::class, 'updateStatus'])->name('support-tickets.update-status');
+    Route::patch('support-tickets/{supportTicket}/priority', [App\Http\Controllers\Admin\SupportTicketController::class, 'updatePriority'])->name('support-tickets.update-priority');
+    Route::patch('support-tickets/{supportTicket}/assign', [App\Http\Controllers\Admin\SupportTicketController::class, 'assign'])->name('support-tickets.assign');
+    Route::post('support-tickets/{supportTicket}/reply', [App\Http\Controllers\Admin\SupportTicketController::class, 'reply'])->name('support-tickets.reply');
     
     // Admin audit management routes
     Route::get('audit', [App\Http\Controllers\Admin\AuditController::class, 'index'])->name('audit.index');
@@ -488,5 +498,14 @@ Route::middleware(['auth', 'auth.session', 'session.timeout', 'client'])->prefix
     Route::get('/invoices', [App\Http\Controllers\Client\InvoiceController::class, 'index'])->name('invoices');
     Route::get('/invoices/{invoice}', [App\Http\Controllers\Client\InvoiceController::class, 'show'])->name('invoices.show');
     Route::get('/invoices/{invoice}/download', [App\Http\Controllers\Client\InvoiceController::class, 'download'])->name('invoices.download');
+    
+    // Client support ticket routes
+    Route::get('/support-tickets', [App\Http\Controllers\Client\SupportTicketController::class, 'index'])->name('support-tickets.index');
+    Route::get('/support-tickets/create', function () {
+        return inertia('Client/SupportTickets/Create');
+    })->name('support-tickets.create');
+    Route::post('/support-tickets', [App\Http\Controllers\Client\SupportTicketController::class, 'store'])->name('support-tickets.store');
+    Route::get('/support-tickets/{supportTicket}', [App\Http\Controllers\Client\SupportTicketController::class, 'show'])->name('support-tickets.show');
+    Route::post('/support-tickets/{supportTicket}/reply', [App\Http\Controllers\Client\SupportTicketController::class, 'reply'])->name('support-tickets.reply');
 
 });

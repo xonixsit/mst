@@ -476,4 +476,23 @@ class Client extends Model
         return strpos($value, 'eyJpdiI6') === 0 || 
                (strlen($value) > 100 && preg_match('/^[A-Za-z0-9+\/]+=*$/', $value));
     }
+
+    /**
+     * Convert the model to an array, ensuring encrypted attributes are decrypted.
+     */
+    public function toArray(): array
+    {
+        $array = parent::toArray();
+        
+        // Ensure encrypted attributes are decrypted in the array
+        foreach ($this->encrypted as $attribute) {
+            // Use getAttribute to trigger the accessor/decryption
+            $value = $this->getAttribute($attribute);
+            if ($value !== null) {
+                $array[$attribute] = $value;
+            }
+        }
+        
+        return $array;
+    }
 }

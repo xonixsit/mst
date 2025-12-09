@@ -11,7 +11,7 @@
         <div class="relative flex flex-col lg:flex-row lg:justify-between lg:items-center space-y-6 lg:space-y-0 py-2">
           <div class="flex items-center space-x-4">
             <!-- Client Dashboard Icon -->
-            <div class="w-16 h-16 bg-gradient-to-br from-blue-500 via-blue-600 to-indigo-600 rounded-2xl flex items-center justify-center shadow-lg ring-4 ring-blue-100">
+            <div class="w-14 h-14 bg-gradient-to-br from-blue-500 via-blue-600 to-indigo-600 rounded-2xl flex items-center justify-center shadow-lg ring-4 ring-blue-100">
               <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2H5a2 2 0 00-2-2z"></path>
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 5a2 2 0 012-2h4a2 2 0 012 2v0H8v0z"></path>
@@ -184,47 +184,6 @@
           </div>
         </div>
       </div>
-
-      <!-- Status Overview -->
-      <!-- <div class="bg-white shadow rounded-lg">
-        <div class="px-6 py-4 border-b border-gray-200">
-          <h2 class="text-lg font-medium text-gray-900">Account Status</h2>
-        </div>
-        <div class="p-6">
-          <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
-            <div class="text-center">
-              <div class="text-2xl font-bold text-indigo-600">Active</div>
-              <div class="text-sm text-gray-600">Account Status</div>
-            </div>
-            <div class="text-center">
-              <div class="text-2xl font-bold text-blue-600">0</div>
-              <div class="text-sm text-gray-600">Documents Uploaded</div>
-            </div>
-            <div class="text-center">
-              <div class="text-2xl font-bold text-green-600">0</div>
-              <div class="text-sm text-gray-600">Returns Completed</div>
-            </div>
-            <div class="text-center">
-              <div class="text-2xl font-bold text-purple-600">Active</div>
-              <div class="text-sm text-gray-600">Account Status</div>
-            </div>
-          </div>
-        </div>
-      </div> -->
-
-      <!-- Recent Activity -->
-      <!-- <div class="bg-white shadow rounded-lg">
-        <div class="px-6 py-4 border-b border-gray-200">
-          <h2 class="text-lg font-medium text-gray-900">Recent Activity</h2>
-        </div>
-        <div class="p-6">
-          <div class="text-center py-8">
-            <ClockIcon class="mx-auto w-12 h-12 text-gray-400" />
-            <p class="mt-2 text-gray-600">No recent activity to display.</p>
-            <p class="text-sm text-gray-500">Your activity will appear here once you start using the platform.</p>
-          </div>
-        </div>
-      </div> -->
     </div>
   </AppLayout>
 </template>

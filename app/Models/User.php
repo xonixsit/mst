@@ -34,9 +34,6 @@ class User extends Authenticatable implements MustVerifyEmail
         'city',
         'state',
         'zip_code',
-        'license_number',
-        'specializations',
-        'bio',
         'email_verified_at',
     ];
 
@@ -115,6 +112,14 @@ class User extends Authenticatable implements MustVerifyEmail
     public function client()
     {
         return $this->hasOne(Client::class);
+    }
+
+    /**
+     * Get the tax professional profile for this user (if user is a tax professional).
+     */
+    public function taxProfessional()
+    {
+        return $this->hasOne(\App\Models\TaxProfessional::class);
     }
 
     /**

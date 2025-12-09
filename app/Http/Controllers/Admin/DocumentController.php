@@ -305,6 +305,7 @@ class DocumentController extends Controller
     {
         // Documents are stored with user_id in the client_id column
         $documents = Document::where('client_id', $client->user_id)
+            ->select('id', 'client_id', 'name', 'original_name', 'file_path', 'file_size', 'mime_type', 'document_type', 'tax_year', 'status', 'uploaded_by', 'notes', 'created_at', 'updated_at')
             ->with('uploader:id,first_name,last_name,email')
             ->get();
         

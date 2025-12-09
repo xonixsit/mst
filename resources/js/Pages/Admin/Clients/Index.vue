@@ -8,10 +8,10 @@
         <div class="absolute bottom-0 left-0 w-48 h-24 bg-gradient-to-tr from-blue-100/30 to-transparent rounded-tr-full"></div>
         
         <!-- Content -->
-        <div class="relative flex flex-col lg:flex-row lg:justify-between lg:items-center space-y-6 lg:space-y-0 py-2">
+        <div class="relative flex flex-col lg:flex-row lg:justify-between lg:items-center space-y-6 lg:space-y-0 py-2 pr-2 pl-2">
           <div class="flex items-center space-x-4">
             <!-- Client Management Icon -->
-            <div class="w-16 h-16 bg-gradient-to-br from-emerald-500 via-emerald-600 to-blue-600 rounded-2xl flex items-center justify-center shadow-lg ring-4 ring-emerald-100">
+            <div class="w-14 h-14 bg-gradient-to-br from-blue-500 via-blue-600 to-indigo-600 rounded-2xl flex items-center justify-center shadow-lg ring-4 ring-blue-100">
               <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path>
               </svg>
@@ -19,7 +19,7 @@
             
             <!-- Title Section -->
             <div>
-              <h1 class="text-3xl font-bold bg-gradient-to-r from-gray-900 via-emerald-900 to-blue-900 bg-clip-text text-transparent">
+              <h1 class="text-2xl font-bold bg-gradient-to-r from-gray-900 via-emerald-900 to-blue-900 bg-clip-text text-transparent">
                 Client Management
               </h1>
               <p class="mt-2 text-sm text-gray-600 font-medium">Comprehensive client information and operations center</p>
@@ -41,7 +41,7 @@
           <!-- Action Buttons -->
           <div class="flex flex-col sm:flex-row items-start sm:items-center space-y-3 sm:space-y-0 sm:space-x-4">
             <button
-              @click="router.visit('/admin/clients/create')"
+              @click="showCreateModal = true"
               class="bg-gradient-to-r from-emerald-600 to-green-600 hover:from-emerald-700 hover:to-green-700 text-white px-6 py-3 rounded-xl flex items-center transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105 group"
             >
               <svg class="w-5 h-5 mr-2 transition-transform duration-300 group-hover:rotate-90" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -396,20 +396,30 @@
       @close="showBulkModal = false"
       @execute="handleBulkOperation"
     />
+
+    <!-- Create Client User Modal -->
+    <CreateClientUserModal
+      :is-open="showCreateModal"
+      @close="showCreateModal = false"
+      @submit="handleCreateClientSubmit"
+    />
   </AppLayout>
 </template>
 
 <script>
 import { ref, computed, onMounted } from 'vue'
 import { router } from '@inertiajs/vue3'
+import axios from 'axios'
 import { debounce } from 'lodash'
 import BulkOperationsModal from '../../../Components/BulkOperationsModal.vue'
+import CreateClientUserModal from '../../../Components/CreateClientUserModal.vue'
 import AppLayout from '../../../Layouts/AppLayout.vue'
 
 export default {
   name: 'AdminClientsIndex',
   components: {
     BulkOperationsModal,
+    CreateClientUserModal,
     AppLayout
   },
   props: {
@@ -439,6 +449,7 @@ export default {
     const perPage = ref(props.filters.per_page || 25)
     const showExportModal = ref(false)
     const showBulkModal = ref(false)
+    const showCreateModal = ref(false)
     const exportFormat = ref('excel')
 
     const allSelected = computed(() => {
@@ -594,6 +605,33 @@ export default {
       showExportModal.value = false
     }
 
+    const handleCreateClientSubmit = (userData) => {
+      // Create user account first, then client
+      axios.post('/admin/clients', {
+        personal: {
+          firstName: userData.first_name,
+          middleName: userData.middle_name,
+          lastName: userData.last_name,
+          email: userData.email
+        },
+        spouse: {},
+        employee: [{}],
+        projects: [],
+        assets: [],
+        expenses: [],
+        createAccount: true,
+        sendCredentials: true
+      }).then(response => {
+        showCreateModal.value = false
+        // Refresh the clients list
+        router.reload()
+        alert('Client created successfully! Credentials have been sent to their email.')
+      }).catch(error => {
+        console.error('Error creating client:', error.response?.data || error)
+        alert('Error creating client: ' + (error.response?.data?.message || 'Please try again.'))
+      })
+    }
+
     const formatDate = (date) => {
       return new Date(date).toLocaleDateString('en-US', {
         year: 'numeric',
@@ -652,6 +690,7 @@ export default {
       perPage,
       showExportModal,
       showBulkModal,
+      showCreateModal,
       exportFormat,
       allSelected,
       paginationPages,
@@ -665,6 +704,7 @@ export default {
       handleBulkOperation,
       clearSelection,
       exportClients,
+      handleCreateClientSubmit,
       formatDate,
       getStatusClass,
       getStatusDotClass,

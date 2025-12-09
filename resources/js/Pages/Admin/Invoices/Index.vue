@@ -8,11 +8,11 @@
         <div class="absolute bottom-0 left-0 w-48 h-24 bg-gradient-to-tr from-green-100/30 to-transparent rounded-tr-full"></div>
         
         <!-- Content -->
-        <div class="relative flex flex-col lg:flex-row lg:justify-between lg:items-center space-y-6 lg:space-y-0 py-2">
+        <div class="relative flex flex-col lg:flex-row lg:justify-between lg:items-center space-y-6 lg:space-y-0 py-2 pr-2 pl-2">
           <div class="flex items-center space-x-4">
-            <!-- Invoice Icon -->
-            <div class="w-16 h-16 bg-gradient-to-br from-emerald-500 via-emerald-600 to-green-600 rounded-2xl flex items-center justify-center shadow-lg ring-4 ring-emerald-100">
-              <DocumentTextIcon class="w-8 h-8 text-white" />
+            <!-- Document Management Icon -->
+            <div class="w-14 h-14 bg-gradient-to-br from-green-500 via-green-600 to-indigo-600 rounded-2xl flex items-center justify-center shadow-lg ring-4 ring-blue-100">
+               <DocumentTextIcon class="w-8 h-8 text-white" />
             </div>
             
             <!-- Title Section -->
@@ -52,8 +52,8 @@
       </div>
     </template>
 
-    <div class="py-12">
-      <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
+    <div class="py-6">
+      <div class="max-w-7xl mx-auto sm:px-6 lg:px-4">
         <!-- Enhanced Statistics Cards -->
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
           <!-- Total Invoices -->
@@ -225,7 +225,7 @@
           </div>
 
           <div v-if="invoices.data.length === 0" class="p-12 text-center">
-            <div class="w-16 h-16 bg-gradient-to-br from-emerald-100 to-green-200 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-inner">
+            <div class="w-14 h-14 bg-gradient-to-br from-emerald-100 to-green-200 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-inner">
               <DocumentTextIcon class="w-8 h-8 text-emerald-600" />
             </div>
             <h3 class="text-lg font-semibold text-gray-900 mb-2">No invoices found</h3>

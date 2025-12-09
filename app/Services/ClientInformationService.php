@@ -45,11 +45,6 @@ class ClientInformationService
                 // Create related records if provided
                 $this->createRelatedRecords($client, $clientData);
 
-                // Create user account if requested
-                if (!empty($clientData['createAccount']) && !empty($clientData['username'])) {
-                    $this->createClientAccount($client, $clientData);
-                }
-
                 // Load all relationships for the response
                 return $this->loadClientWithRelationships($client);
             });
@@ -96,7 +91,7 @@ class ClientInformationService
                 
                 // Track changes for notifications
                 $originalData = $client->toArray();
-                $newClientData = $this->extractClientData($clientData);
+                $newClientData = $this->extractClientData($clientData, $client);
                 $changes = $this->trackChanges($originalData, $newClientData);
                 
                 // Update main client record
@@ -136,15 +131,20 @@ class ClientInformationService
             return DB::transaction(function () use ($clientId) {
                 $client = Client::findOrFail($clientId);
                 
-                // Delete related records first
-                $client->spouse()?->delete();
-                $client->employees()->delete();
-                $client->projects()->delete();
-                $client->assets()->delete();
-                $client->expenses()->delete();
+                // Delete related records first (force delete)
+                $client->spouse()?->forceDelete();
+                $client->employees()->forceDelete();
+                $client->projects()->forceDelete();
+                $client->assets()->forceDelete();
+                $client->expenses()->forceDelete();
                 
-                // Delete the client record
-                return $client->delete();
+                // Delete associated user if exists (force delete)
+                if ($client->user_id) {
+                    \App\Models\User::find($client->user_id)?->forceDelete();
+                }
+                
+                // Force delete the client record
+                return $client->forceDelete();
             });
         } catch (Exception $e) {
             Log::error('Failed to delete client', [
@@ -270,7 +270,7 @@ class ClientInformationService
      * @param array $data
      * @return array
      */
-    private function extractClientData(array $data): array
+    private function extractClientData(array $data, ?Client $existingClient = null): array
     {
         // Handle nested personal data structure from frontend
         $personalData = $data['personal'] ?? $data;
@@ -282,7 +282,22 @@ class ClientInformationService
             'mobile_number', 'work_number', 'visa_status', 'date_of_entry_us', 'status'
         ];
         
-        return array_intersect_key($personalData, array_flip($allowedFields));
+        $extractedData = array_intersect_key($personalData, array_flip($allowedFields));
+        
+        // Preserve existing sensitive fields if the new ones are empty (for security - they are masked on frontend)
+        if ($existingClient) {
+            // Preserve SSN if empty
+            if (empty($extractedData['ssn']) && !empty($existingClient->ssn)) {
+                $extractedData['ssn'] = $existingClient->ssn;
+            }
+            
+            // Preserve date_of_entry_us if empty
+            if (empty($extractedData['date_of_entry_us']) && !empty($existingClient->date_of_entry_us)) {
+                $extractedData['date_of_entry_us'] = $existingClient->date_of_entry_us;
+            }
+        }
+        
+        return $extractedData;
     }
 
     /**
@@ -649,7 +664,6 @@ class ClientInformationService
                 'first_name' => $client->first_name,
                 'last_name' => $client->last_name,
                 'email' => $client->email,
-                'username' => $clientData['username'],
                 'password' => Hash::make($password),
                 'role' => 'client',
                 'email_verified_at' => now(),
@@ -670,7 +684,7 @@ class ClientInformationService
             Log::info('Client account created successfully', [
                 'client_id' => $client->id,
                 'user_id' => $user->id,
-                'username' => $clientData['username'],
+                'email' => $client->email,
                 'credentials_sent' => !empty($clientData['sendCredentials']),
             ]);
         } catch (Exception $e) {

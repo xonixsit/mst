@@ -23,7 +23,7 @@ class TaxProfessionalController extends Controller
 
     public function index(Request $request)
     {
-        $query = User::where('role', 'tax_professional');
+        $query = User::where('role', 'tax_professional')->with('taxProfessional');
 
         // Search functionality
         if ($request->filled('search')) {
@@ -51,17 +51,12 @@ class TaxProfessionalController extends Controller
                                  ->paginate(25)
                                  ->withQueryString();
 
-        // Debug: Log the count of tax professionals
-        \Log::info('Tax Professionals Count:', ['count' => $taxProfessionals->total()]);
-
         $stats = [
             'total_professionals' => User::where('role', 'tax_professional')->count(),
             'active_professionals' => User::where('role', 'tax_professional')->whereNull('deleted_at')->count(),
             'inactive_professionals' => User::where('role', 'tax_professional')->whereNotNull('deleted_at')->count(),
             'total_clients_managed' => User::where('role', 'tax_professional')
-                                          ->withCount(['clients' => function($query) {
-                                              // Don't filter by deleted_at since clients table doesn't have it
-                                          }])
+                                          ->withCount(['clients'])
                                           ->get()
                                           ->sum('clients_count'),
         ];
@@ -96,11 +91,33 @@ class TaxProfessionalController extends Controller
             'bio' => 'nullable|string|max:1000',
         ]);
 
-        $validated['role'] = 'tax_professional';
-        $validated['password'] = Hash::make($validated['password']);
-        $validated['specializations'] = json_encode($validated['specializations'] ?? []);
+        // Separate user and tax professional data
+        $userData = [
+            'first_name' => $validated['first_name'],
+            'middle_name' => $validated['middle_name'],
+            'last_name' => $validated['last_name'],
+            'email' => $validated['email'],
+            'password' => Hash::make($validated['password']),
+            'role' => 'tax_professional',
+            'phone' => $validated['phone'],
+            'address' => $validated['address'],
+            'city' => $validated['city'],
+            'state' => $validated['state'],
+            'zip_code' => $validated['zip_code'],
+        ];
 
-        User::create($validated);
+        $taxProfessionalData = [
+            'license_number' => $validated['license_number'],
+            'specializations' => $validated['specializations'] ?? [],
+            'bio' => $validated['bio'],
+        ];
+
+        // Create user and tax professional in transaction
+        \DB::transaction(function () use ($userData, $taxProfessionalData) {
+            $user = User::create($userData);
+            $taxProfessionalData['user_id'] = $user->id;
+            \App\Models\TaxProfessional::create($taxProfessionalData);
+        });
 
         return redirect()->route('admin.tax-professionals.index')
                        ->with('success', 'Tax professional created successfully!');
@@ -112,12 +129,12 @@ class TaxProfessionalController extends Controller
             abort(404);
         }
 
-        $taxProfessional->load(['clients.invoices']);
+        $taxProfessional->load(['taxProfessional', 'clients.invoices']);
         
         // Calculate stats for this professional
         $stats = [
             'total_clients' => $taxProfessional->clients()->count(),
-            'active_clients' => $taxProfessional->clients()->count(), // All clients are considered active since no soft deletes
+            'active_clients' => $taxProfessional->clients()->count(),
             'total_invoices' => $taxProfessional->clients()->withCount('invoices')->get()->sum('invoices_count'),
             'total_revenue' => $taxProfessional->clients()
                                              ->with('invoices')
@@ -139,8 +156,7 @@ class TaxProfessionalController extends Controller
             abort(404);
         }
 
-        // Debug: Log the tax professional data
-        \Log::info('Tax Professional Edit Data:', $taxProfessional->toArray());
+        $taxProfessional->load('taxProfessional');
 
         return Inertia::render('Admin/TaxProfessionals/Edit', [
             'taxProfessional' => $taxProfessional,
@@ -149,9 +165,6 @@ class TaxProfessionalController extends Controller
 
     public function update(Request $request, User $taxProfessional)
     {
-        \Log::info('Update method called for tax professional ID: ' . $taxProfessional->id);
-        \Log::info('Request data:', $request->all());
-        
         if ($taxProfessional->role !== 'tax_professional') {
             abort(404);
         }
@@ -172,15 +185,37 @@ class TaxProfessionalController extends Controller
             'bio' => 'nullable|string|max:1000',
         ]);
 
+        // Separate user and tax professional data
+        $userData = [
+            'first_name' => $validated['first_name'],
+            'middle_name' => $validated['middle_name'],
+            'last_name' => $validated['last_name'],
+            'email' => $validated['email'],
+            'phone' => $validated['phone'],
+            'address' => $validated['address'],
+            'city' => $validated['city'],
+            'state' => $validated['state'],
+            'zip_code' => $validated['zip_code'],
+        ];
+
         if (!empty($validated['password'])) {
-            $validated['password'] = Hash::make($validated['password']);
-        } else {
-            unset($validated['password']);
+            $userData['password'] = Hash::make($validated['password']);
         }
 
-        $validated['specializations'] = json_encode($validated['specializations'] ?? []);
+        $taxProfessionalData = [
+            'license_number' => $validated['license_number'],
+            'specializations' => $validated['specializations'] ?? [],
+            'bio' => $validated['bio'],
+        ];
 
-        $taxProfessional->update($validated);
+        // Update user and tax professional in transaction
+        \DB::transaction(function () use ($taxProfessional, $userData, $taxProfessionalData) {
+            $taxProfessional->update($userData);
+            $taxProfessional->taxProfessional()->updateOrCreate(
+                ['user_id' => $taxProfessional->id],
+                $taxProfessionalData
+            );
+        });
 
         return redirect()->route('admin.tax-professionals.show', $taxProfessional)
                        ->with('success', 'Tax professional updated successfully!');
@@ -192,7 +227,10 @@ class TaxProfessionalController extends Controller
             abort(404);
         }
 
-        $taxProfessional->delete();
+        \DB::transaction(function () use ($taxProfessional) {
+            $taxProfessional->taxProfessional()?->delete();
+            $taxProfessional->delete();
+        });
 
         return redirect()->route('admin.tax-professionals.index')
                        ->with('success', 'Tax professional deactivated successfully!');
@@ -204,7 +242,10 @@ class TaxProfessionalController extends Controller
             abort(404);
         }
 
-        $taxProfessional->restore();
+        \DB::transaction(function () use ($taxProfessional) {
+            $taxProfessional->taxProfessional()?->restore();
+            $taxProfessional->restore();
+        });
 
         return redirect()->route('admin.tax-professionals.index')
                        ->with('success', 'Tax professional reactivated successfully!');

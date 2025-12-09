@@ -419,6 +419,11 @@ class ComprehensiveExportService
     {
         $row = [];
         
+        // Ensure customFields is an array
+        if (!is_array($customFields)) {
+            $customFields = [];
+        }
+        
         foreach ($customFields as $field) {
             switch ($field) {
                 case 'id':

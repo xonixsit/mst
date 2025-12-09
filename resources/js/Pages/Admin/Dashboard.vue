@@ -11,13 +11,13 @@
         <div class="relative flex flex-col lg:flex-row lg:justify-between lg:items-center space-y-6 lg:space-y-0 py-2 pr-2 pl-2">
           <div class="flex items-center space-x-4">
             <!-- Dashboard Icon -->
-            <div class="w-16 h-16 bg-gradient-to-br from-blue-500 via-blue-600 to-indigo-600 rounded-2xl flex items-center justify-center shadow-lg ring-4 ring-blue-100">
+            <div class="w-14 h-14 bg-gradient-to-br from-blue-500 via-blue-600 to-indigo-600 rounded-2xl flex items-center justify-center shadow-lg ring-4 ring-blue-100">
               <ChartBarIcon class="w-8 h-8 text-white" />
             </div>
             
             <!-- Title Section -->
             <div>
-              <h1 class="text-3xl font-bold bg-gradient-to-r from-gray-900 via-blue-900 to-indigo-900 bg-clip-text text-transparent">
+              <h1 class="text-2xl font-bold bg-gradient-to-r from-gray-900 via-blue-900 to-indigo-900 bg-clip-text text-transparent">
                 Business Intelligence Dashboard
               </h1>
               <p class="mt-2 text-sm text-gray-600 font-medium">Real-time insights and analytics for MySuperTax consulting practice</p>
@@ -248,8 +248,8 @@
             </div>
           </div>
           <div class="p-6 max-h-96 overflow-y-auto">
-            <div v-if="recentActivities.length === 0" class="text-center py-12">
-              <div class="w-16 h-16 bg-gradient-to-br from-gray-100 to-gray-200 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-inner">
+            <div v-if="recentActivities.length === 0" class="text-center py-6">
+              <div class="w-14 h-14 bg-gradient-to-br from-gray-100 to-gray-200 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-inner">
                 <ClockIcon class="h-8 w-8 text-gray-400" />
               </div>
               <p class="text-gray-500 font-medium">No recent activity</p>
@@ -290,8 +290,8 @@
             <p class="text-sm text-gray-600 mt-1">Key business indicators</p>
           </div>
           <div class="p-6">
-            <div v-if="kpiData.length === 0" class="text-center py-12">
-              <div class="w-16 h-16 bg-gradient-to-br from-gray-100 to-gray-200 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-inner">
+            <div v-if="kpiData.length === 0" class="text-center py-6">
+              <div class="w-14 h-14 bg-gradient-to-br from-gray-100 to-gray-200 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-inner">
                 <ChartBarIcon class="h-8 w-8 text-gray-400" />
               </div>
               <p class="text-gray-500 font-medium">No performance data available</p>
@@ -333,8 +333,8 @@
             </div>
           </div>
           <div class="p-6">
-            <div v-if="priorityTasks.length === 0" class="text-center py-12">
-              <div class="w-16 h-16 bg-gradient-to-br from-emerald-100 to-green-200 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-inner">
+            <div v-if="priorityTasks.length === 0" class="text-center py-6">
+              <div class="w-14 h-14 bg-gradient-to-br from-emerald-100 to-green-200 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-inner">
                 <CheckIcon class="h-8 w-8 text-emerald-600" />
               </div>
               <p class="text-gray-500 font-medium">No priority tasks</p>
@@ -361,8 +361,8 @@
             <p class="text-sm text-gray-600 mt-1">System status and notifications</p>
           </div>
           <div class="p-6">
-            <div v-if="systemAlerts.length === 0" class="text-center py-12">
-              <div class="w-16 h-16 bg-gradient-to-br from-emerald-100 to-green-200 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-inner">
+            <div v-if="systemAlerts.length === 0" class="text-center py-6">
+              <div class="w-14 h-14 bg-gradient-to-br from-emerald-100 to-green-200 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-inner">
                 <CheckCircleIcon class="h-8 w-8 text-emerald-600" />
               </div>
               <p class="text-gray-500 font-medium">No system alerts</p>
@@ -405,11 +405,19 @@
         </div>
       </div>
     </div>
+
+    <!-- Create Client User Modal -->
+    <CreateClientUserModal
+      :is-open="showCreateModal"
+      @close="showCreateModal = false"
+      @submit="handleCreateClientSubmit"
+    />
   </AppLayout>
 </template>
 
 <script setup>
 import { ref, computed, onMounted } from 'vue'
+import axios from 'axios'
 import { 
   UsersIcon, 
   DocumentTextIcon, 
@@ -431,6 +439,7 @@ import {
   CogIcon
 } from '@heroicons/vue/24/outline'
 import AppLayout from '../../Layouts/AppLayout.vue'
+import CreateClientUserModal from '../../Components/CreateClientUserModal.vue'
 
 // Reactive data
 const isRefreshing = ref(false)
@@ -546,12 +555,15 @@ const priorityTasks = ref([])
 // System alerts (empty - to be populated with real data)
 const systemAlerts = ref([])
 
+// Modal state
+const showCreateModal = ref(false)
+
 // Quick actions
 const quickActions = ref([
   {
     label: 'New Client',
     icon: PlusIcon,
-    action: () => window.location.href = '/admin/clients/create'
+    action: () => showCreateModal.value = true
   },
   {
     label: 'Create Invoice',
@@ -642,6 +654,33 @@ const getActionIconClass = (index) => {
 
 const getActionTextClass = (index) => {
   return actionColorSchemes[index % actionColorSchemes.length].text
+}
+
+const handleCreateClientSubmit = (userData) => {
+  // Create user account first, then client
+  axios.post('/admin/clients', {
+    personal: {
+      firstName: userData.first_name,
+      middleName: userData.middle_name,
+      lastName: userData.last_name,
+      email: userData.email
+    },
+    spouse: {},
+    employee: [{}],
+    projects: [],
+    assets: [],
+    expenses: [],
+    createAccount: true,
+    sendCredentials: true
+  }).then(response => {
+    showCreateModal.value = false
+    // Refresh the dashboard
+    window.location.reload()
+    alert('Client created successfully! Credentials have been sent to their email.')
+  }).catch(error => {
+    console.error('Error creating client:', error.response?.data || error)
+    alert('Error creating client: ' + (error.response?.data?.message || error.message))
+  })
 }
 
 onMounted(() => {

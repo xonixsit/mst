@@ -11,7 +11,7 @@
         <div class="relative flex flex-col lg:flex-row lg:justify-between lg:items-center space-y-6 lg:space-y-0 py-2">
           <div class="flex items-center space-x-4">
             <!-- Information Management Icon -->
-            <div class="w-16 h-16 bg-gradient-to-br from-emerald-500 via-emerald-600 to-blue-600 rounded-2xl flex items-center justify-center shadow-lg ring-4 ring-emerald-100">
+            <div class="w-14 h-14 bg-gradient-to-br from-emerald-500 via-emerald-600 to-blue-600 rounded-2xl flex items-center justify-center shadow-lg ring-4 ring-emerald-100">
               <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
               </svg>
@@ -50,27 +50,15 @@
           </div>
           
           <!-- Action Buttons -->
-          <div class="flex flex-col sm:flex-row items-start sm:items-center space-y-3 sm:space-y-0 sm:space-x-4">
-            <Link
-              href="/client/documents"
-              class="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white px-6 py-3 rounded-xl flex items-center transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105 group"
-            >
-              <svg class="w-5 h-5 mr-2 transition-transform duration-300 group-hover:-translate-y-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path>
-              </svg>
-              <span class="font-semibold">Upload Documents</span>
-            </Link>
-            
-            <Link
-              href="/client/dashboard"
-              class="bg-gradient-to-r from-emerald-600 to-green-600 hover:from-emerald-700 hover:to-green-700 text-white px-6 py-3 rounded-xl flex items-center transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105 group"
-            >
-              <svg class="w-5 h-5 mr-2 transition-transform duration-300 group-hover:rotate-12" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2H5a2 2 0 00-2-2z"></path>
-              </svg>
-              <span class="font-semibold">Back to Dashboard</span>
-            </Link>
-          </div>
+          <Link
+            href="/client/dashboard"
+            class="bg-gradient-to-r from-emerald-600 to-green-600 hover:from-emerald-700 hover:to-green-700 text-white px-6 py-3 rounded-xl flex items-center transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105 group"
+          >
+            <svg class="w-5 h-5 mr-2 transition-transform duration-300 group-hover:rotate-12" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2H5a2 2 0 00-2-2z"></path>
+            </svg>
+            <span class="font-semibold">Back to Dashboard</span>
+          </Link>
         </div>
       </div>
     </template>
@@ -97,38 +85,42 @@
         </div>
       </div>
       
-      <!-- Navigation Tabs -->
-      <div class="bg-gradient-to-r from-gray-50 to-gray-100 border-b border-gray-200 mb-6 p-2 rounded-t-lg">
-        <nav class="flex space-x-2" aria-label="Tabs">
-          <button
-            v-for="section in sections"
-            :key="section.id"
-            @click="activeSection = section.id"
-            :class="[
-              'py-3 px-4 font-medium text-sm whitespace-nowrap transition-all duration-200 rounded-lg flex-1 min-w-0',
-              getSectionTabClasses(section.id)
-            ]"
-          >
-            <div class="flex items-center justify-center space-x-2">
-              <component :is="section.icon" :class="getTabIconClasses(section.id)" class="w-4 h-4" />
-              <span class="font-medium">{{ section.name }}</span>
+      <!-- Navigation Tabs - Full Width -->
+      <div class="bg-white shadow-lg rounded-lg border border-gray-100 overflow-hidden mb-6">
+        <div class="bg-gradient-to-r from-slate-50 to-gray-50 px-6 py-4 border-b border-gray-200">
+          <h3 class="text-lg font-bold text-gray-900">Information Sections</h3>
+        </div>
+        <div class="overflow-x-auto">
+          <nav class="flex space-x-2 min-w-max px-6 py-4" aria-label="Tabs">
+            <button
+              v-for="section in sections"
+              :key="section.id"
+              @click="activeSection = section.id"
+              :class="[
+                'px-4 py-2 rounded-lg font-medium text-sm transition-all duration-300 border-2 flex items-center space-x-2 whitespace-nowrap hover:shadow-md',
+                getSectionTabClasses(section.id)
+              ]"
+            >
+              <div :class="[
+                'w-5 h-5 rounded flex items-center justify-center transition-all duration-300',
+                getTabIconBgClasses(section.id)
+              ]">
+                <component :is="section.icon" :class="getTabIconClasses(section.id)" class="w-4 h-4" />
+              </div>
+              <span>{{ section.name }}</span>
               <div 
                 v-if="getSectionProgress(section.id) === 100"
-                class="w-2 h-2 bg-green-400 rounded-full animate-pulse"
+                class="w-2 h-2 bg-green-500 rounded-full animate-pulse"
               ></div>
-              <div 
-                v-else-if="getSectionProgress(section.id) === null"
-                :class="`w-2 h-2 rounded-full ${getTabStatusDotClasses(section.id)}`"
-              ></div>
-            </div>
-          </button>
-        </nav>
+            </button>
+          </nav>
+        </div>
       </div>
 
-      <!-- Content Area -->
-      <div class="grid grid-cols-1 lg:grid-cols-4 gap-6">
+      <!-- Content Area - Full Width -->
+      <div class="grid grid-cols-1 lg:grid-cols-5 gap-6">
         <!-- Main Content -->
-        <div class="lg:col-span-3">
+        <div class="lg:col-span-4">
           <div class="shadow rounded-lg overflow-hidden" :class="getSectionBackgroundClasses(activeSection)">
             <div class="p-6">
               <!-- Personal Details Section -->
@@ -498,7 +490,7 @@
 
 <script setup>
 import { ref, reactive, computed, watch, onMounted } from 'vue'
-import { useForm, router } from '@inertiajs/vue3'
+import { useForm, router, Link } from '@inertiajs/vue3'
 import AppLayout from '@/Layouts/AppLayout.vue'
 import PersonalDetailsSection from '@/Components/PersonalDetailsSection.vue'
 import SpouseDetailsSection from '@/Components/SpouseDetailsSection.vue'
@@ -799,6 +791,33 @@ const getTabIconClasses = (sectionId) => {
   }
   
   return colorMap[sectionId] || 'text-gray-600'
+}
+
+const getTabIconBgClasses = (sectionId) => {
+  const isActive = activeSection.value === sectionId
+  
+  if (isActive) {
+    const colorMap = {
+      personal: 'bg-blue-600',
+      spouse: 'bg-rose-600',
+      employee: 'bg-indigo-600',
+      projects: 'bg-purple-600',
+      assets: 'bg-emerald-600',
+      expenses: 'bg-orange-600'
+    }
+    return colorMap[sectionId] || 'bg-gray-600'
+  }
+  
+  const colorMap = {
+    personal: 'bg-blue-100',
+    spouse: 'bg-rose-100',
+    employee: 'bg-indigo-100',
+    projects: 'bg-purple-100',
+    assets: 'bg-emerald-100',
+    expenses: 'bg-orange-100'
+  }
+  
+  return colorMap[sectionId] || 'bg-gray-100'
 }
 
 const getTabStatusDotClasses = (sectionId) => {

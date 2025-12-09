@@ -9,8 +9,13 @@
 
 <div class="info-box">
     <h3 style="margin-top: 0; color: #2d3748;">Document Details</h3>
+    @if($document->client && $document->client->user)
     <p><strong>Client:</strong> {{ $document->client->user->first_name ?? '' }} {{ $document->client->user->last_name ?? '' }}</p>
     <p><strong>Client Email:</strong> {{ $document->client->user->email ?? 'Not provided' }}</p>
+    @else
+    <p><strong>Client:</strong> Not available</p>
+    <p><strong>Client Email:</strong> Not available</p>
+    @endif
     <p><strong>Document Name:</strong> {{ $document->name }}</p>
     <p><strong>Document Type:</strong> {{ ucfirst(str_replace('_', ' ', $document->document_type)) }}</p>
     <p><strong>Upload Date:</strong> {{ $document->created_at->format('F j, Y g:i A') }}</p>
@@ -31,16 +36,20 @@
     </ul>
 </div>
 
+@if($document->client && $document->client->user_id)
 <div style="text-align: center; margin: 30px 0;">
-    <a href="{{ url('/admin/clients/' . $document->client->user_id) }}" class="button">Review Document</a>
+    <a href="{{ url('/admin/clients/' . $document->client->id) }}" class="button">Review Document</a>
 </div>
+@endif
 
+@if($document->client)
 <h3>Client Information</h3>
 <div style="background-color: #f7fafc; padding: 20px; border-radius: 6px; margin: 20px 0;">
     <p><strong>Client Status:</strong> {{ ucfirst($document->client->status) }}</p>
     <p><strong>Phone:</strong> {{ $document->client->phone ?? 'Not provided' }}</p>
     <p><strong>Total Documents:</strong> {{ $document->client->documents()->count() }} uploaded</p>
 </div>
+@endif
 
 <h3>Review Actions</h3>
 <p>After reviewing the document, you can:</p>

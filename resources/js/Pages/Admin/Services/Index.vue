@@ -6,12 +6,11 @@
         <div class="absolute inset-0 bg-gradient-to-r from-slate-50 via-emerald-50 to-blue-50"></div>
         <div class="absolute top-0 right-0 w-64 h-32 bg-gradient-to-bl from-emerald-100/40 to-transparent rounded-bl-full"></div>
         <div class="absolute bottom-0 left-0 w-48 h-24 bg-gradient-to-tr from-blue-100/30 to-transparent rounded-tr-full"></div>
-        
-        <!-- Content -->
-        <div class="relative flex flex-col lg:flex-row lg:justify-between lg:items-center space-y-6 lg:space-y-0 py-2">
+           <div class="relative flex flex-col lg:flex-row lg:justify-between lg:items-center space-y-6 lg:space-y-0 py-2 pr-2 pl-2">
           <div class="flex items-center space-x-4">
-            <!-- Services Icon -->
-            <div class="w-16 h-16 bg-gradient-to-br from-emerald-500 via-emerald-600 to-blue-600 rounded-2xl flex items-center justify-center shadow-lg ring-4 ring-emerald-100">
+            <!-- Document Management Icon -->
+            <div class="w-14 h-14 bg-gradient-to-br from-blue-500 via-blue-600 to-indigo-600 rounded-2xl flex items-center justify-center shadow-lg ring-4 ring-blue-100">
+            
               <CogIcon class="w-8 h-8 text-white" />
             </div>
             
@@ -223,7 +222,7 @@
             <div class="absolute inset-0 bg-gradient-to-br from-red-500/20 to-transparent"></div>
             <div class="h-full bg-gradient-to-br from-emerald-600/20 via-blue-600/20 to-indigo-700/20 flex items-center justify-center">
               <div class="text-center text-white p-8">
-                <PhoneIcon class="w-16 h-16 mx-auto mb-4 opacity-50" />
+                <PhoneIcon class="w-14 h-14 mx-auto mb-4 opacity-50" />
                 <p class="text-lg font-medium opacity-75">Ready to get started?</p>
               </div>
             </div>

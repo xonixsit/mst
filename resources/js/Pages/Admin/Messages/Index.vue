@@ -8,10 +8,11 @@
                 <div class="absolute bottom-0 left-0 w-48 h-24 bg-gradient-to-tr from-blue-100/30 to-transparent rounded-tr-full"></div>
                 
                 <!-- Content -->
-                <div class="relative flex flex-col lg:flex-row lg:justify-between lg:items-center space-y-6 lg:space-y-0 py-2">
-                    <div class="flex items-center space-x-4">
-                        <!-- Messages Icon -->
-                        <div class="w-16 h-16 bg-gradient-to-br from-cyan-500 via-cyan-600 to-blue-600 rounded-2xl flex items-center justify-center shadow-lg ring-4 ring-cyan-100">
+                 <div class="relative flex flex-col lg:flex-row lg:justify-between lg:items-center space-y-6 lg:space-y-0 py-2 pr-2 pl-2">
+          <div class="flex items-center space-x-4">
+            <!-- Document Management Icon -->
+            <div class="w-14 h-14 bg-gradient-to-br from-blue-500 via-blue-600 to-indigo-600 rounded-2xl flex items-center justify-center shadow-lg ring-4 ring-blue-100">
+            
                             <EnvelopeIcon class="w-8 h-8 text-white" />
                         </div>
                         
@@ -52,8 +53,8 @@
             </div>
         </template>
 
-        <div class="py-12">
-            <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
+        <div class="py-6">
+            <div class="max-w-7xl mx-auto sm:px-6 lg:px-4">
                 <!-- Enhanced Statistics Cards -->
                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
                     <!-- Total Messages -->
@@ -264,7 +265,7 @@
                     </div>
 
                     <div v-if="messages.data.length === 0" class="p-12 text-center">
-                        <div class="w-16 h-16 bg-gradient-to-br from-cyan-100 to-blue-200 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-inner">
+                        <div class="w-14 h-14 bg-gradient-to-br from-cyan-100 to-blue-200 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-inner">
                             <EnvelopeIcon class="w-8 h-8 text-cyan-600" />
                         </div>
                         <h3 class="text-lg font-semibold text-gray-900 mb-2">No messages found</h3>

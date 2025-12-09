@@ -8,11 +8,11 @@
         <div class="absolute bottom-0 left-0 w-48 h-24 bg-gradient-to-tr from-blue-100/30 to-transparent rounded-tr-full"></div>
         
         <!-- Content -->
-        <div class="relative flex flex-col lg:flex-row lg:justify-between lg:items-center space-y-6 lg:space-y-0 py-2">
+        <div class="relative flex flex-col lg:flex-row lg:justify-between lg:items-center space-y-6 lg:space-y-0 py-2 pr-2 pl-2">
           <div class="flex items-center space-x-4">
-            <!-- Reports Icon -->
-            <div class="w-16 h-16 bg-gradient-to-br from-cyan-500 via-cyan-600 to-blue-600 rounded-2xl flex items-center justify-center shadow-lg ring-4 ring-cyan-100">
-              <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <!-- Document Management Icon -->
+            <div class="w-14 h-14 bg-gradient-to-br from-blue-500 via-blue-600 to-indigo-600 rounded-2xl flex items-center justify-center shadow-lg ring-4 ring-blue-100">
+                <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
               </svg>
             </div>
@@ -41,8 +41,8 @@
       </div>
     </template>
 
-    <div class="py-12">
-      <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
+    <div class="py-6">
+      <div class="max-w-7xl mx-auto sm:px-6 lg:px-4">
         <!-- Enhanced Report Cards -->
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
           <!-- Client Summary Report -->
@@ -162,7 +162,7 @@
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
               <!-- Total Clients -->
               <div class="relative overflow-hidden bg-gradient-to-br from-cyan-50 via-cyan-100 to-cyan-200 rounded-xl p-6 border border-cyan-200/50 hover:shadow-lg transition-all duration-300 group">
-                <div class="absolute top-0 right-0 w-16 h-16 bg-gradient-to-bl from-cyan-300/30 to-transparent rounded-bl-full"></div>
+                <div class="absolute top-0 right-0 w-14 h-14 bg-gradient-to-bl from-cyan-300/30 to-transparent rounded-bl-full"></div>
                 <div class="relative text-center">
                   <div class="text-3xl font-bold text-cyan-900 mb-2">{{ stats.total_clients }}</div>
                   <div class="text-sm font-semibold text-cyan-700 uppercase tracking-wide">Total Clients</div>
@@ -171,7 +171,7 @@
 
               <!-- Total Revenue -->
               <div class="relative overflow-hidden bg-gradient-to-br from-emerald-50 via-emerald-100 to-emerald-200 rounded-xl p-6 border border-emerald-200/50 hover:shadow-lg transition-all duration-300 group">
-                <div class="absolute top-0 right-0 w-16 h-16 bg-gradient-to-bl from-emerald-300/30 to-transparent rounded-bl-full"></div>
+                <div class="absolute top-0 right-0 w-14 h-14 bg-gradient-to-bl from-emerald-300/30 to-transparent rounded-bl-full"></div>
                 <div class="relative text-center">
                   <div class="text-3xl font-bold text-emerald-900 mb-2">${{ formatCurrency(stats.total_revenue) }}</div>
                   <div class="text-sm font-semibold text-emerald-700 uppercase tracking-wide">Total Revenue</div>
@@ -180,7 +180,7 @@
 
               <!-- Documents Processed -->
               <div class="relative overflow-hidden bg-gradient-to-br from-purple-50 via-purple-100 to-purple-200 rounded-xl p-6 border border-purple-200/50 hover:shadow-lg transition-all duration-300 group">
-                <div class="absolute top-0 right-0 w-16 h-16 bg-gradient-to-bl from-purple-300/30 to-transparent rounded-bl-full"></div>
+                <div class="absolute top-0 right-0 w-14 h-14 bg-gradient-to-bl from-purple-300/30 to-transparent rounded-bl-full"></div>
                 <div class="relative text-center">
                   <div class="text-3xl font-bold text-purple-900 mb-2">{{ stats.total_documents }}</div>
                   <div class="text-sm font-semibold text-purple-700 uppercase tracking-wide">Documents Processed</div>
@@ -189,7 +189,7 @@
 
               <!-- Messages Exchanged -->
               <div class="relative overflow-hidden bg-gradient-to-br from-amber-50 via-amber-100 to-amber-200 rounded-xl p-6 border border-amber-200/50 hover:shadow-lg transition-all duration-300 group">
-                <div class="absolute top-0 right-0 w-16 h-16 bg-gradient-to-bl from-amber-300/30 to-transparent rounded-bl-full"></div>
+                <div class="absolute top-0 right-0 w-14 h-14 bg-gradient-to-bl from-amber-300/30 to-transparent rounded-bl-full"></div>
                 <div class="relative text-center">
                   <div class="text-3xl font-bold text-amber-900 mb-2">{{ stats.total_messages }}</div>
                   <div class="text-sm font-semibold text-amber-700 uppercase tracking-wide">Messages Exchanged</div>

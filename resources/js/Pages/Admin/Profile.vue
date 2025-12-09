@@ -8,11 +8,10 @@
         <div class="absolute bottom-0 left-0 w-48 h-24 bg-gradient-to-tr from-purple-100/30 to-transparent rounded-tr-full"></div>
         
         <!-- Content -->
-        <div class="relative flex flex-col lg:flex-row lg:justify-between lg:items-center space-y-6 lg:space-y-0 py-2">
+        <div class="relative flex flex-col lg:flex-row lg:justify-between lg:items-center space-y-6 lg:space-y-0 py-2 pr-2 pl-2">
           <div class="flex items-center space-x-4">
-            <!-- Profile Icon -->
-            <div class="w-16 h-16 bg-gradient-to-br from-indigo-500 via-indigo-600 to-purple-600 rounded-2xl flex items-center justify-center shadow-lg ring-4 ring-indigo-100">
-              <UserCircleIcon class="w-8 h-8 text-white" />
+            <div class="w-14 h-14 bg-gradient-to-br from-amber-500 via-amber-600 to-orange-600 rounded-2xl flex items-center justify-center shadow-lg ring-4 ring-amber-100">
+            <UserCircleIcon class="w-8 h-8 text-white" />
             </div>
             
             <!-- Title Section -->
@@ -39,8 +38,8 @@
       </div>
     </template>
 
-    <div class="py-12">
-      <div class="max-w-6xl mx-auto sm:px-6 lg:px-8 space-y-8">
+    <div class="py-6">
+      <div class="max-w-6xl mx-auto sm:px-6 lg:px-4 space-y-8">
         <!-- Enhanced Profile Information -->
         <div class="bg-white shadow-xl rounded-2xl border border-gray-100 overflow-hidden">
           <div class="bg-gradient-to-r from-slate-50 to-gray-50 px-6 py-5 border-b border-gray-200">

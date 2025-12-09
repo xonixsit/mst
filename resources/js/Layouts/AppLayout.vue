@@ -209,10 +209,8 @@
 
         <!-- Page Header -->
         <header v-if="$slots.header"
-          class="bg-gradient-to-r from-white via-neutral-50 to-white shadow-sm border-b border-neutral-200/60 flex-shrink-0 backdrop-blur-sm w-full">
-          <div class="px-4 sm:px-6 lg:px-8 py-8 overflow-hidden w-full pr-12 lg:pr-16">
+          class="">
             <slot name="header" />
-          </div>
         </header>
    </div>
         <!-- Main Content -->
@@ -380,6 +378,12 @@
           icon: CalculatorIcon,
           current: currentPath.startsWith('/admin/invoices')
         },
+        {
+          name: 'Support Tickets',
+          href: '/admin/support-tickets',
+          icon: ChatBubbleLeftRightIcon,
+          current: currentPath.startsWith('/admin/support-tickets')
+        },
         ...(user?.role === 'admin' ? [{
           name: 'Tax Professionals',
           href: '/admin/tax-professionals',
@@ -427,6 +431,12 @@
           href: '/client/invoices',
           icon: CalculatorIcon,
           current: currentPath.startsWith('/client/invoices')
+        },
+        {
+          name: 'Support',
+          href: '/client/support-tickets',
+          icon: ChatBubbleLeftRightIcon,
+          current: currentPath.startsWith('/client/support-tickets')
         },
         {
           name: 'My Profile',

@@ -17,7 +17,7 @@
     </div>
 
     <!-- Empty State -->
-    <div v-if="localData.length === 0" class="text-center py-12">
+    <div v-if="localData.length === 0" class="text-center py-6">
       <component :is="emptyIcon" class="mx-auto h-12 w-12 text-gray-400" />
       <h3 class="mt-2 text-sm font-medium text-gray-900">{{ emptyTitle || `No ${rowLabel?.toLowerCase() || 'items'}` }}</h3>
       <p class="mt-1 text-sm text-gray-500">{{ emptyDescription || `Get started by adding your first ${rowLabel?.toLowerCase() || 'item'}.` }}</p>

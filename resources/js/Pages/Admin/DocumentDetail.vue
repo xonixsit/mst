@@ -16,7 +16,7 @@
           <div class="flex items-center space-x-4">
             <!-- Dynamic Document Icon -->
             <div
-              class="w-16 h-16 bg-gradient-to-br from-purple-500 via-purple-600 to-indigo-600 rounded-2xl flex items-center justify-center shadow-lg ring-4 ring-purple-100">
+              class="w-14 h-14 bg-gradient-to-br from-purple-500 via-purple-600 to-indigo-600 rounded-2xl flex items-center justify-center shadow-lg ring-4 ring-purple-100">
               <component :is="documentIcon" class="w-8 h-8 text-white" />
             </div>
 
@@ -63,8 +63,8 @@
       </div>
     </template>
 
-    <div class="py-12">
-      <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 space-y-8">
+    <div class="py-6">
+      <div class="max-w-7xl mx-auto sm:px-6 lg:px-4 space-y-8">
         <!-- Enhanced Document Info Panel -->
         <div class="bg-white shadow-xl rounded-2xl border border-gray-100 overflow-hidden">
           <div class="bg-gradient-to-r from-slate-50 to-gray-50 px-6 py-5 border-b border-gray-200">
@@ -497,7 +497,7 @@
 
 <style scoped>
   .document-detail {
-    @apply px-4 sm:px-6 lg:px-8 py-6 bg-gray-50 min-h-screen;
+    @apply px-4 sm:px-6 lg:px-4 py-6 bg-gray-50 min-h-screen;
   }
 
   .image-viewer img {

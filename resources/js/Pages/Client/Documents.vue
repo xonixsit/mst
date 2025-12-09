@@ -8,10 +8,10 @@
         <div class="absolute bottom-0 left-0 w-48 h-24 bg-gradient-to-tr from-emerald-100/30 to-transparent rounded-tr-full"></div>
         
         <!-- Content -->
-        <div class="relative flex flex-col lg:flex-row lg:justify-between lg:items-center space-y-6 lg:space-y-0 py-2">
+            <div class="relative flex flex-col lg:flex-row lg:justify-between lg:items-center space-y-6 lg:space-y-0 py-2 pr-2 pl-2">
           <div class="flex items-center space-x-4">
             <!-- Document Management Icon -->
-            <div class="w-16 h-16 bg-gradient-to-br from-green-500 via-green-600 to-emerald-600 rounded-2xl flex items-center justify-center shadow-lg ring-4 ring-green-100">
+            <div class="w-14 h-14 bg-gradient-to-br from-blue-500 via-blue-600 to-indigo-600 rounded-2xl flex items-center justify-center shadow-lg ring-4 ring-blue-100">
               <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
               </svg>
@@ -371,7 +371,7 @@
 </template>
 
 <script setup>
-import { ref, computed } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import { router, Link } from '@inertiajs/vue3'
 import { DocumentTextIcon } from '@heroicons/vue/24/outline'
 import AppLayout from '@/Layouts/AppLayout.vue'
@@ -385,7 +385,7 @@ const props = defineProps({
 
 const showUploadModal = ref(false)
 const uploading = ref(false)
-const filters = ref({ ...props.filters })
+const filters = ref({ type: '', year: '', status: '', ...props.filters })
 
 const uploadForm = ref({
   file: null,
@@ -481,4 +481,11 @@ const formatDate = (dateString) => {
     day: 'numeric'
   })
 }
+
+onMounted(() => {
+  // Load documents on initial page load if no data is present
+  if (!props.documents || props.documents.data.length === 0) {
+    applyFilters()
+  }
+})
 </script>

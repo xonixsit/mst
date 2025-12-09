@@ -8,10 +8,10 @@
         <div class="absolute bottom-0 left-0 w-48 h-24 bg-gradient-to-tr from-blue-100/30 to-transparent rounded-tr-full"></div>
         
         <!-- Content -->
-        <div class="relative flex flex-col lg:flex-row lg:justify-between lg:items-center space-y-6 lg:space-y-0 py-2">
+       <div class="relative flex flex-col lg:flex-row lg:justify-between lg:items-center space-y-6 lg:space-y-0 py-2 pr-2 pl-2">
           <div class="flex items-center space-x-4">
-            <!-- Edit Client Icon -->
-            <div class="w-16 h-16 bg-gradient-to-br from-blue-500 via-blue-600 to-emerald-600 rounded-2xl flex items-center justify-center shadow-lg ring-4 ring-blue-100">
+            <!-- Document Management Icon -->
+            <div class="w-14 h-14 bg-gradient-to-br from-emarald-500 via-green-600 to-indigo-600 rounded-2xl flex items-center justify-center shadow-lg ring-4 ring-blue-100">
               <PencilSquareIcon class="w-8 h-8 text-white" />
             </div>
             
@@ -39,14 +39,14 @@
           <!-- Action Buttons -->
           <div class="flex items-center space-x-3">
             <button
-              @click="router.visit(route('admin.clients.show', client.id))"
+              @click="viewClient"
               class="bg-gradient-to-r from-gray-500 to-slate-600 hover:from-gray-600 hover:to-slate-700 text-white px-6 py-3 rounded-xl flex items-center transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105 group"
             >
               <EyeIcon class="w-5 h-5 mr-2" />
               <span class="font-semibold">View Client</span>
             </button>
             <button
-              @click="router.visit(route('admin.clients.index'))"
+              @click="backToClients"
               class="bg-gradient-to-r from-slate-500 to-gray-600 hover:from-slate-600 hover:to-gray-700 text-white px-6 py-3 rounded-xl flex items-center transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105 group"
             >
               <ArrowLeftIcon class="w-5 h-5 mr-2" />
@@ -57,8 +57,8 @@
       </div>
     </template>
 
-    <div class="py-12">
-      <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
+    <div class="py-6">
+      <div class="max-w-7xl mx-auto sm:px-6 lg:px-4">
         <!-- Enhanced Navigation Tabs -->
         <div class="bg-white shadow-xl rounded-2xl border border-gray-100 overflow-hidden mb-8">
           <div class="bg-gradient-to-r from-slate-50 to-gray-50 px-6 py-5 border-b border-gray-200">
@@ -202,9 +202,9 @@
                 :tax-years="taxYears"
                 @update="handleSectionUpdate"
               />
+              </div>
             </div>
           </div>
-        </div>
 
           <!-- Enhanced Sidebar Summary -->
           <div class="lg:col-span-1">
@@ -352,6 +352,7 @@
 import { ref, computed, watch, onUnmounted } from 'vue'
 import axios from 'axios'
 import { useForm, router } from '@inertiajs/vue3'
+import { route } from 'ziggy-js'
 import AppLayout from '@/Layouts/AppLayout.vue'
 import PersonalDetailsSection from '@/Components/PersonalDetailsSection.vue'
 import SpouseDetailsSection from '@/Components/SpouseDetailsSection.vue'
@@ -421,22 +422,8 @@ const form = useForm({
     mobileNumber: props.client.mobile_number || '',
     workNumber: props.client.work_number || '',
     visaStatus: props.client.visa_status || '',
-    date_of_entry_us: props.client.date_of_entry_us || ''
+    dateOfEntryUs: props.client.date_of_entry_us || ''
   },
-  spouse: {
-    firstName: props.client.spouse?.first_name || '',
-    middleName: props.client.spouse?.middle_name || '',
-    lastName: props.client.spouse?.last_name || '',
-    email: props.client.spouse?.email || '',
-    phone: props.client.spouse?.phone || '',
-    ssn: props.client.spouse?.ssn || '',
-    dateOfBirth: props.client.spouse?.date_of_birth || '',
-    occupation: props.client.spouse?.occupation || ''
-  },
-  employee: [props.client.employees?.[0] || {}],
-  projects: props.client.projects || [],
-  assets: props.client.assets || [],
-  expenses: props.client.expenses || []
 })
 
 // Section configuration
@@ -752,9 +739,9 @@ const handleSave = () => {
     }) : []
   }
   
-  form.transform(() => backendData).put(route('admin.clients.update', props.client.id), {
+  form.transform(() => backendData).put(`/admin/clients/${props.client.id}`, {
     onSuccess: () => {
-      router.visit(route('admin.clients.show', props.client.id))
+      router.visit(`/admin/clients/${props.client.id}`)
     },
     onError: (errors) => {
       console.error('Failed to update client:', errors)
@@ -766,8 +753,17 @@ const handleCancel = () => {
   router.visit(route('admin.clients.show', props.client.id))
 }
 
+const viewClient = () => {
+  router.visit(`/admin/clients/${props.client.id}`)
+}
+
+const backToClients = () => {
+  router.visit('/admin/clients')
+}
+
 // Utility functions
 const toSnakeCase = (obj) => {
+  if (!obj) return {}
   const result = {}
   for (const [key, value] of Object.entries(obj)) {
     const snakeKey = key.replace(/[A-Z]/g, letter => `_${letter.toLowerCase()}`)

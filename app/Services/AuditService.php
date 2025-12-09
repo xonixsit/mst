@@ -120,7 +120,7 @@ class AuditService
             'user_type' => Auth::user() ? get_class(Auth::user()) : null,
             'ip_address' => Request::ip(),
             'user_agent' => Request::userAgent(),
-            'metadata' => array_merge($metadata, [
+            'metadata' => array_merge(is_array($metadata) ? $metadata : [], [
                 'operation' => $operation,
                 'affected_count' => count($modelIds),
             ]),
@@ -147,7 +147,7 @@ class AuditService
             'status_changed',
             ['status' => $oldStatus],
             ['status' => $newStatus],
-            array_merge($metadata, [
+            array_merge(is_array($metadata) ? $metadata : [], [
                 'status_change' => [
                     'from' => $oldStatus,
                     'to' => $newStatus,
@@ -176,7 +176,7 @@ class AuditService
             'assigned',
             ['user_id' => $oldUserId],
             ['user_id' => $newUserId],
-            array_merge($metadata, [
+            array_merge(is_array($metadata) ? $metadata : [], [
                 'assignment_change' => [
                     'from_user_id' => $oldUserId,
                     'to_user_id' => $newUserId,

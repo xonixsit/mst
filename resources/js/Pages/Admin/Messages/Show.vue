@@ -11,7 +11,7 @@
         <div class="relative flex flex-col lg:flex-row lg:justify-between lg:items-center space-y-6 lg:space-y-0 py-2">
           <div class="flex items-center space-x-4">
             <!-- Message Icon -->
-            <div class="w-16 h-16 bg-gradient-to-br from-cyan-500 via-cyan-600 to-blue-600 rounded-2xl flex items-center justify-center shadow-lg ring-4 ring-cyan-100">
+            <div class="w-14 h-14 bg-gradient-to-br from-cyan-500 via-cyan-600 to-blue-600 rounded-2xl flex items-center justify-center shadow-lg ring-4 ring-cyan-100">
               <EnvelopeIcon class="w-8 h-8 text-white" />
             </div>
             
@@ -67,8 +67,8 @@
       </div>
     </template>
 
-    <div class="py-12">
-      <div class="max-w-6xl mx-auto sm:px-6 lg:px-8">
+    <div class="py-6">
+      <div class="max-w-6xl mx-auto sm:px-6 lg:px-4">
         <!-- Enhanced Conversation History -->
         <div class="bg-white shadow-xl rounded-2xl border border-gray-100 overflow-hidden">
           <div class="bg-gradient-to-r from-slate-50 to-gray-50 px-6 py-5 border-b border-gray-200">

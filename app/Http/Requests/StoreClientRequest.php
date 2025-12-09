@@ -89,14 +89,6 @@ class StoreClientRequest extends FormRequest
 
             // Account creation
             'createAccount' => 'nullable|boolean',
-            'username' => [
-                'nullable',
-                'required_if:createAccount,true',
-                'string',
-                'max:255',
-                'regex:/^[a-zA-Z0-9.]+$/',
-                Rule::unique('users', 'username'),
-            ],
             'sendCredentials' => 'nullable|boolean',
         ];
     }

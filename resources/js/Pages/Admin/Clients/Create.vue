@@ -8,11 +8,11 @@
         <div class="absolute bottom-0 left-0 w-48 h-24 bg-gradient-to-tr from-blue-100/30 to-transparent rounded-tr-full"></div>
         
         <!-- Content -->
-        <div class="relative flex flex-col lg:flex-row lg:justify-between lg:items-center space-y-6 lg:space-y-0 py-2">
+         <div class="relative flex flex-col lg:flex-row lg:justify-between lg:items-center space-y-6 lg:space-y-0 py-2 pr-2 pl-2">
           <div class="flex items-center space-x-4">
-            <!-- Create Client Icon -->
-            <div class="w-16 h-16 bg-gradient-to-br from-emerald-500 via-emerald-600 to-blue-600 rounded-2xl flex items-center justify-center shadow-lg ring-4 ring-emerald-100">
-              <UserPlusIcon class="w-8 h-8 text-white" />
+            <!-- Document Management Icon -->
+            <div class="w-14 h-14 bg-gradient-to-br from-blue-500 via-blue-600 to-indigo-600 rounded-2xl flex items-center justify-center shadow-lg ring-4 ring-blue-100">
+             <UserPlusIcon class="w-8 h-8 text-white" />
             </div>
             
             <!-- Title Section -->
@@ -50,65 +50,50 @@
       </div>
     </template>
 
-    <div class="py-12">
-      <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-        <!-- Enhanced Navigation Tabs -->
-        <div class="bg-white shadow-xl rounded-2xl border border-gray-100 overflow-hidden mb-8">
-          <div class="bg-gradient-to-r from-slate-50 to-gray-50 px-6 py-5 border-b border-gray-200">
+    <div class="py-6">
+      <div class="max-w-full mx-auto sm:px-6 lg:px-4">
+        <!-- Navigation Tabs - Full Width -->
+        <div class="bg-white shadow-lg rounded-lg border border-gray-100 overflow-hidden mb-8">
+          <div class="bg-gradient-to-r from-slate-50 to-gray-50 px-6 py-4 border-b border-gray-200">
             <div class="flex items-center justify-between">
-              <div>
-                <h3 class="text-xl font-bold text-gray-900">Client Information Sections</h3>
-                <p class="text-sm text-gray-600 mt-1">Complete all sections to create a comprehensive client profile</p>
-              </div>
+              <h3 class="text-lg font-bold text-gray-900">Client Information Sections</h3>
               <div class="bg-white px-4 py-2 rounded-lg border border-gray-200 shadow-sm">
                 <span class="text-sm font-semibold text-emerald-600">{{ Math.round(overallProgress) }}% Complete</span>
               </div>
             </div>
           </div>
           
-          <div class="p-6">
-            <nav class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3" aria-label="Tabs">
+          <div class="overflow-x-auto">
+            <nav class="flex space-x-2 min-w-max px-6 py-4" aria-label="Tabs">
               <button
                 v-for="section in sections"
                 :key="section.id"
                 @click="activeSection = section.id"
                 :class="[
-                  'relative p-4 rounded-xl font-medium text-sm transition-all duration-300 border-2 group hover:shadow-md transform hover:scale-105',
+                  'px-4 py-2 rounded-lg font-medium text-sm transition-all duration-300 border-2 flex items-center space-x-2 whitespace-nowrap hover:shadow-md',
                   getSectionTabClasses(section.id)
                 ]"
               >
-                <div class="flex flex-col items-center space-y-2">
-                  <div :class="[
-                    'w-10 h-10 rounded-lg flex items-center justify-center transition-all duration-300',
-                    getTabIconBgClasses(section.id)
-                  ]">
-                    <component :is="section.icon" :class="getTabIconClasses(section.id)" class="w-5 h-5" />
-                  </div>
-                  <span class="font-semibold text-center">{{ section.name }}</span>
-                  <div class="flex items-center space-x-1">
-                    <div 
-                      v-if="getSectionProgress(section.id) === 100"
-                      class="w-2 h-2 bg-green-500 rounded-full animate-pulse"
-                    ></div>
-                    <div 
-                      v-else
-                      :class="`w-2 h-2 rounded-full ${getTabStatusDotClasses(section.id)}`"
-                    ></div>
-                    <span class="text-xs font-medium opacity-75">
-                      {{ getSectionProgress(section.id) === 100 ? 'Complete' : 'Pending' }}
-                    </span>
-                  </div>
+                <div :class="[
+                  'w-5 h-5 rounded flex items-center justify-center transition-all duration-300',
+                  getTabIconBgClasses(section.id)
+                ]">
+                  <component :is="section.icon" :class="getTabIconClasses(section.id)" class="w-4 h-4" />
                 </div>
+                <span>{{ section.name }}</span>
+                <div 
+                  v-if="getSectionProgress(section.id) === 100"
+                  class="w-2 h-2 bg-green-500 rounded-full animate-pulse"
+                ></div>
               </button>
             </nav>
           </div>
         </div>
-      </div>
-    </div>
-        <!-- Enhanced Content Area -->
-        <div class="grid grid-cols-1 lg:grid-cols-4 gap-8">
+
+        <!-- Content Area - Full Width -->
+        <div class="grid grid-cols-1 lg:grid-cols-5 gap-6">
           <!-- Main Content -->
-          <div class="lg:col-span-3">
+          <div class="lg:col-span-4">
             <div class="bg-white shadow-xl rounded-2xl border border-gray-100 overflow-hidden">
               <div class="bg-gradient-to-r from-slate-50 to-gray-50 px-6 py-5 border-b border-gray-200">
                 <div class="flex items-center">
@@ -191,6 +176,18 @@
                   </div>
 
                   <div class="space-y-4">
+                    <!-- Quick User Setup Button -->
+                    <button
+                      @click="showUserModal = true"
+                      type="button"
+                      class="w-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white py-3 px-4 rounded-xl font-semibold transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105 flex items-center justify-center"
+                    >
+                      <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+                      </svg>
+                      Add User Account Details
+                    </button>
+
                     <!-- Create Account Toggle -->
                     <div class="flex items-center justify-between p-4 bg-white rounded-lg border border-blue-200">
                       <div>
@@ -268,7 +265,7 @@
           </div>
         </div>
 
-          <!-- Enhanced Sidebar Summary -->
+          <!-- Sidebar Summary -->
           <div class="lg:col-span-1">
             <div class="bg-white shadow-xl rounded-2xl border border-gray-100 overflow-hidden sticky top-6">
               <div class="bg-gradient-to-r from-slate-50 to-gray-50 px-6 py-5 border-b border-gray-200">
@@ -411,7 +408,14 @@
           </div>
         </div>
       </div>
-    </div>
+    </div></div>
+</div>
+    <!-- User Account Modal -->
+    <CreateClientUserModal 
+      :is-open="showUserModal"
+      @close="showUserModal = false"
+      @submit="handleUserModalSubmit"
+    />
   </AppLayout>
 </template>
 
@@ -420,6 +424,7 @@ import { ref, computed, watch } from 'vue'
 import { useForm, router } from '@inertiajs/vue3'
 import { route } from 'ziggy-js'
 import AppLayout from '@/Layouts/AppLayout.vue'
+import CreateClientUserModal from '@/Components/CreateClientUserModal.vue'
 import PersonalDetailsSection from '@/Components/PersonalDetailsSection.vue'
 import SpouseDetailsSection from '@/Components/SpouseDetailsSection.vue'
 import EmployeeInformationSection from '@/Components/EmployeeInformationSection.vue'
@@ -453,6 +458,7 @@ const props = defineProps({
 
 // Reactive state
 const activeSection = ref('personal')
+const showUserModal = ref(false)
 
 // Form setup
 const form = useForm({
@@ -529,11 +535,6 @@ const sections = computed(() => [
     id: 'expenses',
     name: 'Expenses',
     icon: ReceiptPercentIcon
-  },
-  {
-    id: 'account',
-    name: 'Account',
-    icon: UserIcon
   }
 ])
 
@@ -579,8 +580,7 @@ const getSectionThemeColor = (sectionId) => {
     employee: 'bg-indigo-500',    // Corporate, professional, stability
     projects: 'bg-purple-500',    // Creativity, planning, innovation
     assets: 'bg-emerald-500',     // Money, growth, prosperity
-    expenses: 'bg-orange-500',    // Energy, attention, caution
-    account: 'bg-cyan-500'        // Security, access, technology
+    expenses: 'bg-orange-500'     // Energy, attention, caution
   }
   return colors[sectionId] || 'bg-gray-500'
 }
@@ -810,7 +810,9 @@ const saveClient = () => {
       }
       return processedAsset
     }) : [],
-    expenses: form.expenses
+    expenses: form.expenses,
+    createAccount: form.createAccount,
+    sendCredentials: form.sendCredentials
   }
   
   console.log('Creating client with data:', backendData)
@@ -913,4 +915,28 @@ const calculateEmployeeProgress = () => {
 watch(() => form.data(), () => {
   // This will trigger reactivity for completion calculations
 }, { deep: true })
+
+// Modal handlers
+const handleUserModalSubmit = async (userData) => {
+  try {
+    // Update personal form with user data
+    form.personal.firstName = userData.first_name
+    form.personal.middleName = userData.middle_name
+    form.personal.lastName = userData.last_name
+    form.personal.email = userData.email
+    
+    // Enable account creation
+    form.createAccount = true
+    form.sendCredentials = true
+    
+    // Close modal
+    showUserModal.value = false
+    
+    // Show success message
+    alert('User account details added. Password will be auto-generated and sent to the client.')
+  } catch (error) {
+    console.error('Error creating user account:', error)
+    alert('Error creating user account. Please try again.')
+  }
+}
 </script>

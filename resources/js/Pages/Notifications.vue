@@ -11,7 +11,7 @@
         <div class="relative flex flex-col lg:flex-row lg:justify-between lg:items-center space-y-6 lg:space-y-0 py-2">
           <div class="flex items-center space-x-4">
             <!-- Notification Icon -->
-            <div class="w-16 h-16 bg-gradient-to-br from-emerald-500 via-emerald-600 to-green-600 rounded-2xl flex items-center justify-center shadow-lg ring-4 ring-emerald-100">
+            <div class="w-14 h-14 bg-gradient-to-br from-emerald-500 via-emerald-600 to-green-600 rounded-2xl flex items-center justify-center shadow-lg ring-4 ring-emerald-100">
               <BellIcon class="w-8 h-8 text-white" />
             </div>
             
@@ -57,8 +57,8 @@
       </div>
     </template>
 
-    <div class="py-12">
-      <div class="max-w-6xl mx-auto sm:px-6 lg:px-8">
+    <div class="py-6">
+      <div class="max-w-6xl mx-auto sm:px-6 lg:px-4">
         <!-- Enhanced Filter Tabs -->
         <div class="bg-white shadow-xl rounded-2xl border border-gray-100 overflow-hidden mb-8">
           <div class="bg-gradient-to-r from-slate-50 to-gray-50 px-6 py-5 border-b border-gray-200">
@@ -106,7 +106,7 @@
         <!-- Enhanced Notifications List -->
         <div class="bg-white shadow-xl rounded-2xl border border-gray-100 overflow-hidden">
           <div v-if="filteredNotifications.length === 0" class="p-12 text-center">
-            <div class="w-16 h-16 bg-gradient-to-br from-emerald-100 to-green-200 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-inner">
+            <div class="w-14 h-14 bg-gradient-to-br from-emerald-100 to-green-200 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-inner">
               <BellIcon class="w-8 h-8 text-emerald-600" />
             </div>
             <h3 class="text-lg font-semibold text-gray-900 mb-2">No notifications found</h3>

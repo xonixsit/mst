@@ -92,10 +92,55 @@ class ClientController extends Controller
      */
     public function store(\App\Http\Requests\StoreClientRequest $request)
     {
-        $client = $this->clientService->createClient($request->validated());
+        $validated = $request->validated();
+        $userId = null;
+        $password = null;
+        $shouldSendCredentials = false;
+
+        // Create user account first if requested
+        if ($validated['createAccount'] === true || $validated['createAccount'] === 'true' || $validated['createAccount'] === 1 || $validated['createAccount'] === '1') {
+            $password = \Illuminate\Support\Str::random(12);
+            
+            // Ensure we have the required data
+            $firstName = $validated['personal']['firstName'] ?? '';
+            $lastName = $validated['personal']['lastName'] ?? '';
+            $email = $validated['personal']['email'] ?? '';
+            
+            if (!$firstName || !$lastName || !$email) {
+                return back()->withErrors(['error' => 'First name, last name, and email are required to create a user account.']);
+            }
+            
+            $user = \App\Models\User::create([
+                'first_name' => $firstName,
+                'middle_name' => $validated['personal']['middleName'] ?? '',
+                'last_name' => $lastName,
+                'email' => $email,
+                'password' => \Illuminate\Support\Facades\Hash::make($password),
+                'role' => 'client',
+                'email_verified_at' => now(),
+            ]);
+            $userId = $user->id;
+            $shouldSendCredentials = $validated['sendCredentials'] === true || $validated['sendCredentials'] === 'true' || $validated['sendCredentials'] === 1 || $validated['sendCredentials'] === '1';
+        }
+
+        // Add user_id to client data if user was created
+        if ($userId) {
+            $validated['personal']['user_id'] = $userId;
+        }
+
+        $client = $this->clientService->createClient($validated);
+        
+        // Send credentials email after client is created
+        if ($shouldSendCredentials && $password) {
+            \Illuminate\Support\Facades\Mail::send(new \App\Mail\ClientCredentialsMail(
+                $client,
+                $validated['personal']['email'],
+                $password
+            ));
+        }
         
         $message = 'Client created successfully.';
-        if ($request->createAccount) {
+        if ($userId) {
             $message .= ' Account credentials have been sent to ' . $client->email;
         }
         
@@ -133,19 +178,22 @@ class ClientController extends Controller
             abort(404, 'Client not found');
         }
 
+        // Convert to array for Inertia
+        $clientArray = $client->toArray();
+        
         // Handle SSN masking for security
         if ($client->ssn) {
-            $client->ssn_masked = '***-**-' . substr($client->ssn, -4);
-            $client->has_ssn = true;
+            $clientArray['ssn_masked'] = '***-**-' . substr($client->ssn, -4);
+            $clientArray['has_ssn'] = true;
             // Don't send actual SSN to frontend
-            $client->ssn = null;
+            $clientArray['ssn'] = null;
         } else {
-            $client->ssn_masked = null;
-            $client->has_ssn = false;
+            $clientArray['ssn_masked'] = null;
+            $clientArray['has_ssn'] = false;
         }
 
         return Inertia::render('Admin/Clients/Edit', [
-            'client' => $client,
+            'client' => $clientArray,
             'visaStatusOptions' => VisaStatus::options(),
             'documentTypes' => [
                 'tax_return' => 'Tax Return',

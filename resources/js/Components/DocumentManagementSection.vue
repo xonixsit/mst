@@ -147,7 +147,7 @@
       </div>
 
       <div v-if="documents.length === 0" class="p-12 text-center">
-        <div class="w-16 h-16 bg-gradient-to-br from-purple-100 to-indigo-200 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-inner">
+        <div class="w-14 h-14 bg-gradient-to-br from-purple-100 to-indigo-200 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-inner">
           <DocumentTextIcon class="w-8 h-8 text-purple-600" />
         </div>
         <p class="text-gray-500 font-medium">No documents uploaded yet</p>
@@ -294,7 +294,7 @@
             <h3 class="text-xl font-bold text-gray-900">Update Document Status</h3>
           </div>
           
-          <form @submit.prevent="submitStatusUpdate" class="space-y-6">
+          <div class="space-y-6">
             <div>
               <label class="block text-sm font-semibold text-gray-700 mb-2">Status</label>
               <select
@@ -328,14 +328,15 @@
                 Cancel
               </button>
               <button
-                type="submit"
+                type="button"
+                @click="submitStatusUpdate"
                 :disabled="updatingStatus"
                 class="bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white px-6 py-3 rounded-xl font-semibold transition-all duration-200 shadow-lg hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 {{ updatingStatus ? 'Updating...' : 'Update Status' }}
               </button>
             </div>
-          </form>
+          </div>
         </div>
       </div>
     </div>
@@ -529,12 +530,14 @@ const loadDocuments = async () => {
   try {
     // First try to get documents by client ID
     const response = await axios.get(`/admin/clients/${props.clientId}/documents`)
+    console.log('Documents loaded from API:', response.data.documents)
     documents.value = response.data.documents || []
   } catch (error) {
     console.error('Failed to load documents by client:', error)
     // Fallback: try to load from documents endpoint with user_id filter
     try {
       const fallbackResponse = await axios.get(`/admin/documents?user_id=${props.clientId}`)
+      console.log('Documents loaded from fallback:', fallbackResponse.data.documents)
       documents.value = fallbackResponse.data.documents || []
     } catch (fallbackError) {
       console.error('Fallback load also failed:', fallbackError)
@@ -571,6 +574,7 @@ const closeDocumentModal = () => {
 }
 
 const updateDocumentStatus = (document) => {
+  console.log('Selected document for status update:', document)
   selectedDocument.value = document
   statusForm.value = {
     status: document.status,
@@ -589,12 +593,39 @@ const submitStatusUpdate = async () => {
   updatingStatus.value = true
   
   try {
-    await axios.patch(`/admin/documents/${selectedDocument.value.id}/status`, statusForm.value)
-    await loadDocuments()
+    const documentId = selectedDocument.value.id
+    const url = `/admin/documents/${documentId}/status`
+    
+    console.log('Updating document status:', { documentId, url, data: statusForm.value })
+    
+    const response = await fetch(url, {
+      method: 'PATCH',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-Requested-With': 'XMLHttpRequest',
+        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.content || ''
+      },
+      body: JSON.stringify(statusForm.value)
+    })
+    
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`)
+    }
+    
+    const data = await response.json()
+    console.log('Status update response:', data)
+    
+    // Update the document in the local list
+    const docIndex = documents.value.findIndex(d => d.id === documentId)
+    if (docIndex !== -1) {
+      documents.value[docIndex].status = statusForm.value.status
+      documents.value[docIndex].notes = statusForm.value.notes
+    }
+    
     closeStatusModal()
+    emit('update')
   } catch (error) {
     console.error('Status update failed:', error)
-    alert('Status update failed. Please try again.')
   } finally {
     updatingStatus.value = false
   }
