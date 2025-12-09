@@ -205,7 +205,11 @@
   }
 
   const submitReply = () => {
-    replyForm.post(`/client/support-tickets/${props.ticket.id}/reply`, {
+    if (!props.ticket || !props.ticket.id) {
+      console.error('Ticket ID is missing:', props.ticket)
+      return
+    }
+    replyForm.post(route('client.support-tickets.reply', props.ticket.id), {
       onSuccess: () => {
         replyForm.reset()
         window.location.reload()
