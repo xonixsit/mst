@@ -166,7 +166,7 @@
   import { Link } from '@inertiajs/vue3'
   import AppLayout from '@/Layouts/AppLayout.vue'
 
-  defineProps({
+  const props = defineProps({
     ticket: Object,
   })
 
@@ -205,7 +205,7 @@
   }
 
   const submitReply = () => {
-    replyForm.post(`/client/support-tickets/${route().params.supportTicket}/reply`, {
+    replyForm.post(`/client/support-tickets/${props.ticket.id}/reply`, {
       onSuccess: () => {
         replyForm.reset()
         window.location.reload()
