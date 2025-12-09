@@ -209,7 +209,7 @@
       console.error('Ticket ID is missing:', props.ticket)
       return
     }
-    replyForm.post(route('client.support-tickets.reply', props.ticket.id), {
+    replyForm.post(`/client/support-tickets/${props.ticket.id}/reply`, {
       onSuccess: () => {
         replyForm.reset()
         window.location.reload()
