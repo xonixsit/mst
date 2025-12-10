@@ -313,6 +313,212 @@ class DocumentController extends Controller
     }
 
     /**
+     * Get upload session status
+     */
+    public function getUploadStatus(Request $request)
+    {
+        $request->validate([
+            'upload_session_id' => 'required|string'
+        ]);
+
+        $uploadSessionId = $request->upload_session_id;
+        $sessionData = \Cache::get("upload_session_{$uploadSessionId}");
+
+        if (!$sessionData) {
+            return response()->json(['error' => 'Upload session not found'], 404);
+        }
+
+        return response()->json([
+            'upload_session_id' => $uploadSessionId,
+            'chunks_received' => $sessionData['chunks_received'],
+            'total_chunks' => $sessionData['total_chunks'],
+            'file_name' => $sessionData['file_name'],
+            'file_size' => $sessionData['file_size'],
+            'created_at' => $sessionData['created_at']
+        ]);
+    }
+
+    /**
+     * Initialize chunked upload session
+     */
+    public function initChunkedUpload(Request $request)
+    {
+        $request->validate([
+            'file_name' => 'required|string',
+            'file_size' => 'required|integer|max:26214400', // 25MB
+            'file_type' => 'required|string',
+            'file_id' => 'required|string',
+            'total_chunks' => 'required|integer|min:1',
+            'client_id' => 'required|exists:clients,id',
+            'document_type' => 'required|string|in:w2,1099,receipts,bank_statements,tax_returns,id_documents,other',
+            'tax_year' => 'nullable|integer|min:2000|max:' . (date('Y') + 1),
+            'notes' => 'nullable|string|max:500'
+        ]);
+
+        $uploadSessionId = uniqid('upload_', true);
+        
+        // Store upload session metadata in cache
+        \Cache::put("upload_session_{$uploadSessionId}", [
+            'file_name' => $request->file_name,
+            'file_size' => $request->file_size,
+            'file_type' => $request->file_type,
+            'file_id' => $request->file_id,
+            'total_chunks' => $request->total_chunks,
+            'client_id' => $request->client_id,
+            'document_type' => $request->document_type,
+            'tax_year' => $request->tax_year,
+            'notes' => $request->notes,
+            'chunks_received' => 0,
+            'created_at' => now()
+        ], 3600); // 1 hour expiry
+
+        return response()->json(['upload_session_id' => $uploadSessionId]);
+    }
+
+    /**
+     * Upload a single chunk
+     */
+    public function uploadChunk(Request $request)
+    {
+        $request->validate([
+            'chunk' => 'required|file|max:10240', // 10MB per chunk
+            'chunk_index' => 'required|integer|min:0',
+            'total_chunks' => 'required|integer|min:1',
+            'upload_session_id' => 'required|string',
+            'file_id' => 'required|string'
+        ]);
+
+        $uploadSessionId = $request->upload_session_id;
+        $sessionData = \Cache::get("upload_session_{$uploadSessionId}");
+
+        if (!$sessionData) {
+            return response()->json(['error' => 'Upload session expired'], 410);
+        }
+
+        // Create temp directory for chunks
+        $tempDir = storage_path("app/private/uploads/{$uploadSessionId}");
+        if (!is_dir($tempDir)) {
+            mkdir($tempDir, 0755, true);
+        }
+
+        // Store chunk
+        $chunkPath = "{$tempDir}/chunk_{$request->chunk_index}";
+        $request->file('chunk')->move($tempDir, "chunk_{$request->chunk_index}");
+
+        // Update session
+        $sessionData['chunks_received']++;
+        \Cache::put("upload_session_{$uploadSessionId}", $sessionData, 3600);
+
+        return response()->json([
+            'chunk_index' => $request->chunk_index,
+            'chunks_received' => $sessionData['chunks_received'],
+            'total_chunks' => $request->total_chunks
+        ]);
+    }
+
+    /**
+     * Finalize chunked upload and assemble file
+     */
+    public function finalizeChunkedUpload(Request $request)
+    {
+        $request->validate([
+            'upload_session_id' => 'required|string',
+            'file_id' => 'required|string'
+        ]);
+
+        $uploadSessionId = $request->upload_session_id;
+        $sessionData = \Cache::get("upload_session_{$uploadSessionId}");
+
+        if (!$sessionData) {
+            return response()->json(['error' => 'Upload session expired'], 410);
+        }
+
+        if ($sessionData['chunks_received'] !== $sessionData['total_chunks']) {
+            return response()->json([
+                'error' => 'Not all chunks received',
+                'chunks_received' => $sessionData['chunks_received'],
+                'total_chunks' => $sessionData['total_chunks']
+            ], 400);
+        }
+
+        try {
+            $tempDir = storage_path("app/private/uploads/{$uploadSessionId}");
+            $fileName = time() . '_' . uniqid() . '_' . $sessionData['file_name'];
+            $finalPath = "documents/{$fileName}";
+            $finalFilePath = storage_path("app/private/{$finalPath}");
+
+            // Ensure documents directory exists
+            if (!Storage::disk('private')->exists('documents')) {
+                Storage::disk('private')->makeDirectory('documents');
+            }
+
+            // Assemble chunks
+            $outputFile = fopen($finalFilePath, 'wb');
+            for ($i = 0; $i < $sessionData['total_chunks']; $i++) {
+                $chunkFile = "{$tempDir}/chunk_{$i}";
+                if (file_exists($chunkFile)) {
+                    $chunkData = fopen($chunkFile, 'rb');
+                    stream_copy_to_stream($chunkData, $outputFile);
+                    fclose($chunkData);
+                    unlink($chunkFile);
+                }
+            }
+            fclose($outputFile);
+
+            // Clean up temp directory
+            rmdir($tempDir);
+
+            // Create document record
+            $client = Client::findOrFail($sessionData['client_id']);
+            $userId = $client->user_id ?? $sessionData['client_id'];
+
+            $document = Document::create([
+                'client_id' => $userId,
+                'name' => $sessionData['file_name'],
+                'original_name' => $sessionData['file_name'],
+                'file_path' => $finalPath,
+                'file_size' => $sessionData['file_size'],
+                'mime_type' => $sessionData['file_type'],
+                'document_type' => $sessionData['document_type'],
+                'tax_year' => $sessionData['tax_year'],
+                'notes' => $sessionData['notes'],
+                'status' => 'pending',
+                'uploaded_by' => auth()->id()
+            ]);
+
+            // Send notification
+            if ($client && $client->user) {
+                try {
+                    if ($client->user->first_name || $client->user->last_name || $client->user->email) {
+                        $client->user->notify(new \App\Notifications\AdminDocumentUploadedNotification($document));
+                    }
+                } catch (\Exception $e) {
+                    \Log::warning('Failed to send document upload notification', [
+                        'client_id' => $client->id,
+                        'error' => $e->getMessage()
+                    ]);
+                }
+            }
+
+            // Clear cache
+            \Cache::forget("upload_session_{$uploadSessionId}");
+
+            return response()->json([
+                'message' => 'Document uploaded successfully',
+                'document' => $document
+            ]);
+
+        } catch (\Exception $e) {
+            \Log::error('Chunked upload finalization failed', [
+                'upload_session_id' => $uploadSessionId,
+                'error' => $e->getMessage()
+            ]);
+
+            return response()->json(['error' => 'Failed to finalize upload'], 500);
+        }
+    }
+
+    /**
      * Upload documents for a client (admin upload)
      */
     public function upload(Request $request)

@@ -28,9 +28,9 @@ Route::get('/legal/disclaimer', function () {
     return inertia('Legal/Disclaimer');
 })->name('legal.disclaimer');
 
-// Redirect root to admin login
+// Landing page
 Route::get('/', function () {
-    return redirect('/admin/login');
+    return inertia('Landing');
 });
 
 // Global login routes
@@ -290,6 +290,10 @@ Route::middleware(['auth', 'auth.session', 'session.timeout', 'admin'])->prefix(
     // Admin document management routes
     Route::get('/documents', [App\Http\Controllers\Admin\DocumentController::class, 'index'])->name('documents');
     Route::post('/documents/upload', [App\Http\Controllers\Admin\DocumentController::class, 'upload'])->name('documents.upload');
+    Route::post('/documents/upload/init', [App\Http\Controllers\Admin\DocumentController::class, 'initChunkedUpload'])->name('documents.upload.init');
+    Route::post('/documents/upload/chunk', [App\Http\Controllers\Admin\DocumentController::class, 'uploadChunk'])->name('documents.upload.chunk');
+    Route::post('/documents/upload/finalize', [App\Http\Controllers\Admin\DocumentController::class, 'finalizeChunkedUpload'])->name('documents.upload.finalize');
+    Route::get('/documents/upload/status', [App\Http\Controllers\Admin\DocumentController::class, 'getUploadStatus'])->name('documents.upload.status');
     Route::get('/documents/{document}', [App\Http\Controllers\Admin\DocumentController::class, 'show'])->name('documents.show');
     Route::get('/documents/{document}/download', [App\Http\Controllers\Admin\DocumentController::class, 'download'])->name('documents.download');
     Route::patch('/documents/{document}/status', [App\Http\Controllers\Admin\DocumentController::class, 'updateStatus'])->name('documents.update-status');
@@ -460,6 +464,9 @@ Route::middleware(['auth', 'auth.session', 'session.timeout', 'client'])->prefix
     Route::post('/documents', [App\Http\Controllers\Client\DocumentController::class, 'store'])->name('documents.store');
     Route::get('/documents/{document}/download', [App\Http\Controllers\Client\DocumentController::class, 'download'])->name('documents.download');
     Route::delete('/documents/{document}', [App\Http\Controllers\Client\DocumentController::class, 'destroy'])->name('documents.destroy');
+    Route::post('/documents/upload/init', [App\Http\Controllers\Client\DocumentController::class, 'initChunkedUpload'])->name('documents.upload.init');
+    Route::post('/documents/upload/chunk', [App\Http\Controllers\Client\DocumentController::class, 'uploadChunk'])->name('documents.upload.chunk');
+    Route::post('/documents/upload/finalize', [App\Http\Controllers\Client\DocumentController::class, 'finalizeChunkedUpload'])->name('documents.upload.finalize');
     
     // Message management routes
     Route::get('/messages', [App\Http\Controllers\Client\MessageController::class, 'index'])->name('messages');

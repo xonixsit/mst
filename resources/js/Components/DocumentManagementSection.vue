@@ -75,7 +75,7 @@
           >
             <CloudArrowUpIcon class="w-12 h-12 text-purple-400 mx-auto mb-4" />
             <p class="text-purple-700 font-semibold mb-2">Click to upload or drag and drop</p>
-            <p class="text-sm text-purple-600">PDF, DOC, DOCX, JPG, PNG, GIF, TXT, XLS, XLSX (Max 10MB each)</p>
+            <p class="text-sm text-purple-600">PDF, DOC, DOCX, JPG, PNG, GIF, TXT, XLS, XLSX (Max 25MB each)</p>
           </div>
         </div>
 
@@ -283,6 +283,13 @@
       @close="closeDocumentModal"
     />
 
+    <!-- Upload Progress Tracker -->
+    <UploadProgressTracker
+      :uploads="uploads"
+      @resume="resumeUpload"
+      @cancel="cancelUpload"
+    />
+
     <!-- Status Update Modal -->
     <div v-if="showStatusModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50">
       <div class="relative top-20 mx-auto p-6 border w-96 shadow-2xl rounded-2xl bg-white">
@@ -356,6 +363,8 @@ import {
   TrashIcon
 } from '@heroicons/vue/24/outline'
 import PdfViewer from '@/Components/PdfViewer.vue'
+import UploadProgressTracker from '@/Components/UploadProgressTracker.vue'
+import { ChunkedUploadService } from '@/Services/ChunkedUploadService'
 
 
 const props = defineProps({
@@ -393,6 +402,8 @@ const showPdfViewer = ref(false)
 const selectedDocument = ref(null)
 const selectedDocumentForView = ref(null)
 const updatingStatus = ref(false)
+const uploads = ref([])
+const activeUploads = ref(new Map())
 
 const uploadForm = ref({
   document_type: '',
@@ -418,7 +429,7 @@ const handleFileDrop = (event) => {
 
 const addFiles = (files) => {
   const validFiles = files.filter(file => {
-    const maxSize = 10 * 1024 * 1024 // 10MB
+    const maxSize = 25 * 1024 * 1024 // 25MB
     const allowedTypes = [
       'application/pdf',
       'application/msword',
@@ -464,66 +475,126 @@ const uploadDocument = async () => {
   uploading.value = true
   
   try {
-    const formData = new FormData()
-    
-    selectedFiles.value.forEach((file, index) => {
-      formData.append(`files[${index}]`, file)
-    })
-    
-    formData.append('client_id', props.clientId)
-    formData.append('document_type', uploadForm.value.document_type)
-    formData.append('tax_year', uploadForm.value.tax_year || '')
-    formData.append('notes', uploadForm.value.notes || '')
-    
-    console.log('Uploading with client_id:', props.clientId)
-    
-    const response = await axios.post('/admin/documents/upload', formData, {
-      headers: {
-        'Content-Type': 'multipart/form-data',
-        'X-Requested-With': 'XMLHttpRequest'
+    for (let i = 0; i < selectedFiles.value.length; i++) {
+      const file = selectedFiles.value[i]
+      const fileId = `${Date.now()}_${i}_${Math.random().toString(36).substr(2, 9)}`
+      
+      const uploadTracker = {
+        fileId,
+        fileName: file.name,
+        fileSize: file.size,
+        progress: 0,
+        uploadedChunks: 0,
+        totalChunks: Math.ceil(file.size / (5 * 1024 * 1024)),
+        status: 'initializing',
+        speed: 0,
+        eta: 0,
+        lastProgress: 0,
+        lastTime: Date.now()
       }
-    })
-    
-    console.log('Upload successful:', response.data)
-    
-    // Reset form
-    selectedFiles.value = []
-    uploadForm.value = {
-      document_type: '',
-      tax_year: '',
-      notes: ''
+      
+      uploads.value.push(uploadTracker)
+      activeUploads.value.set(fileId, uploadTracker)
+      
+      try {
+        await ChunkedUploadService.uploadFile(
+          file,
+          props.clientId,
+          uploadForm.value.document_type,
+          uploadForm.value.tax_year || null,
+          uploadForm.value.notes || '',
+          (progress) => {
+            uploadTracker.progress = progress
+            uploadTracker.uploadedChunks = Math.ceil((progress / 100) * uploadTracker.totalChunks)
+            uploads.value = [...uploads.value]
+          },
+          (status) => {
+            uploadTracker.status = status
+            uploads.value = [...uploads.value]
+          }
+        )
+        
+        uploadTracker.status = 'completed'
+      } catch (error) {
+        console.error(`Upload failed for ${file.name}:`, error)
+        uploadTracker.status = 'paused'
+      }
     }
     
-    // Refresh documents
-    await loadDocuments()
-    
-    emit('update')
-    
-    // Show success message
-    alert('Documents uploaded successfully!')
+    // Check for failures
+    const failures = uploads.value.filter(u => u.status === 'paused')
+    if (failures.length === 0) {
+      // Reset form only if all succeeded
+      selectedFiles.value = []
+      uploadForm.value = {
+        document_type: '',
+        tax_year: '',
+        notes: ''
+      }
+      
+      // Refresh documents
+      await loadDocuments()
+      emit('update')
+      
+      // Clear completed uploads after 3 seconds
+      setTimeout(() => {
+        uploads.value = uploads.value.filter(u => u.status !== 'completed')
+      }, 3000)
+    }
     
   } catch (error) {
     console.error('Upload failed:', error)
-    
-    let errorMessage = 'Upload failed. Please try again.'
-    
-    if (error.response) {
-      console.error('Error response:', error.response.data)
-      
-      if (error.response.status === 422) {
-        // Validation errors
-        const errors = error.response.data.errors || {}
-        const errorMessages = Object.values(errors).flat()
-        errorMessage = errorMessages.length > 0 ? errorMessages.join(', ') : 'Validation failed'
-      } else if (error.response.data.message) {
-        errorMessage = error.response.data.message
-      }
-    }
-    
-    alert(errorMessage)
   } finally {
     uploading.value = false
   }
+}
+
+const resumeUpload = async (upload) => {
+  const file = selectedFiles.value.find(f => f.name === upload.fileName)
+  if (!file) return
+  
+  upload.status = 'resuming'
+  
+  try {
+    await ChunkedUploadService.uploadFile(
+      file,
+      props.clientId,
+      uploadForm.value.document_type,
+      uploadForm.value.tax_year || null,
+      uploadForm.value.notes || '',
+      (progress) => {
+        upload.progress = progress
+        upload.uploadedChunks = Math.ceil((progress / 100) * upload.totalChunks)
+        uploads.value = [...uploads.value]
+      },
+      (status) => {
+        upload.status = status
+        uploads.value = [...uploads.value]
+      }
+    )
+    
+    upload.status = 'completed'
+    
+    // Refresh documents
+    await loadDocuments()
+    emit('update')
+    
+    // Clear completed uploads after 3 seconds
+    setTimeout(() => {
+      uploads.value = uploads.value.filter(u => u.status !== 'completed')
+    }, 3000)
+  } catch (error) {
+    console.error('Resume failed:', error)
+    upload.status = 'paused'
+  }
+}
+
+const cancelUpload = (upload) => {
+  const index = uploads.value.findIndex(u => u.fileId === upload.fileId)
+  if (index !== -1) {
+    uploads.value.splice(index, 1)
+  }
+  activeUploads.value.delete(upload.fileId)
 }
 
 const loadDocuments = async () => {

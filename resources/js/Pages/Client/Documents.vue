@@ -8,7 +8,7 @@
         <div class="absolute bottom-0 left-0 w-48 h-24 bg-gradient-to-tr from-emerald-100/30 to-transparent rounded-tr-full"></div>
         
         <!-- Content -->
-            <div class="relative flex flex-col lg:flex-row lg:justify-between lg:items-center space-y-6 lg:space-y-0 py-2 pr-2 pl-2">
+        <div class="relative flex flex-col lg:flex-row lg:justify-between lg:items-center space-y-6 lg:space-y-0 py-2 px-10">
           <div class="flex items-center space-x-4">
             <!-- Document Management Icon -->
             <div class="w-14 h-14 bg-gradient-to-br from-blue-500 via-blue-600 to-indigo-600 rounded-2xl flex items-center justify-center shadow-lg ring-4 ring-blue-100">
@@ -168,6 +168,12 @@
                   {{ document.status.charAt(0).toUpperCase() + document.status.slice(1) }}
                 </span>
                 <button
+                  @click="viewDocument(document)"
+                  class="text-blue-600 hover:text-blue-500 font-medium text-sm"
+                >
+                  View
+                </button>
+                <button
                   @click="downloadDocument(document)"
                   class="text-indigo-600 hover:text-indigo-500 font-medium text-sm"
                 >
@@ -267,7 +273,7 @@
                   <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                   </svg>
-                  <span class="font-medium">Max 10MB. All file formats supported (PDF, images, Word, Excel, etc.)</span>
+                  <span class="font-medium">Max 25MB. All file formats supported (PDF, images, Word, Excel, etc.)</span>
                 </div>
               </div>
             </div>
@@ -367,6 +373,85 @@
         </div>
       </div>
     </div>
+
+    <!-- Upload Progress Tracker -->
+    <UploadProgressTracker
+      :uploads="uploads"
+      @resume="resumeUpload"
+      @cancel="cancelUpload"
+    />
+
+    <!-- Document Viewer Modal -->
+    <div v-if="showDocumentViewer" class="fixed inset-0 bg-gray-900 bg-opacity-75 z-50 flex items-center justify-center p-4">
+      <div class="relative w-full max-w-5xl bg-white shadow-2xl rounded-xl border border-gray-200 overflow-hidden flex flex-col max-h-[85vh]">
+        <!-- Modal Header -->
+        <div class="bg-gradient-to-r from-slate-50 to-gray-50 px-6 py-4 border-b border-gray-200 flex items-center justify-between flex-shrink-0">
+          <div class="flex-1">
+            <h3 class="text-lg font-bold text-gray-900">{{ selectedDocumentForView?.name }}</h3>
+            <p class="text-sm text-gray-600 mt-1">{{ formatFileSize(selectedDocumentForView?.file_size) }}</p>
+          </div>
+          <div class="flex items-center space-x-3">
+            <button
+              @click="downloadDocument(selectedDocumentForView)"
+              class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-medium transition-colors flex items-center space-x-2 text-sm"
+            >
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path>
+              </svg>
+              <span>Download</span>
+            </button>
+            <button
+              @click="closeDocumentViewer"
+              class="p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-lg transition-all duration-200"
+            >
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+              </svg>
+            </button>
+          </div>
+        </div>
+
+        <!-- Document Content -->
+        <div class="flex-1 overflow-auto bg-gray-50">
+          <!-- PDF Viewer -->
+          <div v-if="isPdfDocument(selectedDocumentForView)" class="w-full h-full">
+            <PdfViewer
+              :pdf-url="`/client/documents/${selectedDocumentForView?.id}/download?view=1`"
+              :document-id="selectedDocumentForView?.id.toString()"
+              :document-name="selectedDocumentForView?.name"
+              :height="600"
+            />
+          </div>
+
+          <!-- Image Viewer -->
+          <div v-else-if="isImageDocument(selectedDocumentForView)" class="flex items-center justify-center w-full h-full p-8">
+            <img
+              :src="`/client/documents/${selectedDocumentForView?.id}/download?view=1`"
+              :alt="selectedDocumentForView?.name"
+              class="max-w-full max-h-full object-contain rounded-lg shadow-lg"
+            />
+          </div>
+
+          <!-- Unsupported Format -->
+          <div v-else class="flex flex-col items-center justify-center p-8 text-center w-full h-full">
+            <svg class="w-16 h-16 text-gray-400 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+            </svg>
+            <p class="text-gray-700 font-medium mb-2">Preview not available</p>
+            <p class="text-sm text-gray-500 mb-6">This file type cannot be previewed in the browser</p>
+            <button
+              @click="downloadDocument(selectedDocumentForView)"
+              class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg font-medium transition-colors flex items-center space-x-2 text-sm"
+            >
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path>
+              </svg>
+              <span>Download File</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
   </AppLayout>
 </template>
 
@@ -375,6 +460,9 @@ import { ref, computed, onMounted } from 'vue'
 import { router, Link } from '@inertiajs/vue3'
 import { DocumentTextIcon } from '@heroicons/vue/24/outline'
 import AppLayout from '@/Layouts/AppLayout.vue'
+import UploadProgressTracker from '@/Components/UploadProgressTracker.vue'
+import PdfViewer from '@/Components/PdfViewer.vue'
+import { ChunkedUploadService } from '@/Services/ChunkedUploadService'
 
 const props = defineProps({
   documents: Object,
@@ -384,8 +472,16 @@ const props = defineProps({
 })
 
 const showUploadModal = ref(false)
+const showDocumentViewer = ref(false)
 const uploading = ref(false)
-const filters = ref({ type: '', year: '', status: '', ...props.filters })
+const selectedDocumentForView = ref(null)
+const filters = ref({
+  type: props.filters?.type || '',
+  year: props.filters?.year || '',
+  status: props.filters?.status || ''
+})
+const uploads = ref([])
+const activeUploads = ref(new Map())
 
 const uploadForm = ref({
   file: null,
@@ -413,26 +509,131 @@ const handleFileSelect = (event) => {
 const uploadDocument = async () => {
   if (!uploadForm.value.file) return
   
+  const file = uploadForm.value.file
+  const fileId = `${Date.now()}_${Math.random().toString(36).substr(2, 9)}`
+  
+  const uploadTracker = {
+    fileId,
+    fileName: file.name,
+    fileSize: file.size,
+    progress: 0,
+    uploadedChunks: 0,
+    totalChunks: Math.ceil(file.size / (5 * 1024 * 1024)),
+    status: 'initializing',
+    speed: 0,
+    eta: 0,
+    lastProgress: 0,
+    lastTime: Date.now()
+  }
+  
+  uploads.value.push(uploadTracker)
+  activeUploads.value.set(fileId, uploadTracker)
   uploading.value = true
   
-  const formData = new FormData()
-  formData.append('file', uploadForm.value.file)
-  formData.append('document_type', uploadForm.value.document_type)
-  if (uploadForm.value.tax_year) {
-    formData.append('tax_year', uploadForm.value.tax_year)
-  }
-  if (uploadForm.value.notes) {
-    formData.append('notes', uploadForm.value.notes)
-  }
-  
-  router.post('/client/documents', formData, {
-    onSuccess: () => {
-      closeUploadModal()
-    },
-    onFinish: () => {
-      uploading.value = false
+  try {
+    // Get authenticated user's client ID from the page props or use user ID
+    const userId = document.querySelector('meta[name="user-id"]')?.content || 
+                   document.querySelector('meta[name="auth-user-id"]')?.content
+    
+    if (!userId) {
+      throw new Error('Unable to determine user ID')
     }
-  })
+    
+    await ChunkedUploadService.uploadFile(
+      file,
+      userId,
+      uploadForm.value.document_type,
+      uploadForm.value.tax_year || null,
+      uploadForm.value.notes || '',
+      (progress) => {
+        console.log('Progress update:', progress)
+        uploadTracker.progress = progress
+        uploadTracker.uploadedChunks = Math.ceil((progress / 100) * uploadTracker.totalChunks)
+        // Force reactivity by updating the array
+        uploads.value = [...uploads.value]
+      },
+      (status) => {
+        console.log('Status update:', status)
+        uploadTracker.status = status
+        uploads.value = [...uploads.value]
+      }
+    )
+    
+    uploadTracker.status = 'completed'
+    
+    // Reset form
+    closeUploadModal()
+    
+    // Refresh documents
+    applyFilters()
+    
+    // Clear completed uploads after 3 seconds
+    setTimeout(() => {
+      uploads.value = uploads.value.filter(u => u.status !== 'completed')
+    }, 3000)
+    
+  } catch (error) {
+    console.error('Upload failed:', error)
+    uploadTracker.status = 'paused'
+  } finally {
+    uploading.value = false
+  }
+}
+
+const resumeUpload = async (upload) => {
+  const file = uploadForm.value.file
+  if (!file || file.name !== upload.fileName) return
+  
+  upload.status = 'resuming'
+  
+  try {
+    const userId = document.querySelector('meta[name="user-id"]')?.content || 
+                   document.querySelector('meta[name="auth-user-id"]')?.content
+    
+    if (!userId) {
+      throw new Error('Unable to determine user ID')
+    }
+    
+    await ChunkedUploadService.uploadFile(
+      file,
+      userId,
+      uploadForm.value.document_type,
+      uploadForm.value.tax_year || null,
+      uploadForm.value.notes || '',
+      (progress) => {
+        console.log('Resume progress:', progress)
+        upload.progress = progress
+        upload.uploadedChunks = Math.ceil((progress / 100) * upload.totalChunks)
+        uploads.value = [...uploads.value]
+      },
+      (status) => {
+        console.log('Resume status:', status)
+        upload.status = status
+        uploads.value = [...uploads.value]
+      }
+    )
+    
+    upload.status = 'completed'
+    
+    // Refresh documents
+    applyFilters()
+    
+    // Clear completed uploads after 3 seconds
+    setTimeout(() => {
+      uploads.value = uploads.value.filter(u => u.status !== 'completed')
+    }, 3000)
+  } catch (error) {
+    console.error('Resume failed:', error)
+    upload.status = 'paused'
+  }
+}
+
+const cancelUpload = (upload) => {
+  const index = uploads.value.findIndex(u => u.fileId === upload.fileId)
+  if (index !== -1) {
+    uploads.value.splice(index, 1)
+  }
+  activeUploads.value.delete(upload.fileId)
 }
 
 const closeUploadModal = () => {
@@ -445,8 +646,38 @@ const closeUploadModal = () => {
   }
 }
 
+const isPdfDocument = (document) => {
+  if (!document) return false
+  return document.mime_type === 'application/pdf' || 
+         document.original_name?.toLowerCase().endsWith('.pdf')
+}
+
+const isImageDocument = (document) => {
+  if (!document) return false
+  const imageTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/webp']
+  return imageTypes.includes(document.mime_type) || 
+         /\.(jpg|jpeg|png|gif|webp)$/i.test(document.original_name)
+}
+
+const viewDocument = (document) => {
+  selectedDocumentForView.value = document
+  showDocumentViewer.value = true
+}
+
+const closeDocumentViewer = () => {
+  showDocumentViewer.value = false
+  selectedDocumentForView.value = null
+}
+
 const downloadDocument = (document) => {
   window.location.href = `/client/documents/${document.id}/download`
+}
+
+const formatFileSize = (bytes) => {
+  if (!bytes) return 'Unknown'
+  const sizes = ['Bytes', 'KB', 'MB', 'GB']
+  const i = Math.floor(Math.log(bytes) / Math.log(1024))
+  return Math.round(bytes / Math.pow(1024, i) * 100) / 100 + ' ' + sizes[i]
 }
 
 const deleteDocument = (document) => {
@@ -483,9 +714,7 @@ const formatDate = (dateString) => {
 }
 
 onMounted(() => {
-  // Load documents on initial page load if no data is present
-  if (!props.documents || props.documents.data.length === 0) {
-    applyFilters()
-  }
+  // Documents are already loaded from server, no need to reload
+  // Filters are already applied by the backend
 })
 </script>

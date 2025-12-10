@@ -1,4 +1,7 @@
 <template>
+  <Head>
+    <meta name="user-id" :content="page.props.auth.user?.id?.toString()" />
+  </Head>
   <div class="h-screen bg-gradient-to-br from-neutral-50 to-neutral-100 flex overflow-hidden">
     <!-- Sidebar -->
     <div :class="[
@@ -278,7 +281,8 @@
 </template>
 
 <script setup>
-  import { ref, computed } from 'vue'
+  import { ref, computed, onMounted } from 'vue'
+  import { Head } from '@inertiajs/vue3'
   
   // Sidebar toggle state - collapsed by default
   const sidebarCollapsed = ref(true)
