@@ -84,8 +84,13 @@ class Document extends Model
             '1099' => '1099 Form',
             'receipts' => 'Receipts',
             'bank_statements' => 'Bank Statements',
+            'bank_statement' => 'Bank Statement',
             'tax_returns' => 'Tax Returns',
             'id_documents' => 'ID Documents',
+            'receipt' => 'Receipt',
+            'invoice' => 'Invoice',
+            'contract' => 'Contract',
+            'identification' => 'Identification',
             'other' => 'Other'
         ];
 

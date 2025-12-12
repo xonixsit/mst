@@ -61,8 +61,13 @@ class DocumentController extends Controller
                 '1099' => '1099 Forms',
                 'receipts' => 'Receipts',
                 'bank_statements' => 'Bank Statements',
+                'bank_statement' => 'Bank Statement',
                 'tax_returns' => 'Tax Returns',
                 'id_documents' => 'ID Documents',
+                'receipt' => 'Receipt',
+                'invoice' => 'Invoice',
+                'contract' => 'Contract',
+                'identification' => 'Identification',
                 'other' => 'Other'
             ]
         ]);
@@ -77,7 +82,7 @@ class DocumentController extends Controller
 
         $request->validate([
             'file' => ['required', 'file', 'max:10240', new ValidDocumentFile()],
-            'document_type' => 'required|in:w2,1099,receipts,bank_statements,tax_returns,id_documents,other',
+            'document_type' => 'required|in:w2,1099,receipts,bank_statements,tax_returns,id_documents,bank_statement,receipt,invoice,contract,identification,other',
             'tax_year' => 'nullable|integer|min:2000|max:' . (date('Y') + 1),
             'notes' => 'nullable|string|max:500'
         ]);

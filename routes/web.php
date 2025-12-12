@@ -33,6 +33,19 @@ Route::get('/', function () {
     return inertia('Landing');
 });
 
+// Public pages
+Route::get('/services', function () {
+    return inertia('Services');
+})->name('services');
+
+Route::get('/about', function () {
+    return inertia('About');
+})->name('about');
+
+Route::get('/contact', function () {
+    return inertia('Contact');
+})->name('contact');
+
 // Global login routes
 Route::get('/login', function () {
     return redirect('/admin/login');
@@ -516,3 +529,9 @@ Route::middleware(['auth', 'auth.session', 'session.timeout', 'client'])->prefix
     Route::post('/support-tickets/{supportTicket}/reply', [App\Http\Controllers\Client\SupportTicketController::class, 'reply'])->name('support-tickets.reply');
 
 });
+
+// Lead submission route (public)
+Route::post('/leads', [App\Http\Controllers\LeadController::class, 'store'])->name('leads.store');
+
+// Contact submission route (public)
+Route::post('/contact', [App\Http\Controllers\ContactSubmissionController::class, 'store'])->name('contact.store');

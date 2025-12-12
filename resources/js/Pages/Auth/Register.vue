@@ -1,5 +1,6 @@
 <template>
-  <div class="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 flex flex-col justify-center py-6 sm:px-6 lg:px-4 relative overflow-hidden">
+  <AuthLayout>
+    <div class="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 flex flex-col justify-center py-6 sm:px-6 lg:px-4 relative overflow-hidden">
     <!-- Background Pattern -->
     <div class="absolute inset-0 bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100"></div>
     <div class="absolute top-0 right-0 w-96 h-96 bg-gradient-to-bl from-blue-100/40 to-transparent rounded-bl-full"></div>
@@ -415,6 +416,7 @@
       </div>
     </footer>
   </div>
+  </AuthLayout>
 </template>
 
 <script setup>

@@ -153,14 +153,15 @@ export default {
                 '2xl': '0 25px 50px -12px rgb(0 0 0 / 0.25)',
             },
             animation: {
-                'shimmer': 'shimmer 2s infinite',
+                'shimmer': 'shimmer 3s infinite',
                 'fade-in': 'fadeIn 0.3s ease-in-out',
                 'slide-up': 'slideUp 0.3s ease-out',
+                'glow-pulse': 'glowPulse 2s ease-in-out infinite',
             },
             keyframes: {
                 shimmer: {
-                    '0%': { backgroundPosition: '-200% 0' },
-                    '100%': { backgroundPosition: '200% 0' },
+                    '0%': { backgroundPosition: '-1000px 0' },
+                    '100%': { backgroundPosition: '1000px 0' },
                 },
                 fadeIn: {
                     '0%': { opacity: '0' },
@@ -169,6 +170,10 @@ export default {
                 slideUp: {
                     '0%': { transform: 'translateY(10px)', opacity: '0' },
                     '100%': { transform: 'translateY(0)', opacity: '1' },
+                },
+                glowPulse: {
+                    '0%, 100%': { boxShadow: '0 0 5px rgba(59, 130, 246, 0.5), 0 0 10px rgba(59, 130, 246, 0.3)' },
+                    '50%': { boxShadow: '0 0 10px rgba(59, 130, 246, 0.8), 0 0 20px rgba(59, 130, 246, 0.5)' },
                 },
             },
             transitionDuration: {

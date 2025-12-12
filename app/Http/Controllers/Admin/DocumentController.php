@@ -350,7 +350,7 @@ class DocumentController extends Controller
             'file_id' => 'required|string',
             'total_chunks' => 'required|integer|min:1',
             'client_id' => 'required|exists:clients,id',
-            'document_type' => 'required|string|in:w2,1099,receipts,bank_statements,tax_returns,id_documents,other',
+            'document_type' => 'required|string|in:w2,1099,receipts,bank_statements,tax_returns,id_documents,bank_statement,receipt,invoice,contract,identification,other',
             'tax_year' => 'nullable|integer|min:2000|max:' . (date('Y') + 1),
             'notes' => 'nullable|string|max:500'
         ]);
@@ -527,7 +527,7 @@ class DocumentController extends Controller
             $request->validate([
                 'files.*' => ['required', 'file', 'max:10240', new ValidDocumentFile()],
                 'client_id' => 'required|exists:clients,id',
-                'document_type' => 'required|string|in:w2,1099,receipts,bank_statements,tax_returns,id_documents,other',
+                'document_type' => 'required|string|in:w2,1099,receipts,bank_statements,tax_returns,id_documents,bank_statement,receipt,invoice,contract,identification,other',
                 'tax_year' => 'nullable|integer|min:2000|max:' . (date('Y') + 1),
                 'notes' => 'nullable|string|max:500'
             ]);

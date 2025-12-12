@@ -1,33 +1,70 @@
 <template>
   <div class="bg-white">
     <!-- Navigation Header -->
-    <nav class="fixed top-0 w-full bg-white/95 backdrop-blur-md border-b border-gray-200 z-50 shadow-sm h-16">
-      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-full">
+    <PublicNavbar />
+    <nav class="hidden">
+      <!-- Gradient Background with Blur -->
+      <div class="absolute inset-0 bg-gradient-to-r from-slate-900 via-blue-900 to-slate-900 backdrop-blur-xl"></div>
+      
+      <!-- Border Accent -->
+      <div class="absolute bottom-0 w-full h-px bg-gradient-to-r from-transparent via-blue-400/50 to-transparent"></div>
+      
+      <!-- Content -->
+      <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-full">
         <div class="flex justify-between items-center h-full">
-          <div class="flex items-center space-x-3">
-            <div class="w-10 h-10 bg-gradient-to-br from-primary-600 via-primary-700 to-primary-800 rounded-xl flex items-center justify-center shadow-lg ring-2 ring-white/20 flex-shrink-0">
+          <!-- Logo Section -->
+          <Link href="/" class="flex items-center space-x-3 group">
+            <div class="w-10 h-10 bg-gradient-to-br from-blue-400 via-blue-500 to-indigo-600 rounded-xl flex items-center justify-center shadow-lg ring-2 ring-blue-300/30 group-hover:ring-blue-300/60 transition-all duration-300 flex-shrink-0">
               <svg class="w-6 h-6 text-white" fill="currentColor" viewBox="0 0 24 24">
                 <path d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
               </svg>
             </div>
-            <div>
-              <span class="text-xl font-bold text-gray-900">MySuperTax</span>
-              <p class="text-xs text-gray-600 font-medium">Professional Services</p>
+            <div class="hidden sm:block">
+              <span class="text-lg font-bold bg-gradient-to-r from-blue-200 to-indigo-200 bg-clip-text text-transparent">MySuperTax</span>
+              <p class="text-xs text-blue-300/70 font-medium">Professional Services</p>
             </div>
+          </Link>
+
+          <!-- Navigation Menu -->
+          <div class="hidden lg:flex items-center space-x-1">
+            <Link href="/services" class="px-4 py-2 text-blue-100 hover:text-white font-medium transition-all duration-300 relative group">
+              Services
+              <span class="absolute bottom-0 left-0 w-0 h-0.5 bg-gradient-to-r from-blue-400 to-indigo-400 group-hover:w-full transition-all duration-300"></span>
+            </Link>
+            <Link href="/about" class="px-4 py-2 text-blue-100 hover:text-white font-medium transition-all duration-300 relative group">
+              About
+              <span class="absolute bottom-0 left-0 w-0 h-0.5 bg-gradient-to-r from-blue-400 to-indigo-400 group-hover:w-full transition-all duration-300"></span>
+            </Link>
+            <Link href="/contact" class="px-4 py-2 text-blue-100 hover:text-white font-medium transition-all duration-300 relative group">
+              Contact
+              <span class="absolute bottom-0 left-0 w-0 h-0.5 bg-gradient-to-r from-blue-400 to-indigo-400 group-hover:w-full transition-all duration-300"></span>
+            </Link>
           </div>
-          <div class="flex items-center space-x-4">
-            <Link href="/client/login" class="bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white px-6 py-2 rounded-lg font-semibold transition-all duration-300 shadow-lg hover:shadow-xl">
-              Client Login
+
+          <!-- CTA Button -->
+          <div class="flex items-center space-x-3">
+            <Link href="/client/login" class="hidden sm:inline-flex bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 text-white px-6 py-2.5 rounded-lg font-semibold transition-all duration-300 shadow-lg hover:shadow-xl hover:scale-105 transform">
+              <span>Client Login</span>
+              <svg class="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"></path>
+              </svg>
             </Link>
           </div>
         </div>
       </div>
     </nav>
-    <!-- Spacer for fixed nav -->
     <div class="h-16"></div>
+    <!-- Spacer for fixed nav -->
+    <!-- <div class="h-16"></div> -->
     <!-- Hero Section -->
-    <section class="pb-20 px-4 sm:px-6 lg:px-8 bg-gradient-to-b from-blue-50 to-white">
-      <div class="max-w-7xl mx-auto">
+    <section class="py-20 px-4 sm:px-6 lg:px-8 bg-gradient-to-b from-blue-50 via-white to-white relative overflow-hidden">
+      <!-- Animated Background Elements -->
+      <div class="absolute inset-0 overflow-hidden pointer-events-none">
+        <div class="absolute top-20 right-10 w-72 h-72 bg-blue-200/20 rounded-full blur-3xl animate-pulse"></div>
+        <div class="absolute bottom-20 left-10 w-96 h-96 bg-indigo-200/20 rounded-full blur-3xl animate-pulse" style="animation-delay: 1s;"></div>
+      </div>
+
+      <div class="max-w-7xl mx-auto relative z-10">
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
           <!-- Left Content -->
           <div class="space-y-8">
@@ -45,67 +82,50 @@
             </div>
 
             <!-- CTA Buttons -->
+            <!-- IRS Badge -->
+            <div class="flex items-center gap-2 px-4 py-3 bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200 rounded-lg w-fit animate-glow-pulse">
+              <svg class="w-5 h-5 text-blue-600" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd" d="M6.267 3.455a3.066 3.066 0 001.745-.723 3.066 3.066 0 013.976 0 3.066 3.066 0 001.745.723 3.066 3.066 0 012.812 3.062v6.218c0 1.264-.534 2.472-1.469 3.304a3.065 3.065 0 01-2.433 1.068c-.566 0-1.108-.116-1.605-.341a4.5 4.5 0 00-3.422 0 3.066 3.066 0 01-2.433-1.068C2.884 15.545 2.35 14.337 2.35 13.073V6.517a3.066 3.066 0 012.917-3.062zM9 12a1 1 0 100-2 1 1 0 000 2z" clip-rule="evenodd"></path>
+              </svg>
+              <span class="text-sm font-semibold text-blue-700">Authorized IRS E-File Provider</span>
+            </div>
+
+            <!-- CTA Buttons -->
             <div class="flex flex-col sm:flex-row gap-4 pt-4">
-              <Link href="/client/login" class="bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white px-8 py-4 rounded-xl font-semibold transition-all duration-300 shadow-lg hover:shadow-xl flex items-center justify-center space-x-2 group">
-                <span>Start Free Trial</span>
+              <button @click="showLeadModal = true" class="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white px-8 py-4 rounded-xl font-semibold transition-all duration-300 shadow-lg hover:shadow-xl flex items-center justify-center space-x-2 group">
+                <span>Get Free Tax Consultation</span>
                 <svg class="w-5 h-5 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"></path>
                 </svg>
-              </Link>
-              <button class="border-2 border-gray-300 text-gray-700 hover:border-gray-400 hover:bg-gray-50 px-8 py-4 rounded-xl font-semibold transition-all duration-300">
-                Schedule Demo
               </button>
-            </div>
-
-            <!-- Trust Indicators -->
-            <div class="grid grid-cols-3 gap-6 pt-8 border-t border-gray-200">
-              <div>
-                <div class="text-3xl font-bold text-gray-900">10K+</div>
-                <div class="text-sm text-gray-600 mt-1">Active Users</div>
-              </div>
-              <div>
-                <div class="text-3xl font-bold text-gray-900">99.9%</div>
-                <div class="text-sm text-gray-600 mt-1">Uptime SLA</div>
-              </div>
-              <div>
-                <div class="text-3xl font-bold text-gray-900">24/7</div>
-                <div class="text-sm text-gray-600 mt-1">Support</div>
-              </div>
+              <!-- Call Now CTA -->
+              <a href="tel:+13153072751" class="inline-flex items-center gap-3 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white px-6 py-4 rounded-xl font-bold transition-all shadow-lg hover:shadow-xl group">
+                <svg class="w-5 h-5 group-hover:scale-110 transition-transform" fill="currentColor" viewBox="0 0 20 20">
+                  <path d="M2 3a1 1 0 011-1h2.153a1 1 0 01.986.836l.74 4.435a1 1 0 01-.54 1.06l-1.548.773c.058.3.102.605.102.924 0 1.748.585 3.364 1.56 4.657l1.548.773a1 1 0 01.54 1.06l-.74 4.435a1 1 0 01-.986.836H3a1 1 0 01-1-1V3z"></path>
+                </svg>
+                <div class="text-left">
+                  <div class="text-xs opacity-90">Call Now!</div>
+                  <div class="text-lg font-bold">+1 315-307-2751</div>
+                </div>
+              </a>
             </div>
           </div>
 
-          <!-- Right Visual - Dashboard Preview -->
-          <div class="relative">
-            <div class="bg-white rounded-2xl shadow-2xl border border-gray-200 overflow-hidden">
-              <!-- Dashboard Header -->
-              <div class="bg-gradient-to-r from-purple-600 to-indigo-600 px-6 py-4 flex items-center justify-between">
-                <div class="flex items-center space-x-3">
-                  <div class="w-8 h-8 bg-white/20 rounded-lg"></div>
-                  <div class="h-2 bg-white/20 rounded w-24"></div>
-                </div>
-                <div class="flex space-x-2">
-                  <div class="w-3 h-3 bg-white/20 rounded-full"></div>
-                  <div class="w-3 h-3 bg-white/20 rounded-full"></div>
-                </div>
-              </div>
-              <!-- Dashboard Content -->
-              <div class="p-6 space-y-4">
-                <div class="grid grid-cols-2 gap-4">
-                  <div class="bg-blue-50 rounded-lg p-4 border border-blue-200">
-                    <div class="h-3 bg-blue-200 rounded w-1/2 mb-3"></div>
-                    <div class="h-6 bg-blue-300 rounded w-2/3"></div>
-                  </div>
-                  <div class="bg-green-50 rounded-lg p-4 border border-green-200">
-                    <div class="h-3 bg-green-200 rounded w-1/2 mb-3"></div>
-                    <div class="h-6 bg-green-300 rounded w-2/3"></div>
-                  </div>
-                </div>
-                <div class="bg-gray-50 rounded-lg p-4 space-y-2">
-                  <div class="h-2 bg-gray-200 rounded w-full"></div>
-                  <div class="h-2 bg-gray-200 rounded w-5/6"></div>
-                  <div class="h-2 bg-gray-200 rounded w-4/6"></div>
-                </div>
-              </div>
+          <!-- Right Visual - Tax Illustration -->
+          <div class="relative h-96 flex items-center justify-center">
+            <!-- Glossy Background Card -->
+            <div class="absolute inset-0 bg-gradient-to-br from-blue-100/40 to-indigo-100/40 rounded-3xl backdrop-blur-xl border border-white/60 shadow-2xl"></div>
+            
+            <!-- Illustration Container -->
+            <div class="relative w-full h-full flex items-center justify-center overflow-hidden">
+              <img 
+                src="/images/tax-illustration.png"
+                alt="Tax Management Illustration"
+                class="w-full h-full object-contain drop-shadow-2xl"
+              />
+              
+              <!-- Shimmering Overlay -->
+              <div class="absolute inset-0 rounded-3xl bg-gradient-to-r from-transparent via-white/20 to-transparent animate-shimmer"></div>
             </div>
           </div>
         </div>
@@ -192,104 +212,25 @@
     <div class="h-16"></div>
 
     <!-- CTA Section -->
-    <section class="py-20 px-4 sm:px-6 lg:px-8 bg-gray-50">
-      <div class="max-w-4xl mx-auto">
-        <div class="bg-gradient-to-r from-purple-600 to-indigo-600 rounded-2xl p-12 text-center my-16">
-          <h2 class="text-4xl font-bold text-white mb-4">Ready to Get Started?</h2>
-          <p class="text-lg text-purple-100 mb-8 max-w-2xl mx-auto">Join thousands of tax professionals streamlining their practice with MySuperTax</p>
-          <div class="flex flex-col sm:flex-row gap-4 justify-center">
-            <Link href="/client/login" class="bg-white text-purple-600 hover:bg-gray-100 px-8 py-4 rounded-xl font-semibold transition-all duration-300 shadow-lg">
-              Start Free Trial
-            </Link>
-            <button class="border-2 border-white text-white hover:bg-white/10 px-8 py-4 rounded-xl font-semibold transition-all duration-300">
-              Schedule Demo
-            </button>
-          </div>
-        </div>
-        </div>
-    </section>
+    <!-- Testimonials Section -->
+    <TestimonialsSection />
     <div class="h-16"></div>
 
-    <!-- Contact Section -->
-    <section class="py-20 px-4 sm:px-6 lg:px-8 bg-gray-50">
-      <div class="max-w-4xl mx-auto">
-        <div class="text-center mb-16">
-          <h2 class="text-4xl font-bold bg-gradient-to-r from-gray-900 via-blue-900 to-indigo-900 bg-clip-text text-transparent mb-4">Get in Touch</h2>
-          <p class="text-xl text-gray-600">Have questions? We're here to help.</p>
-        </div>
-
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mb-12">
-          <!-- Email -->
-          <div class="bg-white rounded-xl p-8 shadow-lg hover:shadow-xl transition-all duration-300 text-center">
-            <div class="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center mx-auto mb-4">
-              <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
-              </svg>
-            </div>
-            <h3 class="text-lg font-bold text-gray-900 mb-2">Email</h3>
-            <p class="text-gray-600 mb-4">support@mysupertax.com</p>
-            <a href="mailto:support@mysupertax.com" class="text-blue-600 hover:text-blue-700 font-semibold">Send Email</a>
-          </div>
-
-          <!-- Phone -->
-          <div class="bg-white rounded-xl p-8 shadow-lg hover:shadow-xl transition-all duration-300 text-center">
-            <div class="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center mx-auto mb-4">
-              <svg class="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"></path>
-              </svg>
-            </div>
-            <h3 class="text-lg font-bold text-gray-900 mb-2">Phone</h3>
-            <p class="text-gray-600 mb-4">+1 (555) 123-4567</p>
-            <a href="tel:+15551234567" class="text-green-600 hover:text-green-700 font-semibold">Call Now</a>
-          </div>
-
-          <!-- Address -->
-          <div class="bg-white rounded-xl p-8 shadow-lg hover:shadow-xl transition-all duration-300 text-center">
-            <div class="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center mx-auto mb-4">
-              <svg class="w-6 h-6 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path>
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path>
-              </svg>
-            </div>
-            <h3 class="text-lg font-bold text-gray-900 mb-2">Address</h3>
-            <p class="text-gray-600 mb-4">123 Tax Street, Suite 100<br>New York, NY 10001</p>
-            <a href="#" class="text-purple-600 hover:text-purple-700 font-semibold">View Map</a>
-          </div>
-        </div>
-
-        <!-- Business Hours -->
-        <div class="bg-white rounded-xl p-8 shadow-lg">
-          <h3 class="text-xl font-bold text-gray-900 mb-6 text-center">Business Hours</h3>
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-            <div>
-              <p class="text-gray-600 mb-2"><span class="font-semibold text-gray-900">Monday - Friday:</span> 9:00 AM - 6:00 PM EST</p>
-              <p class="text-gray-600"><span class="font-semibold text-gray-900">Saturday:</span> 10:00 AM - 4:00 PM EST</p>
-            </div>
-            <div>
-              <p class="text-gray-600 mb-2"><span class="font-semibold text-gray-900">Sunday:</span> Closed</p>
-              <p class="text-gray-600"><span class="font-semibold text-gray-900">Holidays:</span> Closed</p>
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
-
     <!-- Footer -->
-    <footer class="bg-gray-900 py-8 px-4 sm:px-6 lg:px-8">
-      <div class="max-w-7xl mx-auto">
-        <div class="border-t border-gray-700 pt-8 flex flex-col sm:flex-row justify-between items-center">
-          <p class="text-gray-400 text-sm">&copy; 2025 MySuperTax. All rights reserved.</p>
-          <div class="flex space-x-6 mt-4 sm:mt-0">
-            <a href="/legal/terms" class="text-gray-400 hover:text-white transition-colors text-sm">Terms</a>
-            <a href="/legal/privacy" class="text-gray-400 hover:text-white transition-colors text-sm">Privacy</a>
-            <a href="/legal/disclaimer" class="text-gray-400 hover:text-white transition-colors text-sm">Disclaimer</a>
-          </div>
-        </div>
-      </div>
-    </footer>
+    <PublicFooter />
+
+    <!-- Lead Form Modal -->
+    <LeadFormModal :isOpen="showLeadModal" @close="showLeadModal = false" />
   </div>
 </template>
 
 <script setup>
+import { ref } from 'vue'
 import { Link } from '@inertiajs/vue3'
+import LeadFormModal from '@/Components/LeadFormModal.vue'
+import PublicNavbar from '@/Components/PublicNavbar.vue'
+import PublicFooter from '@/Components/PublicFooter.vue'
+import TestimonialsSection from '@/Components/TestimonialsSection.vue'
+
+const showLeadModal = ref(false)
 </script>
