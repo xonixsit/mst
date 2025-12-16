@@ -350,7 +350,7 @@ class DocumentController extends Controller
             'file_id' => 'required|string',
             'total_chunks' => 'required|integer|min:1',
             'client_id' => 'required|exists:clients,id',
-            'document_type' => 'required|string|in:w2,1099,receipts,bank_statements,tax_returns,id_documents,bank_statement,receipt,invoice,contract,identification,other',
+            'document_type' => 'required|string',
             'tax_year' => 'nullable|integer|min:2000|max:' . (date('Y') + 1),
             'notes' => 'nullable|string|max:500'
         ]);
@@ -452,25 +452,53 @@ class DocumentController extends Controller
                 Storage::disk('private')->makeDirectory('documents');
             }
 
+            // Ensure temp directory exists
+            if (!is_dir($tempDir)) {
+                throw new \Exception("Temporary upload directory not found: {$tempDir}");
+            }
+
             // Assemble chunks
             $outputFile = fopen($finalFilePath, 'wb');
+            if (!$outputFile) {
+                throw new \Exception("Failed to create output file: {$finalFilePath}");
+            }
+
             for ($i = 0; $i < $sessionData['total_chunks']; $i++) {
                 $chunkFile = "{$tempDir}/chunk_{$i}";
                 if (file_exists($chunkFile)) {
                     $chunkData = fopen($chunkFile, 'rb');
+                    if (!$chunkData) {
+                        throw new \Exception("Failed to read chunk file: {$chunkFile}");
+                    }
                     stream_copy_to_stream($chunkData, $outputFile);
                     fclose($chunkData);
                     unlink($chunkFile);
+                } else {
+                    throw new \Exception("Missing chunk file: {$chunkFile}");
                 }
             }
             fclose($outputFile);
 
             // Clean up temp directory
-            rmdir($tempDir);
+            if (is_dir($tempDir)) {
+                $files = scandir($tempDir);
+                foreach ($files as $file) {
+                    if ($file !== '.' && $file !== '..') {
+                        unlink("{$tempDir}/{$file}");
+                    }
+                }
+                rmdir($tempDir);
+            }
 
             // Create document record
-            $client = Client::findOrFail($sessionData['client_id']);
-            $userId = $client->user_id ?? $sessionData['client_id'];
+            $client = Client::find($sessionData['client_id']);
+            
+            // If client not found, use client_id directly as user_id
+            if (!$client) {
+                $userId = $sessionData['client_id'];
+            } else {
+                $userId = $client->user_id ?? $sessionData['client_id'];
+            }
 
             $document = Document::create([
                 'client_id' => $userId,
@@ -494,10 +522,15 @@ class DocumentController extends Controller
                     }
                 } catch (\Exception $e) {
                     \Log::warning('Failed to send document upload notification', [
-                        'client_id' => $client->id,
+                        'client_id' => $client->id ?? 'unknown',
                         'error' => $e->getMessage()
                     ]);
                 }
+            } else {
+                \Log::info('Skipping notification - client or user not found', [
+                    'client_id' => $sessionData['client_id'],
+                    'user_id' => $userId
+                ]);
             }
 
             // Clear cache
@@ -511,10 +544,14 @@ class DocumentController extends Controller
         } catch (\Exception $e) {
             \Log::error('Chunked upload finalization failed', [
                 'upload_session_id' => $uploadSessionId,
-                'error' => $e->getMessage()
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
             ]);
 
-            return response()->json(['error' => 'Failed to finalize upload'], 500);
+            // Clean up cache on error
+            \Cache::forget("upload_session_{$uploadSessionId}");
+
+            return response()->json(['error' => 'Failed to finalize upload: ' . $e->getMessage()], 500);
         }
     }
 
@@ -527,7 +564,7 @@ class DocumentController extends Controller
             $request->validate([
                 'files.*' => ['required', 'file', 'max:10240', new ValidDocumentFile()],
                 'client_id' => 'required|exists:clients,id',
-                'document_type' => 'required|string|in:w2,1099,receipts,bank_statements,tax_returns,id_documents,bank_statement,receipt,invoice,contract,identification,other',
+                'document_type' => 'required|string',
                 'tax_year' => 'nullable|integer|min:2000|max:' . (date('Y') + 1),
                 'notes' => 'nullable|string|max:500'
             ]);

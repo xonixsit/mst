@@ -196,14 +196,12 @@ class ClientController extends Controller
             'client' => $clientArray,
             'visaStatusOptions' => VisaStatus::options(),
             'documentTypes' => [
-                'tax_return' => 'Tax Return',
-                'w2' => 'W-2 Form',
-                '1099' => '1099 Form',
-                'bank_statement' => 'Bank Statement',
-                'receipt' => 'Receipt',
-                'invoice' => 'Invoice',
-                'contract' => 'Contract',
-                'identification' => 'Identification',
+                'w2' => 'W-2 Forms',
+                '1099' => '1099 Forms',
+                'receipts' => 'Receipts',
+                'bank_statements' => 'Bank Statements',
+                'tax_returns' => 'Tax Returns',
+                'id_documents' => 'ID Documents',
                 'other' => 'Other'
             ],
             'taxYears' => range(date('Y'), date('Y') - 10)
