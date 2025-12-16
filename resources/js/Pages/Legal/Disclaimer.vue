@@ -1,120 +1,285 @@
 <template>
-  <div class="min-h-screen bg-gray-50 py-6">
-    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-4">
-      <div class="bg-white shadow rounded-lg p-8">
-        <div class="mb-8">
-          <h1 class="text-3xl font-bold text-gray-900 mb-4">Professional Disclaimer</h1>
-          <p class="text-gray-600">Important Information About Our Services</p>
+  <div class="bg-white">
+    <!-- Navigation -->
+    <PublicNavbar />
+
+    <!-- Spacer -->
+    <div class="h-16"></div>
+
+    <!-- Hero Section -->
+    <section class="py-20 px-4 sm:px-6 lg:px-8 bg-gradient-to-b from-blue-50 to-white">
+      <div class="max-w-4xl mx-auto">
+        <div class="text-center space-y-4">
+          <h1 class="text-5xl lg:text-6xl font-bold bg-gradient-to-r from-gray-900 via-blue-900 to-indigo-900 bg-clip-text text-transparent">
+            Disclaimer
+          </h1>
+          <p class="text-xl text-gray-600">
+            Important Legal Disclaimers and Limitations of Liability
+          </p>
+          <p class="text-sm text-gray-500">
+            Last Updated: December 2025
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Content Section -->
+    <section class="py-20 px-4 sm:px-6 lg:px-8 bg-white">
+      <div class="max-w-4xl mx-auto space-y-12">
+        <!-- Introduction -->
+        <div>
+          <h2 class="text-3xl font-bold text-gray-900 mb-4">Important Disclaimer</h2>
+          <div class="bg-red-50 border-l-4 border-red-500 p-6 mb-6">
+            <p class="text-red-800 font-semibold mb-2">Please Read Carefully</p>
+            <p class="text-red-700 text-sm">
+              This disclaimer contains important information about the limitations of MySuperTax services and the risks associated with using our platform. By accessing and using MySuperTax, you acknowledge that you have read, understood, and agree to be bound by all disclaimers and limitations contained herein.
+            </p>
+          </div>
         </div>
 
-        <div class="prose max-w-none">
-          <h2>Professional Services</h2>
-          <p>MySuperTax provides professional tax preparation and advisory services. We are licensed tax professionals committed to accuracy, compliance, and ethical practice. Our team maintains current certifications and continuing education requirements.</p>
-
-          <h2>No Guarantee of Results</h2>
-          <p>While we strive for accuracy and optimal tax outcomes, tax laws are complex and subject to interpretation. We cannot guarantee:</p>
-          <ul>
-            <li>Specific refund amounts or tax savings</li>
-            <li>Acceptance of all deductions or credits claimed</li>
-            <li>Immunity from IRS or state tax agency review</li>
-            <li>Particular outcomes in tax disputes or audits</li>
-            <li>Future tax law interpretations or changes</li>
+        <!-- 1. No Professional Advice -->
+        <div>
+          <h2 class="text-3xl font-bold text-gray-900 mb-4">1. No Professional Advice</h2>
+          <p class="text-gray-700 mb-4">
+            The information provided on MySuperTax is for informational purposes only and should not be construed as professional tax, legal, accounting, or financial advice. While our tax professionals strive to provide accurate information, tax laws are complex and subject to interpretation.
+          </p>
+          <p class="text-gray-700 mb-4">
+            You should not rely solely on information provided through MySuperTax for making tax decisions. We strongly recommend that you:
+          </p>
+          <ul class="list-disc list-inside text-gray-700 space-y-2 mb-4">
+            <li>Consult with a qualified tax professional before making significant tax decisions</li>
+            <li>Verify all information with official IRS publications and guidance</li>
+            <li>Seek legal counsel for matters requiring legal interpretation</li>
+            <li>Conduct independent research on complex tax situations</li>
           </ul>
+        </div>
 
-          <h2>Client Information Accuracy</h2>
-          <p>The accuracy of tax returns and advice depends on the completeness and accuracy of information provided by clients. Clients are responsible for:</p>
-          <ul>
-            <li>Providing all relevant tax documents and information</li>
-            <li>Disclosing all income sources and financial activities</li>
-            <li>Reviewing all tax documents before approval</li>
-            <li>Notifying us of any errors or omissions discovered</li>
-            <li>Maintaining supporting documentation for claimed items</li>
+        <!-- 2. Accuracy of Information -->
+        <div>
+          <h2 class="text-3xl font-bold text-gray-900 mb-4">2. Accuracy of Information</h2>
+          <p class="text-gray-700 mb-4">
+            While MySuperTax makes reasonable efforts to ensure the accuracy of information provided, we make no warranties regarding the accuracy, completeness, or timeliness of any information on our platform. Tax laws change frequently, and information may become outdated.
+          </p>
+          <p class="text-gray-700 mb-4">
+            MySuperTax is not responsible for:
+          </p>
+          <ul class="list-disc list-inside text-gray-700 space-y-2 mb-4">
+            <li>Errors or omissions in tax calculations or return preparation</li>
+            <li>Changes in tax law after services are rendered</li>
+            <li>Interpretations of tax law that differ from IRS guidance</li>
+            <li>Consequences of relying on outdated information</li>
+            <li>Third-party information or links provided on our platform</li>
           </ul>
+        </div>
 
-          <h2>Tax Law Complexity</h2>
-          <p>Tax laws are subject to frequent changes and varying interpretations. Our advice is based on:</p>
-          <ul>
-            <li>Current tax laws and regulations at the time of service</li>
-            <li>Professional interpretation of applicable provisions</li>
-            <li>Generally accepted tax practices and precedents</li>
-            <li>Information available at the time of preparation</li>
+        <!-- 3. No Guarantee of Tax Outcomes -->
+        <div>
+          <h2 class="text-3xl font-bold text-gray-900 mb-4">3. No Guarantee of Tax Outcomes</h2>
+          <p class="text-gray-700 mb-4">
+            MySuperTax does not guarantee any specific tax outcome, refund amount, or tax savings. Tax results depend on numerous factors including:
+          </p>
+          <ul class="list-disc list-inside text-gray-700 space-y-2 mb-4">
+            <li>Accuracy and completeness of information provided by the client</li>
+            <li>Applicable tax laws and regulations</li>
+            <li>IRS interpretation and enforcement of tax law</li>
+            <li>Individual circumstances and eligibility for deductions and credits</li>
+            <li>Changes in tax law or IRS guidance</li>
           </ul>
-
-          <h2>IRS and State Agency Actions</h2>
-          <p>Tax returns may be selected for review, audit, or examination by tax authorities. Such selections are typically random or based on specific criteria beyond our control. We provide representation services within our scope of practice.</p>
-
-          <h2>Professional Representation</h2>
-          <p>We provide representation services for IRS and state tax matters including:</p>
-          <ul>
-            <li>Correspondence and notice responses</li>
-            <li>Audit representation and support</li>
-            <li>Appeals and dispute resolution</li>
-            <li>Payment plan negotiations</li>
-            <li>Penalty abatement requests</li>
-          </ul>
-          <p>Additional fees may apply for complex representation cases or extended proceedings.</p>
-
-          <h2>Professional Standards and Ethics</h2>
-          <p>Our services are provided in accordance with:</p>
-          <ul>
-            <li>IRS Circular 230 regulations</li>
-            <li>Professional ethical standards</li>
-            <li>State licensing requirements</li>
-            <li>Continuing education mandates</li>
-            <li>Professional liability insurance coverage</li>
-          </ul>
-
-          <h2>Limitation of Scope</h2>
-          <p>Our services are limited to tax matters within our area of expertise. We do not provide:</p>
-          <ul>
-            <li>Legal advice outside of tax law</li>
-            <li>Investment or securities advice</li>
-            <li>Insurance or estate planning services</li>
-            <li>Accounting services beyond tax preparation</li>
-            <li>Business consulting outside tax implications</li>
-          </ul>
-
-          <h2>Technology and Security</h2>
-          <p>We use professional-grade tax software and security systems. However, no system is completely immune to technical issues or security breaches. We maintain appropriate insurance and security protocols but cannot guarantee absolute protection against all technological risks.</p>
-
-          <h2>Continuing Relationship</h2>
-          <p>Our professional relationship continues only for the specific services contracted. Ongoing tax advice or representation requires separate engagement. We recommend annual review of tax situations and strategies.</p>
-
-          <h2>Professional Liability</h2>
-          <p>We maintain professional liability insurance and adhere to industry standards. Our liability is limited to the scope of services provided and fees paid, except as required by law.</p>
-
-          <h2>Regulatory Compliance</h2>
-          <p>We are subject to various regulatory requirements including:</p>
-          <ul>
-            <li>IRS practitioner regulations</li>
-            <li>State licensing board oversight</li>
-            <li>Professional association standards</li>
-            <li>Continuing education requirements</li>
-            <li>Ethics and conduct rules</li>
-          </ul>
-
-          <h2>Questions and Concerns</h2>
-          <p>If you have questions about our services, professional standards, or this disclaimer, please contact us at:</p>
-          <p>
-            Professional Services: info@mysupertax.com<br>
-            Phone: (555) 123-4567<br>
-            Address: 123 Tax Street, Finance City, FC 12345
+          <p class="text-gray-700 mb-4">
+            The IRS may challenge any position taken on a tax return, and MySuperTax is not responsible for penalties, interest, or additional taxes resulting from IRS actions.
           </p>
         </div>
 
-        <div class="mt-8 pt-8 border-t border-gray-200">
-          <button 
-            @click="$router.back()" 
-            class="bg-indigo-600 text-white px-6 py-2 rounded-md hover:bg-indigo-700 transition-colors"
-          >
-            Back to Application
-          </button>
+        <!-- 4. Limitation of Liability -->
+        <div>
+          <h2 class="text-3xl font-bold text-gray-900 mb-4">4. Limitation of Liability</h2>
+          <p class="text-gray-700 mb-4">
+            To the maximum extent permitted by law, MySuperTax shall not be liable for any indirect, incidental, special, consequential, or punitive damages, including but not limited to:
+          </p>
+          <ul class="list-disc list-inside text-gray-700 space-y-2 mb-4">
+            <li>Lost profits or revenue</li>
+            <li>Lost data or business interruption</li>
+            <li>Tax penalties or interest</li>
+            <li>Emotional distress or reputational harm</li>
+            <li>Any other damages arising from use of our services</li>
+          </ul>
+          <p class="text-gray-700 mb-4">
+            Our total liability is limited to the fees paid for the specific service in question. Some jurisdictions do not allow limitation of liability, so this limitation may not apply to you.
+          </p>
+        </div>
+
+        <!-- 5. Client Responsibility -->
+        <div>
+          <h2 class="text-3xl font-bold text-gray-900 mb-4">5. Client Responsibility</h2>
+          <p class="text-gray-700 mb-4">
+            Clients are solely responsible for:
+          </p>
+          <ul class="list-disc list-inside text-gray-700 space-y-2 mb-4">
+            <li>Providing accurate and complete financial information</li>
+            <li>Disclosing all income sources and deductible expenses</li>
+            <li>Maintaining organized records and documentation</li>
+            <li>Reviewing tax returns before filing</li>
+            <li>Notifying MySuperTax of any errors or omissions</li>
+            <li>Complying with all applicable tax laws</li>
+            <li>Responding to IRS inquiries or audit notices</li>
+          </ul>
+          <p class="text-gray-700 mb-4">
+            MySuperTax is not responsible for consequences resulting from incomplete or inaccurate information provided by the client.
+          </p>
+        </div>
+
+        <!-- 6. No Audit Representation -->
+        <div>
+          <h2 class="text-3xl font-bold text-gray-900 mb-4">6. No Audit Representation</h2>
+          <p class="text-gray-700 mb-4">
+            Unless explicitly agreed upon in writing, MySuperTax does not represent clients before the IRS in audit proceedings. Clients are responsible for:
+          </p>
+          <ul class="list-disc list-inside text-gray-700 space-y-2 mb-4">
+            <li>Responding to IRS notices and requests</li>
+            <li>Providing documentation to support tax positions</li>
+            <li>Engaging representation if needed for audit defense</li>
+            <li>Paying any resulting taxes, penalties, or interest</li>
+          </ul>
+          <p class="text-gray-700 mb-4">
+            MySuperTax may provide consultation regarding audit responses, but this does not constitute representation before the IRS.
+          </p>
+        </div>
+
+        <!-- 7. Platform Availability -->
+        <div>
+          <h2 class="text-3xl font-bold text-gray-900 mb-4">7. Platform Availability</h2>
+          <p class="text-gray-700 mb-4">
+            MySuperTax makes no warranty that our platform will be uninterrupted, error-free, or secure. We are not responsible for:
+          </p>
+          <ul class="list-disc list-inside text-gray-700 space-y-2 mb-4">
+            <li>Service interruptions or downtime</li>
+            <li>Data loss or corruption</li>
+            <li>Unauthorized access to your information</li>
+            <li>Viruses or malware</li>
+            <li>Third-party interference with services</li>
+          </ul>
+          <p class="text-gray-700 mb-4">
+            While we implement security measures, no system is completely secure. You use our platform at your own risk.
+          </p>
+        </div>
+
+        <!-- 8. Third-Party Content and Links -->
+        <div>
+          <h2 class="text-3xl font-bold text-gray-900 mb-4">8. Third-Party Content and Links</h2>
+          <p class="text-gray-700 mb-4">
+            MySuperTax may contain links to third-party websites and services. We are not responsible for:
+          </p>
+          <ul class="list-disc list-inside text-gray-700 space-y-2 mb-4">
+            <li>Content on third-party websites</li>
+            <li>Accuracy or reliability of third-party information</li>
+            <li>Privacy practices of third parties</li>
+            <li>Transactions with third parties</li>
+            <li>Viruses or malware on third-party sites</li>
+          </ul>
+          <p class="text-gray-700 mb-4">
+            Your use of third-party websites is at your own risk and subject to their terms and conditions.
+          </p>
+        </div>
+
+        <!-- 9. Tax Law Changes -->
+        <div>
+          <h2 class="text-3xl font-bold text-gray-900 mb-4">9. Tax Law Changes</h2>
+          <p class="text-gray-700 mb-4">
+            Tax laws change frequently. MySuperTax is not responsible for:
+          </p>
+          <ul class="list-disc list-inside text-gray-700 space-y-2 mb-4">
+            <li>Changes in tax law after services are rendered</li>
+            <li>New IRS guidance or regulations</li>
+            <li>Court decisions affecting tax law</li>
+            <li>State or local tax law changes</li>
+            <li>Retroactive application of new tax rules</li>
+          </ul>
+          <p class="text-gray-700 mb-4">
+            Clients should monitor tax law changes and consult with a tax professional regarding potential impacts on their tax situation.
+          </p>
+        </div>
+
+        <!-- 10. No Legal Advice -->
+        <div>
+          <h2 class="text-3xl font-bold text-gray-900 mb-4">10. No Legal Advice</h2>
+          <p class="text-gray-700 mb-4">
+            MySuperTax provides tax services only. We do not provide legal advice. For legal matters, you should consult with a qualified attorney. Tax issues often have legal implications, and you may need legal counsel in addition to tax advice.
+          </p>
+        </div>
+
+        <!-- 11. No Investment Advice -->
+        <div>
+          <h2 class="text-3xl font-bold text-gray-900 mb-4">11. No Investment Advice</h2>
+          <p class="text-gray-700 mb-4">
+            MySuperTax does not provide investment advice or financial planning services. Any discussion of investments is for informational purposes only and should not be construed as a recommendation to buy or sell any security. Consult with a qualified financial advisor regarding investment decisions.
+          </p>
+        </div>
+
+        <!-- 12. Compliance with Laws -->
+        <div>
+          <h2 class="text-3xl font-bold text-gray-900 mb-4">12. Compliance with Laws</h2>
+          <p class="text-gray-700 mb-4">
+            Clients are solely responsible for complying with all applicable federal, state, and local tax laws. MySuperTax will not assist with illegal activities, tax evasion, or fraudulent reporting. Clients who engage in such activities do so at their own risk and may face criminal penalties.
+          </p>
+        </div>
+
+        <!-- 13. Statute of Limitations -->
+        <div>
+          <h2 class="text-3xl font-bold text-gray-900 mb-4">13. Statute of Limitations</h2>
+          <p class="text-gray-700 mb-4">
+            The IRS generally has three years to assess additional taxes (six years if income is underreported by 25% or more, and unlimited time for fraud). MySuperTax is not responsible for:
+          </p>
+          <ul class="list-disc list-inside text-gray-700 space-y-2 mb-4">
+            <li>IRS assessments made within the statute of limitations</li>
+            <li>Penalties or interest assessed by the IRS</li>
+            <li>Consequences of amended returns or IRS adjustments</li>
+          </ul>
+        </div>
+
+        <!-- 14. Severability -->
+        <div>
+          <h2 class="text-3xl font-bold text-gray-900 mb-4">14. Severability</h2>
+          <p class="text-gray-700 mb-4">
+            If any provision of this disclaimer is found to be unenforceable, the remaining provisions shall remain in full force and effect. The unenforceability of any provision does not affect the validity of other provisions.
+          </p>
+        </div>
+
+        <!-- 15. Contact for Questions -->
+        <div>
+          <h2 class="text-3xl font-bold text-gray-900 mb-4">15. Contact for Questions</h2>
+          <p class="text-gray-700 mb-4">
+            If you have questions about this disclaimer or our services, please contact us:
+          </p>
+          <div class="bg-blue-50 border border-blue-200 rounded-lg p-6 text-gray-700 space-y-2">
+            <p class="font-semibold">MySuperTax</p>
+            <p>Phone: +1 315-307-2751</p>
+            <p>Email: support@mysupertax.com</p>
+            <p>Address: Moline, IL 61265, USA</p>
+          </div>
+        </div>
+
+        <!-- Acknowledgment -->
+        <div class="bg-gradient-to-r from-red-50 to-orange-50 border border-red-200 rounded-lg p-8 mt-12">
+          <p class="text-gray-700 text-center font-semibold mb-4">
+            Acknowledgment of Disclaimer
+          </p>
+          <p class="text-gray-700 text-center text-sm">
+            By using MySuperTax services, you acknowledge that you have read and understood this disclaimer and agree to be bound by all limitations and disclaimers contained herein. You further acknowledge that you understand the limitations of our services and assume all risks associated with using our platform.
+          </p>
         </div>
       </div>
-    </div>
+    </section>
+
+    <!-- Footer -->
+    <PublicFooter />
   </div>
+  
+  <!-- Consent Banner -->
+  <ConsentBanner />
 </template>
 
 <script setup>
-// This is a standalone legal page
+import PublicNavbar from '@/Components/PublicNavbar.vue'
+import PublicFooter from '@/Components/PublicFooter.vue'
+import ConsentBanner from '@/Components/ConsentBanner.vue'
 </script>

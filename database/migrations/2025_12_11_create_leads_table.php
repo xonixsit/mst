@@ -12,9 +12,11 @@ return new class extends Migration
             $table->id();
             $table->string('name');
             $table->string('email');
-            $table->string('phone');
-            $table->string('state');
-            $table->string('city');
+            $table->string('phone')->nullable();
+            $table->enum('status', ['new', 'contacted', 'converted', 'rejected'])->default('new');
+            $table->string('source')->nullable();
+            $table->text('notes')->nullable();
+            $table->foreignId('assigned_to')->nullable()->constrained('users')->onDelete('set null');
             $table->timestamps();
         });
     }

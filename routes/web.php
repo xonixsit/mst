@@ -15,6 +15,17 @@ Route::get('/test', function () {
     return 'Test route works!';
 });
 
+// Consent management routes (public)
+Route::post('/api/consent', [App\Http\Controllers\ConsentController::class, 'store'])->name('consent.store');
+Route::get('/api/consent', [App\Http\Controllers\ConsentController::class, 'getConsents'])->name('consent.get');
+
+// Authenticated consent routes
+Route::middleware(['auth', 'auth.session'])->group(function () {
+    Route::post('/api/consent/withdraw', [App\Http\Controllers\ConsentController::class, 'withdraw'])->name('consent.withdraw');
+    Route::post('/api/consent/update', [App\Http\Controllers\ConsentController::class, 'updatePreferences'])->name('consent.update');
+    Route::get('/api/consent/history', [App\Http\Controllers\ConsentController::class, 'getConsentHistory'])->name('consent.history');
+});
+
 // Legal pages (accessible to everyone)
 Route::get('/legal/terms', function () {
     return inertia('Legal/Terms');
@@ -41,6 +52,10 @@ Route::get('/services', function () {
 Route::get('/about', function () {
     return inertia('About');
 })->name('about');
+
+Route::get('/faq', function () {
+    return inertia('FAQ');
+})->name('faq');
 
 Route::get('/contact', function () {
     return inertia('Contact');
@@ -356,6 +371,24 @@ Route::middleware(['auth', 'auth.session', 'session.timeout', 'admin'])->prefix(
     Route::patch('support-tickets/{supportTicket}/priority', [App\Http\Controllers\Admin\SupportTicketController::class, 'updatePriority'])->name('support-tickets.update-priority');
     Route::patch('support-tickets/{supportTicket}/assign', [App\Http\Controllers\Admin\SupportTicketController::class, 'assign'])->name('support-tickets.assign');
     Route::post('support-tickets/{supportTicket}/reply', [App\Http\Controllers\Admin\SupportTicketController::class, 'reply'])->name('support-tickets.reply');
+    
+    // Admin consent management routes
+    Route::get('consent-management', function () {
+        return inertia('Admin/ConsentManagement');
+    })->name('consent-management');
+    
+    // Admin leads management routes
+    Route::get('leads', [App\Http\Controllers\Admin\LeadController::class, 'index'])->name('leads');
+    Route::post('leads', [App\Http\Controllers\Admin\LeadController::class, 'store'])->name('leads.store');
+    Route::patch('leads/{lead}/status', [App\Http\Controllers\Admin\LeadController::class, 'updateStatus'])->whereNumber('lead')->name('leads.update-status');
+    Route::patch('leads/{lead}/assign', [App\Http\Controllers\Admin\LeadController::class, 'assignLead'])->whereNumber('lead')->name('leads.assign');
+    Route::delete('leads/{lead}', [App\Http\Controllers\Admin\LeadController::class, 'destroy'])->whereNumber('lead')->name('leads.destroy');
+    
+    // Admin contact queries routes
+    Route::get('contact-queries', [App\Http\Controllers\Admin\ContactQueryController::class, 'index'])->name('contact-queries');
+    Route::patch('contact-queries/{query}/read', [App\Http\Controllers\Admin\ContactQueryController::class, 'markAsRead'])->name('contact-queries.mark-read');
+    Route::patch('contact-queries/{query}/replied', [App\Http\Controllers\Admin\ContactQueryController::class, 'markAsReplied'])->name('contact-queries.mark-replied');
+    Route::delete('contact-queries/{query}', [App\Http\Controllers\Admin\ContactQueryController::class, 'destroy'])->name('contact-queries.destroy');
     
     // Admin audit management routes
     Route::get('audit', [App\Http\Controllers\Admin\AuditController::class, 'index'])->name('audit.index');

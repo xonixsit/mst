@@ -17,10 +17,8 @@
         <div :class="[
           'flex flex-col flex-grow relative pt-6 pb-4 overflow-y-auto overflow-x-hidden shadow-xl backdrop-blur-sm transition-all duration-300',
           sidebarCollapsed ? 'scrollbar-none' : 'scrollbar-thin scrollbar-thumb-gray-600 scrollbar-track-transparent'
-        ]">
-          <!-- Cohesive Theme Background -->
-          <div class="absolute inset-0 bg-gradient-to-br from-slate-800 via-slate-900 to-gray-900"></div>
-
+        ]"
+        style="background: linear-gradient(to bottom right, rgb(30, 41, 59), rgb(15, 23, 42), rgb(17, 24, 39));">
           <!-- Subtle Pattern for Texture -->
           <div class="absolute inset-0 opacity-5"
             style="background-image: radial-gradient(circle at 1px 1px, rgba(255, 255, 255, 0.4) 1px, transparent 0); background-size: 24px 24px;">
@@ -28,15 +26,15 @@
 
           <!-- Theme Accent Overlays -->
           <div
-            class="absolute top-0 right-0 w-48 h-48 bg-gradient-to-bl from-primary-600/20 to-transparent rounded-bl-full">
+            class="absolute top-0 right-0 w-48 h-48 bg-gradient-to-bl from-primary-600/20 to-transparent rounded-bl-full pointer-events-none">
           </div>
           <div
-            class="absolute bottom-0 left-0 w-40 h-40 bg-gradient-to-tr from-secondary-600/15 to-transparent rounded-tr-full">
+            class="absolute bottom-0 left-0 w-40 h-40 bg-gradient-to-tr from-secondary-600/15 to-transparent rounded-tr-full pointer-events-none">
           </div>
 
           <!-- Border and Shadow -->
           <div
-            class="absolute inset-y-0 right-0 w-px bg-gradient-to-b from-transparent via-neutral-200/60 to-transparent">
+            class="absolute inset-y-0 right-0 w-px bg-gradient-to-b from-transparent via-neutral-200/60 to-transparent pointer-events-none">
           </div>
 
           <!-- Content Container -->
@@ -95,7 +93,7 @@
             </nav>
             
             <!-- Toggle Button -->
-            <div class="px-3 pb-4">
+            <!-- <div class="px-3 pb-4">
               <button
                 @click="sidebarCollapsed = true; sidebarHovered = false"
                 :class="[
@@ -114,7 +112,7 @@
                 </div>
                 <span v-if="!sidebarCollapsed" class="ml-3">Collapse</span>
               </button>
-            </div>
+            </div> -->
           </div>
         </div>
       </div>
@@ -278,11 +276,15 @@
         @click="showUserMenu = false; showMobileMenu = false"></div>
     </div>
   </div>
+  
+  <!-- Consent Banner -->
+  <ConsentBanner />
 </template>
 
 <script setup>
   import { ref, computed, onMounted } from 'vue'
   import { Head } from '@inertiajs/vue3'
+  import ConsentBanner from '@/Components/ConsentBanner.vue'
   
   // Sidebar toggle state - collapsed by default
   const sidebarCollapsed = ref(true)
@@ -387,6 +389,18 @@
           href: '/admin/support-tickets',
           icon: ChatBubbleLeftRightIcon,
           current: currentPath.startsWith('/admin/support-tickets')
+        },
+        {
+          name: 'Contact Queries',
+          href: '/admin/contact-queries',
+          icon: InboxIcon,
+          current: currentPath.startsWith('/admin/contact-queries')
+        },
+        {
+          name: 'Leads',
+          href: '/admin/leads',
+          icon: UsersIcon,
+          current: currentPath.startsWith('/admin/leads')
         },
         ...(user?.role === 'admin' ? [{
           name: 'Tax Professionals',

@@ -23,8 +23,8 @@
             </p>
             <!-- IRS Badge -->
             <div class="flex items-center gap-2 px-4 py-3 bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200 rounded-lg w-fit animate-glow-pulse">
-              <svg class="w-5 h-5 text-blue-600" fill="currentColor" viewBox="0 0 20 20">
-                <path fill-rule="evenodd" d="M6.267 3.455a3.066 3.066 0 001.745-.723 3.066 3.066 0 013.976 0 3.066 3.066 0 001.745.723 3.066 3.066 0 012.812 3.062v6.218c0 1.264-.534 2.472-1.469 3.304a3.065 3.065 0 01-2.433 1.068c-.566 0-1.108-.116-1.605-.341a4.5 4.5 0 00-3.422 0 3.066 3.066 0 01-2.433-1.068C2.884 15.545 2.35 14.337 2.35 13.073V6.517a3.066 3.066 0 012.917-3.062zM9 12a1 1 0 100-2 1 1 0 000 2z" clip-rule="evenodd"></path>
+              <svg class="w-5 h-5 text-green-600" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
               </svg>
               <span class="text-sm font-semibold text-blue-700">Authorized IRS E-File Provider</span>
             </div>
@@ -293,9 +293,13 @@
     <!-- Footer -->
     <PublicFooter />
   </div>
+  
+  <!-- Consent Banner -->
+  <ConsentBanner />
 </template>
 
 <script setup>
 import PublicNavbar from '@/Components/PublicNavbar.vue'
 import PublicFooter from '@/Components/PublicFooter.vue'
+import ConsentBanner from '@/Components/ConsentBanner.vue'
 </script>

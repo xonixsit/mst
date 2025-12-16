@@ -203,6 +203,9 @@
       <!-- Communication Preferences -->
       <CommunicationPreferences :client="communicationPreferences" />
 
+      <!-- Privacy & Consent Preferences -->
+      <ConsentPreferences />
+
       <!-- Account Information -->
       <div class="bg-white shadow rounded-lg">
         <div class="px-6 py-4 border-b border-gray-200">
@@ -240,6 +243,7 @@ import { ref } from 'vue'
 import { useForm, usePage, Link } from '@inertiajs/vue3'
 import AppLayout from '@/Layouts/AppLayout.vue'
 import CommunicationPreferences from '@/Components/CommunicationPreferences.vue'
+import ConsentPreferences from '@/Components/ConsentPreferences.vue'
 
 const props = defineProps({
   clientData: {

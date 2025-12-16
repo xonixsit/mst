@@ -36,6 +36,10 @@
             Contact
             <span class="absolute bottom-0 left-0 w-0 h-0.5 bg-gradient-to-r from-blue-400 to-indigo-400 group-hover:w-full transition-all duration-300"></span>
           </Link>
+          <Link href="/faq" class="px-4 py-2 text-blue-100 hover:text-white font-medium transition-all duration-300 relative group">
+            FAQ
+            <span class="absolute bottom-0 left-0 w-0 h-0.5 bg-gradient-to-r from-blue-400 to-indigo-400 group-hover:w-full transition-all duration-300"></span>
+          </Link>
         </div>
 
         <!-- CTA Buttons -->

@@ -281,6 +281,9 @@
     <!-- Footer -->
     <PublicFooter />
   </div>
+  
+  <!-- Consent Banner -->
+  <ConsentBanner />
 </template>
 
 <script setup>
@@ -288,6 +291,7 @@ import { ref } from 'vue'
 import { Link } from '@inertiajs/vue3'
 import PublicNavbar from '@/Components/PublicNavbar.vue'
 import PublicFooter from '@/Components/PublicFooter.vue'
+import ConsentBanner from '@/Components/ConsentBanner.vue'
 
 const contactForm = ref({
   name: '',

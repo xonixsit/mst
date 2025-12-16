@@ -50,7 +50,7 @@
         <!-- Resources -->
         <div>
           <h3 class="text-white font-bold text-lg mb-6 flex items-center gap-2">
-            <span class="text-blue-400">R</span>ESOURCE
+            <span class="text-blue-400">RESOURCE</span>
           </h3>
           <ul class="space-y-3">
             <li>
@@ -64,9 +64,9 @@
               </Link>
             </li>
             <li>
-              <a href="#" class="text-gray-400 hover:text-blue-400 transition-colors flex items-center gap-2">
+              <Link href="/client/login" class="text-gray-400 hover:text-blue-400 transition-colors flex items-center gap-2">
                 <span class="text-blue-400">–</span> Make Payment
-              </a>
+              </Link>
             </li>
             <li>
               <Link href="/services" class="text-gray-400 hover:text-blue-400 transition-colors flex items-center gap-2">
@@ -74,8 +74,11 @@
               </Link>
             </li>
             <li>
-              <a href="#" class="text-gray-400 hover:text-blue-400 transition-colors flex items-center gap-2">
+              <a href="https://sa.www4.irs.gov/wmr/" target="_blank" rel="noopener noreferrer" class="text-gray-400 hover:text-blue-400 transition-colors flex items-center gap-2">
                 <span class="text-blue-400">–</span> Check Refund
+                <svg class="w-4 h-4 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path>
+                </svg>
               </a>
             </li>
           </ul>
@@ -84,7 +87,7 @@
         <!-- Useful Links -->
         <div>
           <h3 class="text-white font-bold text-lg mb-6 flex items-center gap-2">
-            <span class="text-blue-400">U</span>SEFUL LINKS
+            <span class="text-blue-400">USEFUL LINKS</span>
           </h3>
           <ul class="space-y-3">
             <li>
@@ -103,7 +106,7 @@
               </Link>
             </li>
             <li>
-              <a href="#" class="text-gray-400 hover:text-blue-400 transition-colors flex items-center gap-2">
+              <a href="/faq" class="text-gray-400 hover:text-blue-400 transition-colors flex items-center gap-2">
                 <span class="text-blue-400">–</span> FAQ
               </a>
             </li>
@@ -113,7 +116,7 @@
         <!-- Contacts -->
         <div>
           <h3 class="text-white font-bold text-lg mb-6 flex items-center gap-2">
-            <span class="text-blue-400">C</span>ONTACTS
+            <span class="text-blue-400">CONTACTS</span>
           </h3>
           <ul class="space-y-4">
             <li class="flex items-start gap-3">
@@ -147,12 +150,12 @@
         <p class="text-gray-500 text-sm">
           Copyright © 2025. All rights reserved to <span class="text-blue-400 font-semibold">MySuperTax</span>
         </p>
-        <div class="flex items-center gap-6 text-sm">
-          <a href="#" class="text-gray-400 hover:text-blue-400 transition-colors">Terms & Condition</a>
+        <div class="flex items-center gap-6 text-sm flex-wrap justify-center">
+          <Link href="/legal/terms" class="text-gray-400 hover:text-blue-400 transition-colors">Terms & Condition</Link>
           <span class="text-gray-700">.</span>
-          <a href="#" class="text-gray-400 hover:text-blue-400 transition-colors">Services</a>
+          <Link href="/legal/privacy" class="text-gray-400 hover:text-blue-400 transition-colors">Privacy Policy</Link>
           <span class="text-gray-700">.</span>
-          <a href="#" class="text-gray-400 hover:text-blue-400 transition-colors">Careers</a>
+          <Link href="/legal/disclaimer" class="text-gray-400 hover:text-blue-400 transition-colors">Disclaimer</Link>
         </div>
       </div>
 
