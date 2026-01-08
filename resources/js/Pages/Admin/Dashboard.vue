@@ -231,155 +231,78 @@
         </div>
       </div>
 
-      <!-- Operational Insights -->
+      <!-- Leads & Contact Summary -->
       <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
-        <!-- Recent Activity Timeline -->
+        <!-- Recent Leads -->
         <div class="bg-white shadow-xl rounded-2xl border border-gray-100 overflow-hidden">
           <div class="bg-gradient-to-r from-slate-50 to-gray-50 px-6 py-5 border-b border-gray-200">
             <div class="flex items-center justify-between">
               <div>
-                <h3 class="text-xl font-bold text-gray-900">Live Activity Feed</h3>
-                <p class="text-sm text-gray-600 mt-1">Real-time system updates</p>
+                <h3 class="text-xl font-bold text-gray-900">Recent Leads</h3>
+                <p class="text-sm text-gray-600 mt-1">Latest prospective clients</p>
               </div>
-              <span class="inline-flex items-center px-3 py-1.5 rounded-full text-xs font-semibold bg-gradient-to-r from-emerald-100 to-green-100 text-emerald-800 shadow-sm">
-                <span class="w-2 h-2 bg-emerald-400 rounded-full mr-2 animate-pulse"></span>
-                Live
-              </span>
+              <a href="/admin/leads" class="text-blue-600 hover:text-blue-800 text-sm font-semibold">View All →</a>
             </div>
-          </div>
-          <div class="p-6 max-h-96 overflow-y-auto">
-            <div v-if="recentActivities.length === 0" class="text-center py-6">
-              <div class="w-14 h-14 bg-gradient-to-br from-gray-100 to-gray-200 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-inner">
-                <ClockIcon class="h-8 w-8 text-gray-400" />
-              </div>
-              <p class="text-gray-500 font-medium">No recent activity</p>
-              <p class="text-gray-400 text-sm mt-1">Activity will appear here as it happens</p>
-            </div>
-            <div v-else class="flow-root">
-              <ul class="-mb-8">
-                <li v-for="(activity, index) in recentActivities" :key="index">
-                  <div class="relative pb-8" :class="{ 'pb-0': index === recentActivities.length - 1 }">
-                    <span v-if="index !== recentActivities.length - 1" class="absolute top-4 left-4 -ml-px h-full w-0.5 bg-gradient-to-b from-gray-200 to-gray-100"></span>
-                    <div class="relative flex space-x-4">
-                      <div>
-                        <span class="h-10 w-10 rounded-xl flex items-center justify-center ring-4 ring-white shadow-lg" :class="activity.iconBg">
-                          <component :is="activity.icon" class="h-5 w-5 text-white" />
-                        </span>
-                      </div>
-                      <div class="min-w-0 flex-1 pt-1.5 flex justify-between space-x-4">
-                        <div>
-                          <p class="text-sm text-gray-600 font-medium" v-html="activity.description"></p>
-                          <p v-if="activity.details" class="text-xs text-gray-400 mt-1">{{ activity.details }}</p>
-                        </div>
-                        <div class="text-right text-xs whitespace-nowrap text-gray-500 font-medium">
-                          {{ activity.time }}
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </li>
-              </ul>
-            </div>
-          </div>
-        </div>
-
-        <!-- Key Performance Indicators -->
-        <div class="bg-white shadow-xl rounded-2xl border border-gray-100 overflow-hidden">
-          <div class="bg-gradient-to-r from-slate-50 to-gray-50 px-6 py-5 border-b border-gray-200">
-            <h3 class="text-xl font-bold text-gray-900">Performance Metrics</h3>
-            <p class="text-sm text-gray-600 mt-1">Key business indicators</p>
           </div>
           <div class="p-6">
-            <div v-if="kpiData.length === 0" class="text-center py-6">
+            <div v-if="recentLeads.length === 0" class="text-center py-6">
               <div class="w-14 h-14 bg-gradient-to-br from-gray-100 to-gray-200 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-inner">
-                <ChartBarIcon class="h-8 w-8 text-gray-400" />
+                <UsersIcon class="h-8 w-8 text-gray-400" />
               </div>
-              <p class="text-gray-500 font-medium">No performance data available</p>
-              <p class="text-gray-400 text-sm mt-1">Metrics will appear as data is collected</p>
+              <p class="text-gray-500 font-medium">No recent leads</p>
+              <p class="text-gray-400 text-sm mt-1">New leads will appear here</p>
             </div>
-            <div v-else class="space-y-6">
-              <div v-for="kpi in kpiData" :key="kpi.label" class="p-4 rounded-xl bg-gradient-to-r from-gray-50 to-slate-50 border border-gray-100">
-                <div class="flex items-center justify-between mb-3">
-                  <span class="text-sm font-semibold text-gray-700">{{ kpi.label }}</span>
-                  <div class="flex items-center">
-                    <span class="text-lg font-bold text-gray-900 mr-3">{{ kpi.value }}</span>
-                    <span class="text-xs px-3 py-1 rounded-full font-semibold shadow-sm" :class="kpi.trend === 'up' ? 'bg-emerald-100 text-emerald-800' : kpi.trend === 'down' ? 'bg-red-100 text-red-800' : 'bg-gray-100 text-gray-800'">
-                      {{ kpi.change }}
+            <div v-else class="space-y-4">
+              <div v-for="lead in recentLeads" :key="lead.id" class="flex items-start space-x-4 p-4 rounded-xl border border-gray-200 hover:border-blue-300 hover:bg-blue-50 transition-all duration-200">
+                <div class="flex-shrink-0">
+                  <div class="w-10 h-10 rounded-xl flex items-center justify-center shadow-sm" :class="lead.status === 'new' ? 'bg-blue-100' : lead.status === 'contacted' ? 'bg-indigo-100' : 'bg-green-100'">
+                    <UsersIcon :class="lead.status === 'new' ? 'text-blue-600' : lead.status === 'contacted' ? 'text-indigo-600' : 'text-green-600'" class="h-5 w-5" />
+                  </div>
+                </div>
+                <div class="flex-1 min-w-0">
+                  <p class="text-sm font-semibold text-gray-900">{{ lead.name }}</p>
+                  <p class="text-xs text-gray-600 mt-0.5">{{ lead.email }}</p>
+                  <div class="flex items-center mt-2">
+                    <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-semibold" :class="lead.status === 'new' ? 'bg-blue-100 text-blue-800' : lead.status === 'contacted' ? 'bg-indigo-100 text-indigo-800' : 'bg-green-100 text-green-800'">
+                      {{ lead.status.charAt(0).toUpperCase() + lead.status.slice(1) }}
                     </span>
                   </div>
                 </div>
-                <div class="w-full bg-gray-200 rounded-full h-3 shadow-inner">
-                  <div class="h-3 rounded-full transition-all duration-1000 ease-out shadow-sm" :class="kpi.barColor" :style="{ width: `${kpi.percentage}%` }"></div>
-                </div>
               </div>
             </div>
           </div>
         </div>
-      </div>
 
-      <!-- Action Items & Alerts -->
-      <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        <!-- Priority Tasks -->
+        <!-- Contact Summary -->
         <div class="bg-white shadow-xl rounded-2xl border border-gray-100 overflow-hidden">
           <div class="bg-gradient-to-r from-slate-50 to-gray-50 px-6 py-5 border-b border-gray-200">
             <div class="flex items-center justify-between">
               <div>
-                <h3 class="text-xl font-bold text-gray-900">Priority Tasks</h3>
-                <p class="text-sm text-gray-600 mt-1">Important items requiring attention</p>
+                <h3 class="text-xl font-bold text-gray-900">Contact Summary</h3>
+                <p class="text-sm text-gray-600 mt-1">Incoming contact inquiries</p>
               </div>
-              <span class="inline-flex items-center px-3 py-1.5 rounded-full text-xs font-semibold bg-gradient-to-r from-red-100 to-pink-100 text-red-800 shadow-sm">
-                {{ priorityTasks.filter(t => t.priority === 'high').length }} High Priority
-              </span>
+              <a href="/admin/contact-queries" class="text-blue-600 hover:text-blue-800 text-sm font-semibold">View All →</a>
             </div>
           </div>
           <div class="p-6">
-            <div v-if="priorityTasks.length === 0" class="text-center py-6">
-              <div class="w-14 h-14 bg-gradient-to-br from-emerald-100 to-green-200 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-inner">
-                <CheckIcon class="h-8 w-8 text-emerald-600" />
+            <div v-if="contactSummary.length === 0" class="text-center py-6">
+              <div class="w-14 h-14 bg-gradient-to-br from-gray-100 to-gray-200 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-inner">
+                <EnvelopeIcon class="h-8 w-8 text-gray-400" />
               </div>
-              <p class="text-gray-500 font-medium">No priority tasks</p>
-              <p class="text-gray-400 text-sm mt-1">All caught up! Great work.</p>
+              <p class="text-gray-500 font-medium">No contact inquiries</p>
+              <p class="text-gray-400 text-sm mt-1">Contact submissions will appear here</p>
             </div>
             <div v-else class="space-y-4">
-              <div v-for="task in priorityTasks" :key="task.id" class="flex items-start space-x-4 p-4 rounded-xl border-2 transition-all duration-200 hover:shadow-md" :class="task.priority === 'high' ? 'border-red-200 bg-gradient-to-r from-red-50 to-pink-50 hover:border-red-300' : task.priority === 'medium' ? 'border-amber-200 bg-gradient-to-r from-amber-50 to-yellow-50 hover:border-amber-300' : 'border-gray-200 bg-gradient-to-r from-gray-50 to-slate-50 hover:border-gray-300'">
-                <div class="flex-shrink-0 mt-1">
-                  <div class="w-3 h-3 rounded-full shadow-sm" :class="task.priority === 'high' ? 'bg-red-500' : task.priority === 'medium' ? 'bg-amber-500' : 'bg-gray-500'"></div>
-                </div>
-                <div class="flex-1 min-w-0">
-                  <p class="text-sm font-semibold text-gray-900">{{ task.title }}</p>
-                  <p class="text-xs text-gray-600 mt-1 font-medium">{{ task.client }} • Due {{ task.dueDate }}</p>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- System Alerts -->
-        <div class="bg-white shadow-xl rounded-2xl border border-gray-100 overflow-hidden">
-          <div class="bg-gradient-to-r from-slate-50 to-gray-50 px-6 py-5 border-b border-gray-200">
-            <h3 class="text-xl font-bold text-gray-900">System Alerts</h3>
-            <p class="text-sm text-gray-600 mt-1">System status and notifications</p>
-          </div>
-          <div class="p-6">
-            <div v-if="systemAlerts.length === 0" class="text-center py-6">
-              <div class="w-14 h-14 bg-gradient-to-br from-emerald-100 to-green-200 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-inner">
-                <CheckCircleIcon class="h-8 w-8 text-emerald-600" />
-              </div>
-              <p class="text-gray-500 font-medium">No system alerts</p>
-              <p class="text-gray-400 text-sm mt-1">All systems running smoothly</p>
-            </div>
-            <div v-else class="space-y-4">
-              <div v-for="alert in systemAlerts" :key="alert.id" class="flex items-start space-x-4 p-4 rounded-xl border-2 transition-all duration-200 hover:shadow-md" :class="alert.type === 'warning' ? 'border-amber-200 bg-gradient-to-r from-amber-50 to-yellow-50 hover:border-amber-300' : alert.type === 'info' ? 'border-blue-200 bg-gradient-to-r from-blue-50 to-indigo-50 hover:border-blue-300' : 'border-emerald-200 bg-gradient-to-r from-emerald-50 to-green-50 hover:border-emerald-300'">
+              <div v-for="contact in contactSummary" :key="contact.id" class="flex items-start space-x-4 p-4 rounded-xl border border-gray-200 hover:border-amber-300 hover:bg-amber-50 transition-all duration-200">
                 <div class="flex-shrink-0">
-                  <div class="w-10 h-10 rounded-xl flex items-center justify-center shadow-sm" :class="alert.type === 'warning' ? 'bg-amber-100' : alert.type === 'info' ? 'bg-blue-100' : 'bg-emerald-100'">
-                    <ExclamationTriangleIcon v-if="alert.type === 'warning'" class="h-5 w-5 text-amber-600" />
-                    <InformationCircleIcon v-else-if="alert.type === 'info'" class="h-5 w-5 text-blue-600" />
-                    <CheckCircleIcon v-else class="h-5 w-5 text-emerald-600" />
+                  <div class="w-10 h-10 rounded-xl flex items-center justify-center shadow-sm bg-amber-100">
+                    <EnvelopeIcon class="h-5 w-5 text-amber-600" />
                   </div>
                 </div>
                 <div class="flex-1 min-w-0">
-                  <p class="text-sm font-semibold text-gray-900">{{ alert.title }}</p>
-                  <p class="text-xs text-gray-600 mt-1">{{ alert.message }}</p>
+                  <p class="text-sm font-semibold text-gray-900">{{ contact.name }}</p>
+                  <p class="text-xs text-gray-600 mt-0.5 truncate">{{ contact.subject }}</p>
+                  <p class="text-xs text-gray-500 mt-1">{{ contact.email }}</p>
                 </div>
               </div>
             </div>
@@ -486,6 +409,14 @@ const props = defineProps({
         newClients: 0
       }
     })
+  },
+  recentLeads: {
+    type: Array,
+    default: () => []
+  },
+  recentContacts: {
+    type: Array,
+    default: () => []
   }
 })
 
@@ -543,17 +474,11 @@ const clientStatusData = computed(() => {
   ]
 })
 
-// Recent activities (empty - to be populated with real data)
-const recentActivities = ref([])
+// Recent leads data
+const recentLeads = ref(props.recentLeads || [])
 
-// KPI data (empty - to be populated with real data)
-const kpiData = ref([])
-
-// Priority tasks (empty - to be populated with real data)
-const priorityTasks = ref([])
-
-// System alerts (empty - to be populated with real data)
-const systemAlerts = ref([])
+// Contact summary data
+const contactSummary = ref(props.recentContacts || [])
 
 // Modal state
 const showCreateModal = ref(false)

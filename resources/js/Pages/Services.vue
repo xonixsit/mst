@@ -16,10 +16,10 @@
               <span class="bg-blue-100 text-blue-700 px-4 py-2 rounded-full text-sm font-semibold">Our Services</span>
             </div>
             <h1 class="text-5xl lg:text-6xl font-bold bg-gradient-to-r from-gray-900 via-blue-900 to-indigo-900 bg-clip-text text-transparent leading-tight">
-              Comprehensive Tax Solutions
+              Professional Tax Services
             </h1>
             <p class="text-lg text-gray-600 leading-relaxed">
-              From individual tax returns to complex business structures, we provide expert guidance tailored to your unique needs.
+              AUTHORIZED E-FILER ACROSS ALL STATES. From individual tax returns to complex business structures, we provide expert guidance tailored to your unique needs with maximum tax benefits.
             </p>
             <!-- IRS Badge -->
             <div class="flex items-center gap-2 px-4 py-3 bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200 rounded-lg w-fit animate-glow-pulse">
@@ -38,8 +38,8 @@
               </button>
               <!-- Contact Number -->
               <a href="tel:+13153072751" class="inline-flex items-center gap-2 px-4 py-3 bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200 text-blue-700 hover:bg-blue-100 rounded-lg font-semibold transition-all">
-                <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-                  <path d="M2 3a1 1 0 011-1h2.153a1 1 0 01.986.836l.74 4.435a1 1 0 01-.54 1.06l-1.548.773c.058.3.102.605.102.924 0 1.748.585 3.364 1.56 4.657l1.548.773a1 1 0 01.54 1.06l-.74 4.435a1 1 0 01-.986.836H3a1 1 0 01-1-1V3z"></path>
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"></path>
                 </svg>
                 <span>+1 315-307-2751</span>
               </a>
@@ -62,216 +62,948 @@
       </div>
     </section>
 
-    <!-- Services Grid -->
-    <section class="py-20 px-4 sm:px-6 lg:px-8 bg-gradient-to-b from-gray-50 to-white">
+    <!-- Individual Tax Returns - Detailed Section -->
+    <section id="individual-tax-returns" class="py-20 px-4 sm:px-6 lg:px-8 bg-gradient-to-b from-gray-50 to-white">
       <div class="max-w-7xl mx-auto">
-        <!-- Section Header -->
-        <div class="text-center mb-16">
-          <h2 class="text-4xl font-bold text-gray-900 mb-4">Our Expert Services</h2>
-          <p class="text-lg text-gray-600 max-w-2xl mx-auto">Comprehensive tax solutions designed to maximize your returns and minimize your burden</p>
+        <div class="bg-white rounded-3xl shadow-2xl overflow-hidden border border-gray-100">
+          <!-- Header -->
+          <div class="bg-gradient-to-r from-blue-600 to-indigo-600 px-8 py-6">
+            <div class="flex items-center gap-4">
+              <div class="w-16 h-16 bg-white/20 rounded-2xl flex items-center justify-center backdrop-blur-sm">
+                <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                </svg>
+              </div>
+              <div>
+                <h3 class="text-2xl font-bold text-white">Individual Tax Returns</h3>
+                <p class="text-blue-100 font-medium">Tax Planning & Preparation</p>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Content -->
+          <div class="p-8">
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 items-start">
+              <!-- Left Content -->
+              <div class="space-y-6">
+                <p class="text-gray-700 leading-relaxed text-lg">
+                  Tax planning implies reducing the tax liability by invoking beneficial tax laws. Tax planning encompasses many different aspects, such as logical analysis of a financial situation, planning from a tax perspective, to reduce tax liability through the finest use of all accessible allowances, exclusions, deductions, exemptions, etc.
+                </p>
+                
+                <div class="bg-blue-50 rounded-xl p-6 border border-blue-200">
+                  <h4 class="font-bold text-blue-900 mb-3 flex items-center gap-2">
+                    <svg class="w-5 h-5 text-blue-600" fill="currentColor" viewBox="0 0 20 20">
+                      <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+                    </svg>
+                    Our Commitment
+                  </h4>
+                  <p class="text-blue-800 text-sm leading-relaxed">
+                    We strictly follow tax compliance and proactively recommend tax saving strategies to maximize the client benefits. We make it a priority to enhance and regularly update our mastery of the current tax law and regulations.
+                  </p>
+                </div>
+              </div>
+              
+              <!-- Right Content - Benefits -->
+              <div class="space-y-4">
+                <h4 class="text-xl font-bold text-gray-900 mb-4">Key Benefits</h4>
+                <div class="space-y-3">
+                  <div class="flex items-start gap-3">
+                    <div class="w-6 h-6 bg-green-100 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
+                      <svg class="w-4 h-4 text-green-600" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+                      </svg>
+                    </div>
+                    <div>
+                      <h5 class="font-semibold text-gray-900">Maximum Deductions</h5>
+                      <p class="text-gray-600 text-sm">Utilize all available allowances and exemptions</p>
+                    </div>
+                  </div>
+                  
+                  <div class="flex items-start gap-3">
+                    <div class="w-6 h-6 bg-green-100 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
+                      <svg class="w-4 h-4 text-green-600" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+                      </svg>
+                    </div>
+                    <div>
+                      <h5 class="font-semibold text-gray-900">Strategic Planning</h5>
+                      <p class="text-gray-600 text-sm">Logical analysis from tax perspective</p>
+                    </div>
+                  </div>
+                  
+                  <div class="flex items-start gap-3">
+                    <div class="w-6 h-6 bg-green-100 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
+                      <svg class="w-4 h-4 text-green-600" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+                      </svg>
+                    </div>
+                    <div>
+                      <h5 class="font-semibold text-gray-900">Compliance Assurance</h5>
+                      <p class="text-gray-600 text-sm">Strict adherence to tax regulations</p>
+                    </div>
+                  </div>
+                  
+                  <div class="flex items-start gap-3">
+                    <div class="w-6 h-6 bg-green-100 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
+                      <svg class="w-4 h-4 text-green-600" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+                      </svg>
+                    </div>
+                    <div>
+                      <h5 class="font-semibold text-gray-900">Updated Knowledge</h5>
+                      <p class="text-gray-600 text-sm">Regular updates on current tax laws</p>
+                    </div>
+                  </div>
+                </div>
+                
+                <!-- CTA Button -->
+                <div class="pt-4">
+                  <button @click="showLeadModal = true" class="w-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white px-6 py-3 rounded-xl font-semibold transition-all duration-300 shadow-lg hover:shadow-xl">
+                    Get Started with Individual Tax Planning
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
+      </div>
+    </section>
 
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          <!-- Service 1: Individual Tax Returns -->
-          <div class="group relative bg-white rounded-2xl p-8 border border-gray-200 hover:border-blue-400 hover:shadow-2xl transition-all duration-300 cursor-pointer overflow-hidden">
-            <div class="absolute top-0 right-0 w-24 h-24 bg-blue-50 rounded-bl-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-            <div class="relative z-10">
-              <div class="w-16 h-16 bg-gradient-to-br from-blue-500 to-blue-600 rounded-2xl flex items-center justify-center mb-6 shadow-lg group-hover:scale-110 group-hover:shadow-xl transition-all duration-300">
-                <svg class="w-8 h-8 text-white" fill="currentColor" viewBox="0 0 24 24">
-                  <path d="M9 12l2 2 4-4m7 0a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+    <!-- ITIN Application - Detailed Section -->
+    <section id="itin-application" class="py-20 px-4 sm:px-6 lg:px-8 bg-white">
+      <div class="max-w-7xl mx-auto">
+        <div class="bg-white rounded-3xl shadow-2xl overflow-hidden border border-gray-100">
+          <!-- Header -->
+          <div class="bg-gradient-to-r from-green-600 to-emerald-600 px-8 py-6">
+            <div class="flex items-center gap-4">
+              <div class="w-16 h-16 bg-white/20 rounded-2xl flex items-center justify-center backdrop-blur-sm">
+                <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H5a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-5m-4 0V5a2 2 0 10-4 0v5m0 0H5"></path>
                 </svg>
               </div>
-              <h3 class="text-xl font-bold text-gray-900 mb-3">Individual Tax Returns</h3>
-              <p class="text-gray-600 text-sm leading-relaxed mb-4">Expert preparation with maximum deductions and strategic planning for optimal results</p>
-              <div class="flex items-center text-blue-600 font-semibold text-sm group-hover:translate-x-1 transition-transform">
-                Learn more <svg class="w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+              <div>
+                <h3 class="text-2xl font-bold text-white">ITIN Application</h3>
+                <p class="text-green-100 font-medium">Individual Taxpayer Identification Number</p>
               </div>
             </div>
           </div>
-
-          <!-- Service 2: Federal and State Tax Filing -->
-          <div class="group relative bg-white rounded-2xl p-8 border border-gray-200 hover:border-green-400 hover:shadow-2xl transition-all duration-300 cursor-pointer overflow-hidden">
-            <div class="absolute top-0 right-0 w-24 h-24 bg-green-50 rounded-bl-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-            <div class="relative z-10">
-              <div class="w-16 h-16 bg-gradient-to-br from-green-500 to-green-600 rounded-2xl flex items-center justify-center mb-6 shadow-lg group-hover:scale-110 group-hover:shadow-xl transition-all duration-300">
-                <svg class="w-8 h-8 text-white" fill="currentColor" viewBox="0 0 24 24">
-                  <path d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
-                </svg>
+          
+          <!-- Content -->
+          <div class="p-8">
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 items-start">
+              <!-- Left Content -->
+              <div class="space-y-6">
+                <p class="text-gray-700 leading-relaxed text-lg">
+                  We assist in applying ITIN for such people thereby helping them avail higher benefits. If an individual doesn't qualify for SSN, IRS issues ITIN to such persons on having federal tax reporting or filing requirements.
+                </p>
+                
+                <div class="bg-green-50 rounded-xl p-6 border border-green-200">
+                  <h4 class="font-bold text-green-900 mb-4 flex items-center gap-2">
+                    <svg class="w-5 h-5 text-green-600" fill="currentColor" viewBox="0 0 20 20">
+                      <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"></path>
+                    </svg>
+                    Who Needs ITIN?
+                  </h4>
+                  <div class="space-y-3 text-green-800 text-sm">
+                    <div class="flex items-start gap-2">
+                      <span class="text-green-600 font-bold">•</span>
+                      <span>A nonresident alien required to file a U.S. tax return</span>
+                    </div>
+                    <div class="flex items-start gap-2">
+                      <span class="text-green-600 font-bold">•</span>
+                      <span>A U.S. resident alien (based on days present in the United States) filing a U.S. tax return</span>
+                    </div>
+                  </div>
+                </div>
               </div>
-              <h3 class="text-xl font-bold text-gray-900 mb-3">Federal & State Filing</h3>
-              <p class="text-gray-600 text-sm leading-relaxed mb-4">Comprehensive multi-state filing with compliance across all jurisdictions</p>
-              <div class="flex items-center text-green-600 font-semibold text-sm group-hover:translate-x-1 transition-transform">
-                Learn more <svg class="w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
-              </div>
-            </div>
-          </div>
-
-          <!-- Service 3: Corporate Filing -->
-          <div class="group relative bg-white rounded-2xl p-8 border border-gray-200 hover:border-purple-400 hover:shadow-2xl transition-all duration-300 cursor-pointer overflow-hidden">
-            <div class="absolute top-0 right-0 w-24 h-24 bg-purple-50 rounded-bl-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-            <div class="relative z-10">
-              <div class="w-16 h-16 bg-gradient-to-br from-purple-500 to-purple-600 rounded-2xl flex items-center justify-center mb-6 shadow-lg group-hover:scale-110 group-hover:shadow-xl transition-all duration-300">
-                <svg class="w-8 h-8 text-white" fill="currentColor" viewBox="0 0 24 24">
-                  <path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z"></path>
-                </svg>
-              </div>
-              <h3 class="text-xl font-bold text-gray-900 mb-3">Corporate Filing</h3>
-              <p class="text-gray-600 text-sm leading-relaxed mb-4">Strategic planning for C-Corps & S-Corps with tax optimization</p>
-              <div class="flex items-center text-purple-600 font-semibold text-sm group-hover:translate-x-1 transition-transform">
-                Learn more <svg class="w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
-              </div>
-            </div>
-          </div>
-
-          <!-- Service 4: ITIN Assistance -->
-          <div class="group relative bg-white rounded-2xl p-8 border border-gray-200 hover:border-orange-400 hover:shadow-2xl transition-all duration-300 cursor-pointer overflow-hidden">
-            <div class="absolute top-0 right-0 w-24 h-24 bg-orange-50 rounded-bl-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-            <div class="relative z-10">
-              <div class="w-16 h-16 bg-gradient-to-br from-orange-500 to-orange-600 rounded-2xl flex items-center justify-center mb-6 shadow-lg group-hover:scale-110 group-hover:shadow-xl transition-all duration-300">
-                <svg class="w-8 h-8 text-white" fill="currentColor" viewBox="0 0 24 24">
-                  <path d="M10 6H5a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-5m-4 0V5a2 2 0 10-4 0v5m0 0H5"></path>
-                </svg>
-              </div>
-              <h3 class="text-xl font-bold text-gray-900 mb-3">ITIN Assistance</h3>
-              <p class="text-gray-600 text-sm leading-relaxed mb-4">Specialized services for non-residents and foreign nationals</p>
-              <div class="flex items-center text-orange-600 font-semibold text-sm group-hover:translate-x-1 transition-transform">
-                Learn more <svg class="w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
-              </div>
-            </div>
-          </div>
-
-          <!-- Service 5: LLC Incorporation -->
-          <div class="group relative bg-white rounded-2xl p-8 border border-gray-200 hover:border-red-400 hover:shadow-2xl transition-all duration-300 cursor-pointer overflow-hidden">
-            <div class="absolute top-0 right-0 w-24 h-24 bg-red-50 rounded-bl-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-            <div class="relative z-10">
-              <div class="w-16 h-16 bg-gradient-to-br from-red-500 to-red-600 rounded-2xl flex items-center justify-center mb-6 shadow-lg group-hover:scale-110 group-hover:shadow-xl transition-all duration-300">
-                <svg class="w-8 h-8 text-white" fill="currentColor" viewBox="0 0 24 24">
-                  <path d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4"></path>
-                </svg>
-              </div>
-              <h3 class="text-xl font-bold text-gray-900 mb-3">LLC Incorporation</h3>
-              <p class="text-gray-600 text-sm leading-relaxed mb-4">Formation guidance and tax election strategies for new entities</p>
-              <div class="flex items-center text-red-600 font-semibold text-sm group-hover:translate-x-1 transition-transform">
-                Learn more <svg class="w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
-              </div>
-            </div>
-          </div>
-
-          <!-- Service 6: Amendment Filing -->
-          <div class="group relative bg-white rounded-2xl p-8 border border-gray-200 hover:border-indigo-400 hover:shadow-2xl transition-all duration-300 cursor-pointer overflow-hidden">
-            <div class="absolute top-0 right-0 w-24 h-24 bg-indigo-50 rounded-bl-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-            <div class="relative z-10">
-              <div class="w-16 h-16 bg-gradient-to-br from-indigo-500 to-indigo-600 rounded-2xl flex items-center justify-center mb-6 shadow-lg group-hover:scale-110 group-hover:shadow-xl transition-all duration-300">
-                <svg class="w-8 h-8 text-white" fill="currentColor" viewBox="0 0 24 24">
-                  <path d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
-                </svg>
-              </div>
-              <h3 class="text-xl font-bold text-gray-900 mb-3">Amendment Filing</h3>
-              <p class="text-gray-600 text-sm leading-relaxed mb-4">Professional corrections and amendments for prior year returns</p>
-              <div class="flex items-center text-indigo-600 font-semibold text-sm group-hover:translate-x-1 transition-transform">
-                Learn more <svg class="w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
-              </div>
-            </div>
-          </div>
-
-          <!-- Service 7: IRS Tax Representation -->
-          <div class="group relative bg-white rounded-2xl p-8 border border-gray-200 hover:border-cyan-400 hover:shadow-2xl transition-all duration-300 cursor-pointer overflow-hidden">
-            <div class="absolute top-0 right-0 w-24 h-24 bg-cyan-50 rounded-bl-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-            <div class="relative z-10">
-              <div class="w-16 h-16 bg-gradient-to-br from-cyan-500 to-cyan-600 rounded-2xl flex items-center justify-center mb-6 shadow-lg group-hover:scale-110 group-hover:shadow-xl transition-all duration-300">
-                <svg class="w-8 h-8 text-white" fill="currentColor" viewBox="0 0 24 24">
-                  <path d="M9 12l2 2 4-4m7 0a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                </svg>
-              </div>
-              <h3 class="text-xl font-bold text-gray-900 mb-3">IRS Representation</h3>
-              <p class="text-gray-600 text-sm leading-relaxed mb-4">Expert support for audits, appeals and tax dispute resolution</p>
-              <div class="flex items-center text-cyan-600 font-semibold text-sm group-hover:translate-x-1 transition-transform">
-                Learn more <svg class="w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+              
+              <!-- Right Content - Process Steps -->
+              <div class="space-y-4">
+                <h4 class="text-xl font-bold text-gray-900 mb-4">Our ITIN Process</h4>
+                <div class="space-y-4">
+                  <div class="flex items-start gap-4">
+                    <div class="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center flex-shrink-0">
+                      <span class="text-green-600 font-bold text-sm">1</span>
+                    </div>
+                    <div>
+                      <h5 class="font-semibold text-gray-900">Document Review</h5>
+                      <p class="text-gray-600 text-sm">We review your eligibility and required documentation</p>
+                    </div>
+                  </div>
+                  
+                  <div class="flex items-start gap-4">
+                    <div class="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center flex-shrink-0">
+                      <span class="text-green-600 font-bold text-sm">2</span>
+                    </div>
+                    <div>
+                      <h5 class="font-semibold text-gray-900">Form Preparation</h5>
+                      <p class="text-gray-600 text-sm">Complete Form W-7 application accurately</p>
+                    </div>
+                  </div>
+                  
+                  <div class="flex items-start gap-4">
+                    <div class="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center flex-shrink-0">
+                      <span class="text-green-600 font-bold text-sm">3</span>
+                    </div>
+                    <div>
+                      <h5 class="font-semibold text-gray-900">IRS Submission</h5>
+                      <p class="text-gray-600 text-sm">Submit application with supporting documents to IRS</p>
+                    </div>
+                  </div>
+                  
+                  <div class="flex items-start gap-4">
+                    <div class="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center flex-shrink-0">
+                      <span class="text-green-600 font-bold text-sm">4</span>
+                    </div>
+                    <div>
+                      <h5 class="font-semibold text-gray-900">Follow-up Support</h5>
+                      <p class="text-gray-600 text-sm">Track application status and provide ongoing assistance</p>
+                    </div>
+                  </div>
+                </div>
+                
+                <!-- Benefits Box -->
+                <div class="mt-6 p-4 bg-gradient-to-r from-green-50 to-emerald-50 rounded-lg border border-green-200">
+                  <h5 class="font-semibold text-green-900 mb-2">Key Benefits</h5>
+                  <ul class="text-green-800 text-sm space-y-1">
+                    <li>• Access to higher tax benefits</li>
+                    <li>• Compliance with federal tax requirements</li>
+                    <li>• Professional guidance throughout process</li>
+                  </ul>
+                </div>
+                
+                <!-- CTA Button -->
+                <div class="pt-4">
+                  <button @click="showLeadModal = true" class="w-full bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white px-6 py-3 rounded-xl font-semibold transition-all duration-300 shadow-lg hover:shadow-xl">
+                    Start Your ITIN Application
+                  </button>
+                </div>
               </div>
             </div>
           </div>
+        </div>
+      </div>
+    </section>
 
-          <!-- Service 8: FATCA -->
-          <div class="group relative bg-white rounded-2xl p-8 border border-gray-200 hover:border-teal-400 hover:shadow-2xl transition-all duration-300 cursor-pointer overflow-hidden">
-            <div class="absolute top-0 right-0 w-24 h-24 bg-teal-50 rounded-bl-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-            <div class="relative z-10">
-              <div class="w-16 h-16 bg-gradient-to-br from-teal-500 to-teal-600 rounded-2xl flex items-center justify-center mb-6 shadow-lg group-hover:scale-110 group-hover:shadow-xl transition-all duration-300">
-                <svg class="w-8 h-8 text-white" fill="currentColor" viewBox="0 0 24 24">
-                  <path d="M3 10h18M3 14h18m-9-4v8m-7 0h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"></path>
+    <!-- Corporate Filing - Detailed Section -->
+    <section id="corporate-filing" class="py-20 px-4 sm:px-6 lg:px-8 bg-gradient-to-b from-gray-50 to-white">
+      <div class="max-w-7xl mx-auto">
+        <div class="bg-white rounded-3xl shadow-2xl overflow-hidden border border-gray-100">
+          <!-- Header -->
+          <div class="bg-gradient-to-r from-purple-600 to-indigo-600 px-8 py-6">
+            <div class="flex items-center gap-4">
+              <div class="w-16 h-16 bg-white/20 rounded-2xl flex items-center justify-center backdrop-blur-sm">
+                <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z"></path>
                 </svg>
               </div>
-              <h3 class="text-xl font-bold text-gray-900 mb-3">FATCA Compliance</h3>
-              <p class="text-gray-600 text-sm leading-relaxed mb-4">Foreign account compliance and international reporting requirements</p>
-              <div class="flex items-center text-teal-600 font-semibold text-sm group-hover:translate-x-1 transition-transform">
-                Learn more <svg class="w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+              <div>
+                <h3 class="text-2xl font-bold text-white">Corporate Filing</h3>
+                <p class="text-purple-100 font-medium">WE HELP YOU TO GET MAXIMUM TAX BENEFITS</p>
               </div>
             </div>
           </div>
-
-          <!-- Service 9: FBAR -->
-          <div class="group relative bg-white rounded-2xl p-8 border border-gray-200 hover:border-pink-400 hover:shadow-2xl transition-all duration-300 cursor-pointer overflow-hidden">
-            <div class="absolute top-0 right-0 w-24 h-24 bg-pink-50 rounded-bl-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-            <div class="relative z-10">
-              <div class="w-16 h-16 bg-gradient-to-br from-pink-500 to-pink-600 rounded-2xl flex items-center justify-center mb-6 shadow-lg group-hover:scale-110 group-hover:shadow-xl transition-all duration-300">
-                <svg class="w-8 h-8 text-white" fill="currentColor" viewBox="0 0 24 24">
-                  <path d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                </svg>
+          
+          <!-- Content -->
+          <div class="p-8">
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 items-start">
+              <!-- Left Content -->
+              <div class="space-y-6">
+                <p class="text-gray-700 leading-relaxed text-lg">
+                  We have stepped into corporate tax filing for the last 3 years and got a good response from clients. We focus on being a compliance partner of our clients so that our clients can relax and focus on their business only.
+                </p>
+                
+                <p class="text-gray-700 leading-relaxed">
+                  We are using our experience in cross border tax compliance services to deliver both domestic and global multi-tax compliance services to our clients.
+                </p>
+                
+                <div class="bg-purple-50 rounded-xl p-6 border border-purple-200">
+                  <h4 class="font-bold text-purple-900 mb-3 flex items-center gap-2">
+                    <svg class="w-5 h-5 text-purple-600" fill="currentColor" viewBox="0 0 20 20">
+                      <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+                    </svg>
+                    Our Approach
+                  </h4>
+                  <p class="text-purple-800 text-sm leading-relaxed">
+                    We can work with the clients to coordinate all tax compliance activities, e.g. federal, state and local taxes. Our client relationship manager gives centralized coordination and communication.
+                  </p>
+                </div>
               </div>
-              <h3 class="text-xl font-bold text-gray-900 mb-3">FBAR Filing</h3>
-              <p class="text-gray-600 text-sm leading-relaxed mb-4">Form 114 foreign bank account reporting and compliance</p>
-              <div class="flex items-center text-pink-600 font-semibold text-sm group-hover:translate-x-1 transition-transform">
-                Learn more <svg class="w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+              
+              <!-- Right Content - Services -->
+              <div class="space-y-4">
+                <h4 class="text-xl font-bold text-gray-900 mb-4">Our Corporate Services</h4>
+                <div class="space-y-4">
+                  <div class="flex items-start gap-3 p-4 bg-gradient-to-r from-purple-50 to-indigo-50 rounded-lg border border-purple-200">
+                    <div class="w-8 h-8 bg-purple-100 rounded-full flex items-center justify-center flex-shrink-0">
+                      <svg class="w-4 h-4 text-purple-600" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M4 4a2 2 0 00-2 2v4a2 2 0 002 2V6h10a2 2 0 00-2-2H4zm2 6a2 2 0 012-2h8a2 2 0 012 2v4a2 2 0 01-2 2H8a2 2 0 01-2-2v-4zm6 4a2 2 0 100-4 2 2 0 000 4z" clip-rule="evenodd"></path>
+                      </svg>
+                    </div>
+                    <div>
+                      <h5 class="font-semibold text-gray-900">Tax Accounting</h5>
+                      <p class="text-gray-600 text-sm">Comprehensive accounting services for corporate tax compliance</p>
+                    </div>
+                  </div>
+                  
+                  <div class="flex items-start gap-3 p-4 bg-gradient-to-r from-purple-50 to-indigo-50 rounded-lg border border-purple-200">
+                    <div class="w-8 h-8 bg-purple-100 rounded-full flex items-center justify-center flex-shrink-0">
+                      <svg class="w-4 h-4 text-purple-600" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+                      </svg>
+                    </div>
+                    <div>
+                      <h5 class="font-semibold text-gray-900">Tax Compliance</h5>
+                      <p class="text-gray-600 text-sm">Federal, state, and local tax compliance coordination</p>
+                    </div>
+                  </div>
+                  
+                  <div class="flex items-start gap-3 p-4 bg-gradient-to-r from-purple-50 to-indigo-50 rounded-lg border border-purple-200">
+                    <div class="w-8 h-8 bg-purple-100 rounded-full flex items-center justify-center flex-shrink-0">
+                      <svg class="w-4 h-4 text-purple-600" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"></path>
+                      </svg>
+                    </div>
+                    <div>
+                      <h5 class="font-semibold text-gray-900">Audit Support</h5>
+                      <p class="text-gray-600 text-sm">Professional representation during tax audits</p>
+                    </div>
+                  </div>
+                  
+                  <div class="flex items-start gap-3 p-4 bg-gradient-to-r from-purple-50 to-indigo-50 rounded-lg border border-purple-200">
+                    <div class="w-8 h-8 bg-purple-100 rounded-full flex items-center justify-center flex-shrink-0">
+                      <svg class="w-4 h-4 text-purple-600" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M12 1.586l-4 4v12.828l4-4V1.586zM3.707 3.293A1 1 0 002 4v10a1 1 0 00.293.707L6 18.414V5.586L3.707 3.293zM17.707 5.293L14 1.586v12.828l2.293 2.293A1 1 0 0018 16V6a1 1 0 00-.293-.707z" clip-rule="evenodd"></path>
+                      </svg>
+                    </div>
+                    <div>
+                      <h5 class="font-semibold text-gray-900">Cross Border Consultation</h5>
+                      <p class="text-gray-600 text-sm">International tax planning and compliance services</p>
+                    </div>
+                  </div>
+                  
+                  <div class="flex items-start gap-3 p-4 bg-gradient-to-r from-purple-50 to-indigo-50 rounded-lg border border-purple-200">
+                    <div class="w-8 h-8 bg-purple-100 rounded-full flex items-center justify-center flex-shrink-0">
+                      <svg class="w-4 h-4 text-purple-600" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M18 8a6 6 0 01-7.743 5.743L10 14l-1 1-1 1H6v2H2v-4l4.257-4.257A6 6 0 1118 8zm-6-4a1 1 0 100 2 2 2 0 012 2 1 1 0 102 0 4 4 0 00-4-4z" clip-rule="evenodd"></path>
+                      </svg>
+                    </div>
+                    <div>
+                      <h5 class="font-semibold text-gray-900">IRS & State Department Relations</h5>
+                      <p class="text-gray-600 text-sm">Direct communication and problem resolution</p>
+                    </div>
+                  </div>
+                </div>
+                
+                <!-- CTA Button -->
+                <div class="pt-4">
+                  <button @click="showLeadModal = true" class="w-full bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white px-6 py-3 rounded-xl font-semibold transition-all duration-300 shadow-lg hover:shadow-xl">
+                    Start Corporate Tax Partnership
+                  </button>
+                </div>
               </div>
             </div>
           </div>
+        </div>
+      </div>
+    </section>
 
-          <!-- Service 10: Payroll Services -->
-          <div class="group relative bg-white rounded-2xl p-8 border border-gray-200 hover:border-lime-400 hover:shadow-2xl transition-all duration-300 cursor-pointer overflow-hidden">
-            <div class="absolute top-0 right-0 w-24 h-24 bg-lime-50 rounded-bl-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-            <div class="relative z-10">
-              <div class="w-16 h-16 bg-gradient-to-br from-lime-500 to-lime-600 rounded-2xl flex items-center justify-center mb-6 shadow-lg group-hover:scale-110 group-hover:shadow-xl transition-all duration-300">
-                <svg class="w-8 h-8 text-white" fill="currentColor" viewBox="0 0 24 24">
-                  <path d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+    <!-- Amendment Filing - Detailed Section -->
+    <section id="amendment-filing" class="py-20 px-4 sm:px-6 lg:px-8 bg-white">
+      <div class="max-w-7xl mx-auto">
+        <div class="bg-white rounded-3xl shadow-2xl overflow-hidden border border-gray-100">
+          <!-- Header -->
+          <div class="bg-gradient-to-r from-orange-600 to-red-600 px-8 py-6">
+            <div class="flex items-center gap-4">
+              <div class="w-16 h-16 bg-white/20 rounded-2xl flex items-center justify-center backdrop-blur-sm">
+                <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
                 </svg>
               </div>
-              <h3 class="text-xl font-bold text-gray-900 mb-3">Payroll Services</h3>
-              <p class="text-gray-600 text-sm leading-relaxed mb-4">Processing, withholding calculations and quarterly filing</p>
-              <div class="flex items-center text-lime-600 font-semibold text-sm group-hover:translate-x-1 transition-transform">
-                Learn more <svg class="w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+              <div>
+                <h3 class="text-2xl font-bold text-white">Amendment Filing</h3>
+                <p class="text-orange-100 font-medium">WE HELP YOU TO GET MAXIMUM TAX BENEFITS</p>
               </div>
             </div>
           </div>
-
-          <!-- Service 11: Business Tax Planning -->
-          <div class="group relative bg-white rounded-2xl p-8 border border-gray-200 hover:border-amber-400 hover:shadow-2xl transition-all duration-300 cursor-pointer overflow-hidden">
-            <div class="absolute top-0 right-0 w-24 h-24 bg-amber-50 rounded-bl-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-            <div class="relative z-10">
-              <div class="w-16 h-16 bg-gradient-to-br from-amber-500 to-amber-600 rounded-2xl flex items-center justify-center mb-6 shadow-lg group-hover:scale-110 group-hover:shadow-xl transition-all duration-300">
-                <svg class="w-8 h-8 text-white" fill="currentColor" viewBox="0 0 24 24">
-                  <path d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
-                </svg>
+          
+          <!-- Content -->
+          <div class="p-8">
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 items-start">
+              <!-- Left Content -->
+              <div class="space-y-6">
+                <p class="text-gray-700 leading-relaxed text-lg">
+                  Amendment to the return is required if there are any changes / corrections are needed after the return has been filed. We help in filing the amended tax return according to the need of the tax payer using 1040X form.
+                </p>
+                
+                <div class="bg-orange-50 rounded-xl p-6 border border-orange-200">
+                  <h4 class="font-bold text-orange-900 mb-3 flex items-center gap-2">
+                    <svg class="w-5 h-5 text-orange-600" fill="currentColor" viewBox="0 0 20 20">
+                      <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"></path>
+                    </svg>
+                    Form 1040X Process
+                  </h4>
+                  <p class="text-orange-800 text-sm leading-relaxed">
+                    We use the official IRS Form 1040X to ensure all amendments are processed correctly and efficiently, maximizing your tax benefits through proper corrections.
+                  </p>
+                </div>
               </div>
-              <h3 class="text-xl font-bold text-gray-900 mb-3">Business Tax Planning</h3>
-              <p class="text-gray-600 text-sm leading-relaxed mb-4">Strategic planning and optimization for all business types</p>
-              <div class="flex items-center text-amber-600 font-semibold text-sm group-hover:translate-x-1 transition-transform">
-                Learn more <svg class="w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+              
+              <!-- Right Content - Amendment Situations -->
+              <div class="space-y-4">
+                <h4 class="text-xl font-bold text-gray-900 mb-4">We Help You File Amendments For:</h4>
+                <div class="space-y-3">
+                  <div class="flex items-start gap-3 p-4 bg-gradient-to-r from-orange-50 to-red-50 rounded-lg border border-orange-200">
+                    <div class="w-8 h-8 bg-orange-100 rounded-full flex items-center justify-center flex-shrink-0">
+                      <svg class="w-4 h-4 text-orange-600" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+                      </svg>
+                    </div>
+                    <div>
+                      <h5 class="font-semibold text-gray-900">Correcting Under Reported Income</h5>
+                      <p class="text-gray-600 text-sm">Fix income reporting errors to ensure compliance</p>
+                    </div>
+                  </div>
+                  
+                  <div class="flex items-start gap-3 p-4 bg-gradient-to-r from-orange-50 to-red-50 rounded-lg border border-orange-200">
+                    <div class="w-8 h-8 bg-orange-100 rounded-full flex items-center justify-center flex-shrink-0">
+                      <svg class="w-4 h-4 text-orange-600" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+                      </svg>
+                    </div>
+                    <div>
+                      <h5 class="font-semibold text-gray-900">Removing Expenses</h5>
+                      <p class="text-gray-600 text-sm">Remove incorrectly claimed expenses from your return</p>
+                    </div>
+                  </div>
+                  
+                  <div class="flex items-start gap-3 p-4 bg-gradient-to-r from-orange-50 to-red-50 rounded-lg border border-orange-200">
+                    <div class="w-8 h-8 bg-orange-100 rounded-full flex items-center justify-center flex-shrink-0">
+                      <svg class="w-4 h-4 text-orange-600" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+                      </svg>
+                    </div>
+                    <div>
+                      <h5 class="font-semibold text-gray-900">Adding Dependents</h5>
+                      <p class="text-gray-600 text-sm">Include missed dependents to increase your refund</p>
+                    </div>
+                  </div>
+                  
+                  <div class="flex items-start gap-3 p-4 bg-gradient-to-r from-orange-50 to-red-50 rounded-lg border border-orange-200">
+                    <div class="w-8 h-8 bg-orange-100 rounded-full flex items-center justify-center flex-shrink-0">
+                      <svg class="w-4 h-4 text-orange-600" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+                      </svg>
+                    </div>
+                    <div>
+                      <h5 class="font-semibold text-gray-900">Adding Unclaimed Expenses</h5>
+                      <p class="text-gray-600 text-sm">Claim legitimate expenses you initially missed</p>
+                    </div>
+                  </div>
+                  
+                  <div class="flex items-start gap-3 p-4 bg-gradient-to-r from-orange-50 to-red-50 rounded-lg border border-orange-200">
+                    <div class="w-8 h-8 bg-orange-100 rounded-full flex items-center justify-center flex-shrink-0">
+                      <svg class="w-4 h-4 text-orange-600" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+                      </svg>
+                    </div>
+                    <div>
+                      <h5 class="font-semibold text-gray-900">Changing Filing Status</h5>
+                      <p class="text-gray-600 text-sm">Update filing status for better tax advantages</p>
+                    </div>
+                  </div>
+                </div>
+                
+                <!-- CTA Button -->
+                <div class="pt-4">
+                  <button @click="showLeadModal = true" class="w-full bg-gradient-to-r from-orange-600 to-red-600 hover:from-orange-700 hover:to-red-700 text-white px-6 py-3 rounded-xl font-semibold transition-all duration-300 shadow-lg hover:shadow-xl">
+                    File Your Tax Amendment Today
+                  </button>
+                </div>
               </div>
             </div>
           </div>
+        </div>
+      </div>
+    </section>
 
-          <!-- Service 12: Retirement Planning -->
-          <div class="group relative bg-white rounded-2xl p-8 border border-gray-200 hover:border-rose-400 hover:shadow-2xl transition-all duration-300 cursor-pointer overflow-hidden">
-            <div class="absolute top-0 right-0 w-24 h-24 bg-rose-50 rounded-bl-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-            <div class="relative z-10">
-              <div class="w-16 h-16 bg-gradient-to-br from-rose-500 to-rose-600 rounded-2xl flex items-center justify-center mb-6 shadow-lg group-hover:scale-110 group-hover:shadow-xl transition-all duration-300">
-                <svg class="w-8 h-8 text-white" fill="currentColor" viewBox="0 0 24 24">
-                  <path d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+    <!-- Retirement Planning - Detailed Section -->
+    <section id="retirement-planning" class="py-20 px-4 sm:px-6 lg:px-8 bg-gradient-to-b from-gray-50 to-white">
+      <div class="max-w-7xl mx-auto">
+        <div class="bg-white rounded-3xl shadow-2xl overflow-hidden border border-gray-100">
+          <!-- Header -->
+          <div class="bg-gradient-to-r from-teal-600 to-cyan-600 px-8 py-6">
+            <div class="flex items-center gap-4">
+              <div class="w-16 h-16 bg-white/20 rounded-2xl flex items-center justify-center backdrop-blur-sm">
+                <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                 </svg>
               </div>
-              <h3 class="text-xl font-bold text-gray-900 mb-3">Retirement Planning</h3>
-              <p class="text-gray-600 text-sm leading-relaxed mb-4">401(k), IRA and retirement account optimization strategies</p>
-              <div class="flex items-center text-rose-600 font-semibold text-sm group-hover:translate-x-1 transition-transform">
-                Learn more <svg class="w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+              <div>
+                <h3 class="text-2xl font-bold text-white">Retirement Planning</h3>
+                <p class="text-teal-100 font-medium">401(k) & Retirement Savings Solutions</p>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Content -->
+          <div class="p-8">
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 items-start">
+              <!-- Left Content -->
+              <div class="space-y-6">
+                <p class="text-gray-700 leading-relaxed text-lg">
+                  A 401(k) is a retirement savings plan sponsored by an employer. It lets workers save and invest a piece of their paycheck before taxes are taken out. Taxes aren't paid until the money is withdrawn from the account.
+                </p>
+                
+                <p class="text-gray-700 leading-relaxed">
+                  You can contribute to 401(K) either individually or as part of an organization. 401(K) provided by an employer makes for a great starting platform for a retirement plan.
+                </p>
+                
+                <div class="bg-teal-50 rounded-xl p-6 border border-teal-200">
+                  <h4 class="font-bold text-teal-900 mb-3 flex items-center gap-2">
+                    <svg class="w-5 h-5 text-teal-600" fill="currentColor" viewBox="0 0 20 20">
+                      <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+                    </svg>
+                    Key Benefits
+                  </h4>
+                  <ul class="text-teal-800 text-sm space-y-2">
+                    <li>• Save up to $18,000 of your pre-tax income</li>
+                    <li>• Portable - carry over to new employers</li>
+                    <li>• Solo 401(k) available for sole proprietors</li>
+                    <li>• Tax advantages until withdrawal</li>
+                  </ul>
+                </div>
+              </div>
+              
+              <!-- Right Content - Plan Types -->
+              <div class="space-y-4">
+                <h4 class="text-xl font-bold text-gray-900 mb-4">Retirement Plan Options</h4>
+                <div class="space-y-4">
+                  <div class="p-4 bg-gradient-to-r from-teal-50 to-cyan-50 rounded-lg border border-teal-200">
+                    <div class="flex items-start gap-3">
+                      <div class="w-8 h-8 bg-teal-100 rounded-full flex items-center justify-center flex-shrink-0">
+                        <svg class="w-4 h-4 text-teal-600" fill="currentColor" viewBox="0 0 20 20">
+                          <path fill-rule="evenodd" d="M4 4a2 2 0 00-2 2v4a2 2 0 002 2V6h10a2 2 0 00-2-2H4zm2 6a2 2 0 012-2h8a2 2 0 012 2v4a2 2 0 01-2 2H8a2 2 0 01-2-2v-4zm6 4a2 2 0 100-4 2 2 0 000 4z" clip-rule="evenodd"></path>
+                        </svg>
+                      </div>
+                      <div>
+                        <h5 class="font-semibold text-gray-900">Employer 401(k)</h5>
+                        <p class="text-gray-600 text-sm">Most for-profit organizations provide employees with 401(k) plans as a great starting platform for retirement planning</p>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <div class="p-4 bg-gradient-to-r from-teal-50 to-cyan-50 rounded-lg border border-teal-200">
+                    <div class="flex items-start gap-3">
+                      <div class="w-8 h-8 bg-teal-100 rounded-full flex items-center justify-center flex-shrink-0">
+                        <svg class="w-4 h-4 text-teal-600" fill="currentColor" viewBox="0 0 20 20">
+                          <path fill-rule="evenodd" d="M10.496 2.132a1 1 0 00-.992 0l-7 4A1 1 0 003 8v7a1 1 0 100 2h14a1 1 0 100-2V8a1 1 0 00.496-1.868l-7-4zM6 9a1 1 0 011-1h6a1 1 0 110 2H7a1 1 0 01-1-1z" clip-rule="evenodd"></path>
+                        </svg>
+                      </div>
+                      <div>
+                        <h5 class="font-semibold text-gray-900">403(b) Plans</h5>
+                        <p class="text-gray-600 text-sm">Teachers and employees of non-profit organizations have 403(b) instead of traditional 401(k)</p>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <div class="p-4 bg-gradient-to-r from-teal-50 to-cyan-50 rounded-lg border border-teal-200">
+                    <div class="flex items-start gap-3">
+                      <div class="w-8 h-8 bg-teal-100 rounded-full flex items-center justify-center flex-shrink-0">
+                        <svg class="w-4 h-4 text-teal-600" fill="currentColor" viewBox="0 0 20 20">
+                          <path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd"></path>
+                        </svg>
+                      </div>
+                      <div>
+                        <h5 class="font-semibold text-gray-900">Solo 401(k)</h5>
+                        <p class="text-gray-600 text-sm">Sole proprietors can set up individual accounts where you pay for both employer and employee contributions</p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                
+                <!-- IRS Resource -->
+                <div class="mt-6 p-4 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-lg border border-blue-200">
+                  <h5 class="font-semibold text-blue-900 mb-2 flex items-center gap-2">
+                    <svg class="w-4 h-4 text-blue-600" fill="currentColor" viewBox="0 0 20 20">
+                      <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"></path>
+                    </svg>
+                    Official IRS Resource
+                  </h5>
+                  <p class="text-blue-800 text-sm mb-3">For comprehensive details about 401(k) plans:</p>
+                  <a href="https://www.irs.gov/retirement-plans/401k-plans" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-2 text-blue-600 hover:text-blue-800 font-medium text-sm">
+                    Visit IRS 401(k) Plans Guide
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path>
+                    </svg>
+                  </a>
+                </div>
+                
+                <!-- CTA Button -->
+                <div class="pt-4">
+                  <button @click="showLeadModal = true" class="w-full bg-gradient-to-r from-teal-600 to-cyan-600 hover:from-teal-700 hover:to-cyan-700 text-white px-6 py-3 rounded-xl font-semibold transition-all duration-300 shadow-lg hover:shadow-xl">
+                    Start Your Retirement Planning
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Business Tax Planning - Detailed Section -->
+    <section id="business-tax-planning" class="py-20 px-4 sm:px-6 lg:px-8 bg-white">
+      <div class="max-w-7xl mx-auto">
+        <div class="bg-white rounded-3xl shadow-2xl overflow-hidden border border-gray-100">
+          <!-- Header -->
+          <div class="bg-gradient-to-r from-indigo-600 to-purple-600 px-8 py-6">
+            <div class="flex items-center gap-4">
+              <div class="w-16 h-16 bg-white/20 rounded-2xl flex items-center justify-center backdrop-blur-sm">
+                <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
+                </svg>
+              </div>
+              <div>
+                <h3 class="text-2xl font-bold text-white">Business Tax Planning</h3>
+                <p class="text-indigo-100 font-medium">Strategic Entity Structure Optimization</p>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Content -->
+          <div class="p-8">
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 items-start">
+              <!-- Left Content -->
+              <div class="space-y-6">
+                <p class="text-gray-700 leading-relaxed text-lg">
+                  Choose the Right Business Structure: Your entity type (e.g., sole proprietorship, LLC, S corp, C corp) fundamentally determines how you are taxed.
+                </p>
+                
+                <div class="bg-indigo-50 rounded-xl p-6 border border-indigo-200">
+                  <h4 class="font-bold text-indigo-900 mb-3 flex items-center gap-2">
+                    <svg class="w-5 h-5 text-indigo-600" fill="currentColor" viewBox="0 0 20 20">
+                      <path fill-rule="evenodd" d="M4 2a1 1 0 011 1v2.101a7.002 7.002 0 0111.601 2.566 1 1 0 11-1.885.666A5.002 5.002 0 005.999 7H9a1 1 0 010 2H4a1 1 0 01-1-1V3a1 1 0 011-1zm.008 9.057a1 1 0 011.276.61A5.002 5.002 0 0014.001 13H11a1 1 0 110-2h5a1 1 0 011 1v5a1 1 0 11-2 0v-2.101a7.002 7.002 0 01-11.601-2.566 1 1 0 01.61-1.276z" clip-rule="evenodd"></path>
+                    </svg>
+                    Ongoing Optimization
+                  </h4>
+                  <p class="text-indigo-800 text-sm leading-relaxed">
+                    Periodically re-evaluating your structure can ensure it remains the most tax-efficient as your business grows or laws change.
+                  </p>
+                </div>
+              </div>
+              
+              <!-- Right Content - Entity Types -->
+              <div class="space-y-4">
+                <h4 class="text-xl font-bold text-gray-900 mb-4">Business Entity Options</h4>
+                <div class="space-y-3">
+                  <div class="p-4 bg-gradient-to-r from-indigo-50 to-purple-50 rounded-lg border border-indigo-200">
+                    <div class="flex items-start gap-3">
+                      <div class="w-8 h-8 bg-indigo-100 rounded-full flex items-center justify-center flex-shrink-0">
+                        <svg class="w-4 h-4 text-indigo-600" fill="currentColor" viewBox="0 0 20 20">
+                          <path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd"></path>
+                        </svg>
+                      </div>
+                      <div>
+                        <h5 class="font-semibold text-gray-900">Sole Proprietorship</h5>
+                        <p class="text-gray-600 text-sm">Simplest structure with direct tax implications</p>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <div class="p-4 bg-gradient-to-r from-indigo-50 to-purple-50 rounded-lg border border-indigo-200">
+                    <div class="flex items-start gap-3">
+                      <div class="w-8 h-8 bg-indigo-100 rounded-full flex items-center justify-center flex-shrink-0">
+                        <svg class="w-4 h-4 text-indigo-600" fill="currentColor" viewBox="0 0 20 20">
+                          <path fill-rule="evenodd" d="M4 4a2 2 0 00-2 2v8a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2H4zm0 2v8h12V6H4z" clip-rule="evenodd"></path>
+                        </svg>
+                      </div>
+                      <div>
+                        <h5 class="font-semibold text-gray-900">LLC (Limited Liability Company)</h5>
+                        <p class="text-gray-600 text-sm">Flexible taxation with liability protection</p>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <div class="p-4 bg-gradient-to-r from-indigo-50 to-purple-50 rounded-lg border border-indigo-200">
+                    <div class="flex items-start gap-3">
+                      <div class="w-8 h-8 bg-indigo-100 rounded-full flex items-center justify-center flex-shrink-0">
+                        <svg class="w-4 h-4 text-indigo-600" fill="currentColor" viewBox="0 0 20 20">
+                          <path fill-rule="evenodd" d="M10.496 2.132a1 1 0 00-.992 0l-7 4A1 1 0 003 8v7a1 1 0 100 2h14a1 1 0 100-2V8a1 1 0 00.496-1.868l-7-4z" clip-rule="evenodd"></path>
+                        </svg>
+                      </div>
+                      <div>
+                        <h5 class="font-semibold text-gray-900">S Corporation</h5>
+                        <p class="text-gray-600 text-sm">Pass-through taxation with employment benefits</p>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <div class="p-4 bg-gradient-to-r from-indigo-50 to-purple-50 rounded-lg border border-indigo-200">
+                    <div class="flex items-start gap-3">
+                      <div class="w-8 h-8 bg-indigo-100 rounded-full flex items-center justify-center flex-shrink-0">
+                        <svg class="w-4 h-4 text-indigo-600" fill="currentColor" viewBox="0 0 20 20">
+                          <path fill-rule="evenodd" d="M4 4a2 2 0 00-2 2v4a2 2 0 002 2V6h10a2 2 0 00-2-2H4zm2 6a2 2 0 012-2h8a2 2 0 012 2v4a2 2 0 01-2 2H8a2 2 0 01-2-2v-4zm6 4a2 2 0 100-4 2 2 0 000 4z" clip-rule="evenodd"></path>
+                        </svg>
+                      </div>
+                      <div>
+                        <h5 class="font-semibold text-gray-900">C Corporation</h5>
+                        <p class="text-gray-600 text-sm">Double taxation but maximum growth flexibility</p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                
+                <!-- CTA Button -->
+                <div class="pt-4">
+                  <button @click="showLeadModal = true" class="w-full bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white px-6 py-3 rounded-xl font-semibold transition-all duration-300 shadow-lg hover:shadow-xl">
+                    Optimize Your Business Structure
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- FBAR Filing - Detailed Section -->
+    <section id="fbar-filing" class="py-20 px-4 sm:px-6 lg:px-8 bg-gradient-to-b from-gray-50 to-white">
+      <div class="max-w-7xl mx-auto">
+        <div class="bg-white rounded-3xl shadow-2xl overflow-hidden border border-gray-100">
+          <!-- Header -->
+          <div class="bg-gradient-to-r from-emerald-600 to-teal-600 px-8 py-6">
+            <div class="flex items-center gap-4">
+              <div class="w-16 h-16 bg-white/20 rounded-2xl flex items-center justify-center backdrop-blur-sm">
+                <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M3 14h18m-9-4v8m-7 0h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"></path>
+                </svg>
+              </div>
+              <div>
+                <h3 class="text-2xl font-bold text-white">FBAR Filing</h3>
+                <p class="text-emerald-100 font-medium">Foreign Bank Account Reporting</p>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Content -->
+          <div class="p-8">
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 items-start">
+              <!-- Left Content -->
+              <div class="space-y-6">
+                <p class="text-gray-700 leading-relaxed text-lg">
+                  The Report of Foreign Bank and Financial Accounts (FBAR) is an annual filing requirement for U.S. persons with foreign financial accounts that exceed an aggregate value of $10,000 at any time during the calendar year.
+                </p>
+                
+                <div class="bg-emerald-50 rounded-xl p-6 border border-emerald-200">
+                  <h4 class="font-bold text-emerald-900 mb-3 flex items-center gap-2">
+                    <svg class="w-5 h-5 text-emerald-600" fill="currentColor" viewBox="0 0 20 20">
+                      <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"></path>
+                    </svg>
+                    Important Threshold
+                  </h4>
+                  <p class="text-emerald-800 text-sm leading-relaxed">
+                    The $10,000 threshold is based on the aggregate value of all foreign accounts at any point during the year, not the year-end balance.
+                  </p>
+                </div>
+              </div>
+              
+              <!-- Right Content - Requirements -->
+              <div class="space-y-4">
+                <h4 class="text-xl font-bold text-gray-900 mb-4">FBAR Requirements</h4>
+                <div class="space-y-4">
+                  <div class="p-4 bg-gradient-to-r from-emerald-50 to-teal-50 rounded-lg border border-emerald-200">
+                    <div class="flex items-start gap-3">
+                      <div class="w-8 h-8 bg-emerald-100 rounded-full flex items-center justify-center flex-shrink-0">
+                        <span class="text-emerald-600 font-bold text-sm">1</span>
+                      </div>
+                      <div>
+                        <h5 class="font-semibold text-gray-900">U.S. Person Status</h5>
+                        <p class="text-gray-600 text-sm">Must be a U.S. citizen, resident, or entity</p>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <div class="p-4 bg-gradient-to-r from-emerald-50 to-teal-50 rounded-lg border border-emerald-200">
+                    <div class="flex items-start gap-3">
+                      <div class="w-8 h-8 bg-emerald-100 rounded-full flex items-center justify-center flex-shrink-0">
+                        <span class="text-emerald-600 font-bold text-sm">2</span>
+                      </div>
+                      <div>
+                        <h5 class="font-semibold text-gray-900">Foreign Account Ownership</h5>
+                        <p class="text-gray-600 text-sm">Financial interest in or signature authority over foreign accounts</p>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <div class="p-4 bg-gradient-to-r from-emerald-50 to-teal-50 rounded-lg border border-emerald-200">
+                    <div class="flex items-start gap-3">
+                      <div class="w-8 h-8 bg-emerald-100 rounded-full flex items-center justify-center flex-shrink-0">
+                        <span class="text-emerald-600 font-bold text-sm">3</span>
+                      </div>
+                      <div>
+                        <h5 class="font-semibold text-gray-900">$10,000 Threshold</h5>
+                        <p class="text-gray-600 text-sm">Aggregate value exceeds $10,000 at any time during the year</p>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <div class="p-4 bg-gradient-to-r from-emerald-50 to-teal-50 rounded-lg border border-emerald-200">
+                    <div class="flex items-start gap-3">
+                      <div class="w-8 h-8 bg-emerald-100 rounded-full flex items-center justify-center flex-shrink-0">
+                        <span class="text-emerald-600 font-bold text-sm">4</span>
+                      </div>
+                      <div>
+                        <h5 class="font-semibold text-gray-900">Annual Filing</h5>
+                        <p class="text-gray-600 text-sm">Must file by April 15th (with automatic extension to October 15th)</p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                
+                <!-- Warning Box -->
+                <div class="mt-6 p-4 bg-gradient-to-r from-red-50 to-orange-50 rounded-lg border border-red-200">
+                  <h5 class="font-semibold text-red-900 mb-2 flex items-center gap-2">
+                    <svg class="w-4 h-4 text-red-600" fill="currentColor" viewBox="0 0 20 20">
+                      <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd"></path>
+                    </svg>
+                    Compliance Critical
+                  </h5>
+                  <p class="text-red-800 text-sm">Failure to file FBAR can result in significant penalties. Professional assistance ensures compliance.</p>
+                </div>
+                
+                <!-- CTA Button -->
+                <div class="pt-4">
+                  <button @click="showLeadModal = true" class="w-full bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white px-6 py-3 rounded-xl font-semibold transition-all duration-300 shadow-lg hover:shadow-xl">
+                    Get FBAR Filing Assistance
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Payroll Services - Detailed Section -->
+    <section id="payroll-services" class="py-20 px-4 sm:px-6 lg:px-8 bg-white">
+      <div class="max-w-7xl mx-auto">
+        <div class="bg-white rounded-3xl shadow-2xl overflow-hidden border border-gray-100">
+          <!-- Header -->
+          <div class="bg-gradient-to-r from-amber-600 to-yellow-600 px-8 py-6">
+            <div class="flex items-center gap-4">
+              <div class="w-16 h-16 bg-white/20 rounded-2xl flex items-center justify-center backdrop-blur-sm">
+                <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                </svg>
+              </div>
+              <div>
+                <h3 class="text-2xl font-bold text-white">Payroll Services</h3>
+                <p class="text-amber-100 font-medium">Comprehensive Payroll Management Solutions</p>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Content -->
+          <div class="p-8">
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 items-start">
+              <!-- Left Content -->
+              <div class="space-y-6">
+                <p class="text-gray-700 leading-relaxed text-lg">
+                  Our comprehensive payroll services ensure accurate, timely, and compliant payroll processing for businesses of all sizes. We handle everything from electronic processing to statutory compliance and management reporting.
+                </p>
+                
+                <div class="bg-amber-50 rounded-xl p-6 border border-amber-200">
+                  <h4 class="font-bold text-amber-900 mb-3 flex items-center gap-2">
+                    <svg class="w-5 h-5 text-amber-600" fill="currentColor" viewBox="0 0 20 20">
+                      <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+                    </svg>
+                    Full-Service Solution
+                  </h4>
+                  <p class="text-amber-800 text-sm leading-relaxed">
+                    From processing to compliance, we manage your entire payroll operation so you can focus on growing your business.
+                  </p>
+                </div>
+              </div>
+              
+              <!-- Right Content - Services -->
+              <div class="space-y-4">
+                <h4 class="text-xl font-bold text-gray-900 mb-4">Our Payroll Services Include</h4>
+                <div class="space-y-4">
+                  <div class="p-4 bg-gradient-to-r from-amber-50 to-yellow-50 rounded-lg border border-amber-200">
+                    <div class="flex items-start gap-3">
+                      <div class="w-8 h-8 bg-amber-100 rounded-full flex items-center justify-center flex-shrink-0">
+                        <svg class="w-4 h-4 text-amber-600" fill="currentColor" viewBox="0 0 20 20">
+                          <path fill-rule="evenodd" d="M3 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1z" clip-rule="evenodd"></path>
+                        </svg>
+                      </div>
+                      <div>
+                        <h5 class="font-semibold text-gray-900">Payroll Processing Electronically</h5>
+                        <p class="text-gray-600 text-sm">Automated electronic payroll processing for accuracy and efficiency</p>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <div class="p-4 bg-gradient-to-r from-amber-50 to-yellow-50 rounded-lg border border-amber-200">
+                    <div class="flex items-start gap-3">
+                      <div class="w-8 h-8 bg-amber-100 rounded-full flex items-center justify-center flex-shrink-0">
+                        <svg class="w-4 h-4 text-amber-600" fill="currentColor" viewBox="0 0 20 20">
+                          <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+                        </svg>
+                      </div>
+                      <div>
+                        <h5 class="font-semibold text-gray-900">Payroll Statutory Compliance</h5>
+                        <p class="text-gray-600 text-sm">Ensure compliance with federal, state, and local payroll regulations</p>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <div class="p-4 bg-gradient-to-r from-amber-50 to-yellow-50 rounded-lg border border-amber-200">
+                    <div class="flex items-start gap-3">
+                      <div class="w-8 h-8 bg-amber-100 rounded-full flex items-center justify-center flex-shrink-0">
+                        <svg class="w-4 h-4 text-amber-600" fill="currentColor" viewBox="0 0 20 20">
+                          <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"></path>
+                        </svg>
+                      </div>
+                      <div>
+                        <h5 class="font-semibold text-gray-900">Query Management from Departments</h5>
+                        <p class="text-gray-600 text-sm">Handle inquiries and communications with government departments</p>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <div class="p-4 bg-gradient-to-r from-amber-50 to-yellow-50 rounded-lg border border-amber-200">
+                    <div class="flex items-start gap-3">
+                      <div class="w-8 h-8 bg-amber-100 rounded-full flex items-center justify-center flex-shrink-0">
+                        <svg class="w-4 h-4 text-amber-600" fill="currentColor" viewBox="0 0 20 20">
+                          <path fill-rule="evenodd" d="M3 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1z" clip-rule="evenodd"></path>
+                        </svg>
+                      </div>
+                      <div>
+                        <h5 class="font-semibold text-gray-900">Reports to Management</h5>
+                        <p class="text-gray-600 text-sm">Comprehensive payroll reports and analytics for management decisions</p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                
+                <!-- Benefits Box -->
+                <div class="mt-6 p-4 bg-gradient-to-r from-green-50 to-emerald-50 rounded-lg border border-green-200">
+                  <h5 class="font-semibold text-green-900 mb-2">Why Choose Our Payroll Services?</h5>
+                  <ul class="text-green-800 text-sm space-y-1">
+                    <li>• Reduce administrative burden</li>
+                    <li>• Ensure accurate calculations</li>
+                    <li>• Maintain compliance standards</li>
+                    <li>• Access detailed reporting</li>
+                  </ul>
+                </div>
+                
+                <!-- CTA Button -->
+                <div class="pt-4">
+                  <button @click="showLeadModal = true" class="w-full bg-gradient-to-r from-amber-600 to-yellow-600 hover:from-amber-700 hover:to-yellow-700 text-white px-6 py-3 rounded-xl font-semibold transition-all duration-300 shadow-lg hover:shadow-xl">
+                    Start Payroll Services Today
+                  </button>
+                </div>
               </div>
             </div>
           </div>
@@ -284,7 +1016,7 @@
       <div class="max-w-4xl mx-auto text-center">
         <h2 class="text-4xl font-bold text-white mb-4">Ready to Get Started?</h2>
         <p class="text-lg text-blue-100 mb-8">Let our experts help you optimize your tax strategy today.</p>
-        <button class="bg-white text-blue-600 hover:bg-gray-100 px-8 py-4 rounded-xl font-semibold transition-all shadow-lg">
+        <button @click="showLeadModal = true" class="bg-white text-blue-600 hover:bg-gray-100 px-8 py-4 rounded-xl font-semibold transition-all shadow-lg">
           Schedule Consultation
         </button>
       </div>
@@ -292,6 +1024,9 @@
 
     <!-- Footer -->
     <PublicFooter />
+
+    <!-- Lead Form Modal -->
+    <LeadFormModal :isOpen="showLeadModal" @close="showLeadModal = false" />
   </div>
   
   <!-- Consent Banner -->
@@ -299,7 +1034,11 @@
 </template>
 
 <script setup>
+import { ref } from 'vue'
 import PublicNavbar from '@/Components/PublicNavbar.vue'
 import PublicFooter from '@/Components/PublicFooter.vue'
 import ConsentBanner from '@/Components/ConsentBanner.vue'
+import LeadFormModal from '@/Components/LeadFormModal.vue'
+
+const showLeadModal = ref(false)
 </script>

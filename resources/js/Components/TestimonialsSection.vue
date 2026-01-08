@@ -72,27 +72,7 @@
         </div>
       </div>
 
-      <!-- Trust Metrics -->
-      <div class="bg-gradient-to-r from-blue-600 to-indigo-600 rounded-2xl p-12 text-white">
-        <div class="grid grid-cols-1 md:grid-cols-4 gap-8 text-center">
-          <div>
-            <p class="text-4xl font-bold mb-2">5000+</p>
-            <p class="text-blue-100">Satisfied Clients</p>
-          </div>
-          <div>
-            <p class="text-4xl font-bold mb-2">$50M+</p>
-            <p class="text-blue-100">Tax Savings Delivered</p>
-          </div>
-          <div>
-            <p class="text-4xl font-bold mb-2">98%</p>
-            <p class="text-blue-100">Client Satisfaction Rate</p>
-          </div>
-          <div>
-            <p class="text-4xl font-bold mb-2">15+</p>
-            <p class="text-blue-100">Years of Excellence</p>
-          </div>
-        </div>
-      </div>
+    
     </div>
   </section>
 </template>

@@ -336,6 +336,9 @@
           </form>
         </div>
 
+      <!-- Two-Factor Authentication -->
+      <TwoFactorSettings :user="page.props.auth.user" />
+
       <!-- Account Statistics -->
       <div class="bg-white shadow rounded-lg">
         <div class="px-6 py-4 border-b border-gray-200">
@@ -365,6 +368,7 @@
 import { ref } from 'vue'
 import { useForm, usePage } from '@inertiajs/vue3'
 import AppLayout from '@/Layouts/AppLayout.vue'
+import TwoFactorSettings from '@/Components/TwoFactorSettings.vue'
 import { 
   UserCircleIcon, 
   UserIcon, 

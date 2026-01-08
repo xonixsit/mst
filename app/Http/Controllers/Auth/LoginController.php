@@ -41,9 +41,22 @@ class LoginController extends Controller
         $remember = $request->boolean('remember');
 
         if (Auth::attempt($credentials, $remember)) {
-            $request->session()->regenerate();
-
             $user = Auth::user();
+
+            // Check if 2FA is enabled
+            if ($user->two_factor_enabled) {
+                Auth::logout();
+                $request->session()->put('2fa_pending', true);
+                $request->session()->put('2fa_user_id', $user->id);
+                
+                // Send 2FA code via email
+                $twoFactorService = app(\App\Services\TwoFactorAuthService::class);
+                $twoFactorService->sendCode($user);
+                
+                return redirect()->route('auth.2fa.verify');
+            }
+
+            $request->session()->regenerate();
             
             // Check if email verification is required
             if ($user instanceof \Illuminate\Contracts\Auth\MustVerifyEmail && !$user->hasVerifiedEmail()) {

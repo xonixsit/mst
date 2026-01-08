@@ -80,6 +80,12 @@ Route::get('/reset-password/{token}', function ($token) {
     return redirect("/client/reset-password/{$token}");
 })->name('password.reset');
 
+// 2FA Routes
+Route::prefix('auth')->name('auth.')->group(function () {
+    Route::get('/2fa/verify', [App\Http\Controllers\Auth\TwoFactorAuthController::class, 'verify'])->name('2fa.verify');
+    Route::post('/2fa/verify', [App\Http\Controllers\Auth\TwoFactorAuthController::class, 'verifyCode'])->name('2fa.verify.code');
+});
+
 // Admin Authentication Routes
 Route::prefix('admin')->name('admin.')->group(function () {
     Route::get('/login', [LoginController::class, 'showLoginForm'])->name('login');
@@ -116,6 +122,15 @@ Route::prefix('client')->name('client.')->group(function () {
     Route::post('/email/verification-notification', [App\Http\Controllers\Auth\VerificationController::class, 'resend'])->name('verification.send');
     
     Route::post('/logout', [LoginController::class, 'logout'])->middleware(['auth', 'auth.session'])->name('logout');
+});
+
+// Authenticated 2FA Routes
+Route::middleware(['auth', 'auth.session'])->prefix('auth')->name('auth.')->group(function () {
+    Route::get('/2fa/setup', [App\Http\Controllers\Auth\TwoFactorAuthController::class, 'setup'])->name('2fa.setup');
+    Route::post('/2fa/confirm', [App\Http\Controllers\Auth\TwoFactorAuthController::class, 'confirm'])->name('2fa.confirm');
+    Route::post('/2fa/disable', [App\Http\Controllers\Auth\TwoFactorAuthController::class, 'disable'])->name('2fa.disable');
+    Route::get('/2fa/backup-codes', [App\Http\Controllers\Auth\TwoFactorAuthController::class, 'backupCodes'])->name('2fa.backup-codes');
+    Route::post('/2fa/backup-codes/regenerate', [App\Http\Controllers\Auth\TwoFactorAuthController::class, 'regenerateBackupCodes'])->name('2fa.backup-codes.regenerate');
 });
 
 // Admin routes
@@ -198,8 +213,16 @@ Route::middleware(['auth', 'auth.session', 'session.timeout', 'admin'])->prefix(
             ]
         ];
 
+        // Get recent leads
+        $recentLeads = \App\Models\Lead::orderBy('created_at', 'desc')->limit(5)->get();
+
+        // Get recent contact queries
+        $recentContacts = \App\Models\ContactSubmission::orderBy('created_at', 'desc')->limit(5)->get();
+
         return inertia('Admin/Dashboard', [
-            'stats' => $stats
+            'stats' => $stats,
+            'recentLeads' => $recentLeads,
+            'recentContacts' => $recentContacts
         ]);
     })->name('dashboard');
     

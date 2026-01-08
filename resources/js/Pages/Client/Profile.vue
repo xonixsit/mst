@@ -200,6 +200,9 @@
         </div>
       </div>
 
+      <!-- Two-Factor Authentication -->
+      <TwoFactorSettings :user="page.props.auth.user" />
+
       <!-- Communication Preferences -->
       <CommunicationPreferences :client="communicationPreferences" />
 
@@ -242,6 +245,7 @@
 import { ref } from 'vue'
 import { useForm, usePage, Link } from '@inertiajs/vue3'
 import AppLayout from '@/Layouts/AppLayout.vue'
+import TwoFactorSettings from '@/Components/TwoFactorSettings.vue'
 import CommunicationPreferences from '@/Components/CommunicationPreferences.vue'
 import ConsentPreferences from '@/Components/ConsentPreferences.vue'
 

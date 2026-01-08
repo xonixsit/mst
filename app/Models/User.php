@@ -35,6 +35,9 @@ class User extends Authenticatable implements MustVerifyEmail
         'state',
         'zip_code',
         'email_verified_at',
+        'two_factor_enabled',
+        'two_factor_secret',
+        'two_factor_backup_codes',
     ];
 
     /**
@@ -45,6 +48,8 @@ class User extends Authenticatable implements MustVerifyEmail
     protected $hidden = [
         'password',
         'remember_token',
+        'two_factor_secret',
+        'two_factor_backup_codes',
     ];
 
     /**
@@ -72,6 +77,14 @@ class User extends Authenticatable implements MustVerifyEmail
     public function clients(): HasMany
     {
         return $this->hasMany(Client::class);
+    }
+
+    /**
+     * Get 2FA codes for this user.
+     */
+    public function twoFactorCodes(): HasMany
+    {
+        return $this->hasMany(TwoFactorCode::class);
     }
 
     /**
