@@ -1,1 +1,0 @@
-import{_ as t,a as r}from"./PublicFooter-BpsDVRl6.js";import{c as n,o as c,b as e,a,I as l}from"./app-AKBEy-eR.js";const _={class:"bg-white min-h-screen flex flex-col"},i={class:"flex-grow"},p={__name:"AuthLayout",setup(m){return(o,s)=>(c(),n("div",_,[e(t),s[0]||(s[0]=a("div",{class:"h-16"},null,-1)),a("main",i,[l(o.$slots,"default")]),e(r)]))}};export{p as _};
