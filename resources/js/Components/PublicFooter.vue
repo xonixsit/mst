@@ -148,7 +148,7 @@
       <!-- Bottom Footer -->
       <div class="flex flex-col md:flex-row justify-between items-center gap-4">
         <p class="text-gray-500 text-sm">
-          Copyright © 2025. All rights reserved to <span class="text-blue-400 font-semibold">MySuperTax</span>
+          Copyright © 2026. All rights reserved to <span class="text-blue-400 font-semibold">MySuperTax</span>
         </p>
         <div class="flex items-center gap-6 text-sm flex-wrap justify-center">
           <Link href="/legal/terms" class="text-gray-400 hover:text-blue-400 transition-colors">Terms & Condition</Link>
