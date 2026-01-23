@@ -1,6 +1,6 @@
 import axios from 'axios'
 
-const CHUNK_SIZE = 5 * 1024 * 1024 // 5MB chunks
+const CHUNK_SIZE = 2 * 1024 * 1024 // 5MB chunks
 const DB_NAME = 'DocumentUploadDB'
 const STORE_NAME = 'uploads'
 
