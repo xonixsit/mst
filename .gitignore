@@ -4,7 +4,8 @@
 /public/storage
 /storage/*.key
 /vendor
-.env
+public/build
+/.env
 .env.backup
 .env.production
 .phpunit.result.cache
@@ -16,4 +17,4 @@ yarn-error.log
 /.fleet
 /.idea
 /.vscode
-.kiro
+/.kiro
