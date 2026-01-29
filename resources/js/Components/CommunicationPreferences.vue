@@ -5,6 +5,16 @@
       <p class="mt-1 text-sm text-gray-600">Manage how you receive notifications and communications</p>
     </div>
     <div class="px-6 py-4">
+      <!-- Success Message -->
+      <div v-if="$page.props.flash?.success" class="rounded-lg bg-green-50 border border-green-200 p-4 mb-6">
+        <p class="text-sm text-green-800 font-medium">{{ $page.props.flash.success }}</p>
+      </div>
+
+      <!-- Error Message -->
+      <div v-if="$page.props.flash?.error" class="rounded-lg bg-red-50 border border-red-200 p-4 mb-6">
+        <p class="text-sm text-red-800 font-medium">{{ $page.props.flash.error }}</p>
+      </div>
+
       <form @submit.prevent="updatePreferences" class="space-y-6">
         <!-- Notification Methods -->
         <div>
@@ -166,7 +176,10 @@ const updatePreferences = () => {
   form.patch(`/client/communication-preferences`, {
     preserveScroll: true,
     onSuccess: () => {
-      // Show success message
+      // Success message will be shown via flash message
+    },
+    onError: () => {
+      // Error message will be shown via flash message
     }
   })
 }

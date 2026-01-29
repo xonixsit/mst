@@ -311,10 +311,40 @@ class Client extends Model
      */
     public function updateCommunicationPreferences(array $preferences): void
     {
-        $this->update([
-            'communication_preferences' => array_merge($this->getCommunicationPreferences(), $preferences),
-            'last_communication_at' => now(),
-        ]);
+        // Ensure we have valid JSON data with proper types
+        $currentPreferences = $this->getCommunicationPreferences();
+        $newPreferences = array_merge($currentPreferences, $preferences);
+        
+        // Validate and cast the JSON structure with strict types
+        $validatedPreferences = [
+            'email_notifications' => (bool)($newPreferences['email_notifications'] ?? true),
+            'document_notifications' => (bool)($newPreferences['document_notifications'] ?? true),
+            'invoice_notifications' => (bool)($newPreferences['invoice_notifications'] ?? true),
+            'reminder_notifications' => (bool)($newPreferences['reminder_notifications'] ?? true),
+            'notification_frequency' => (string)($newPreferences['notification_frequency'] ?? 'immediate'),
+        ];
+        
+        // Ensure notification_frequency is a valid value
+        if (!in_array($validatedPreferences['notification_frequency'], ['immediate', 'daily', 'weekly'])) {
+            $validatedPreferences['notification_frequency'] = 'immediate';
+        }
+        
+        try {
+            $this->update([
+                'communication_preferences' => $validatedPreferences,
+                'last_communication_at' => now(),
+            ]);
+        } catch (\Exception $e) {
+            \Log::error('Failed to update communication preferences', [
+                'client_id' => $this->id,
+                'preferences' => $validatedPreferences,
+                'error' => $e->getMessage()
+            ]);
+            
+            // Try updating without the communication_preferences field
+            $this->update(['last_communication_at' => now()]);
+            throw $e;
+        }
     }
 
     /**

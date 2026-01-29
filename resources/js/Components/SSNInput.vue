@@ -1,13 +1,11 @@
 <template>
   <div class="relative">
     <input
-      :id="inputId"
       ref="inputRef"
-      :value="displayValue"
-      type="text"
-      :class="inputClasses"
+      :type="showValue ? 'text' : 'password'"
+      :value="modelValue"
       :placeholder="placeholder"
-      :maxlength="11"
+      :class="inputClasses"
       :disabled="disabled"
       :readonly="readonly"
       @input="handleInput"
@@ -16,47 +14,33 @@
       @keydown="handleKeydown"
     />
     
-    <!-- Security indicator -->
-    <div 
-      v-if="showSecurityIndicator && hasValue && !isFocused"
-      class="absolute inset-y-0 right-0 flex items-center pr-3"
-    >
-      <div class="flex items-center space-x-1">
-        <EyeSlashIcon class="h-4 w-4 text-gray-400" />
-        <span class="text-xs text-gray-500">Secured</span>
-      </div>
-    </div>
-    
-    <!-- Show/Hide toggle for debugging (only in development) -->
+    <!-- Toggle visibility button -->
     <button
-      v-if="showToggle && hasValue"
       type="button"
-      @click="toggleMask"
+      @click="toggleVisibility"
       class="absolute inset-y-0 right-0 flex items-center pr-3 text-gray-400 hover:text-gray-600"
+      :disabled="disabled"
     >
-      <EyeIcon v-if="isMasked" class="h-4 w-4" />
-      <EyeSlashIcon v-else class="h-4 w-4" />
+      <EyeIcon v-if="!showValue" class="h-5 w-5" />
+      <EyeSlashIcon v-else class="h-5 w-5" />
     </button>
+    
+    <!-- Security indicator -->
+    <div v-if="showSecurityIndicator && hasValue" class="mt-1 flex items-center text-xs text-green-600">
+      <svg class="w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 20 20">
+        <path fill-rule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clip-rule="evenodd" />
+      </svg>
+      Encrypted and secure
+    </div>
   </div>
 </template>
 
 <script setup>
-import { ref, computed, watch, nextTick } from 'vue'
+import { ref, computed } from 'vue'
 import { EyeIcon, EyeSlashIcon } from '@heroicons/vue/24/outline'
-import { 
-  maskSSN, 
-  shouldMaskSSN, 
-  formatSSNInput, 
-  getSSNDisplayValue,
-  isValidSSN 
-} from '@/Utils/SSNMask.js'
 
 const props = defineProps({
   modelValue: {
-    type: String,
-    default: ''
-  },
-  inputId: {
     type: String,
     required: true
   },
@@ -66,7 +50,7 @@ const props = defineProps({
   },
   inputClasses: {
     type: String,
-    default: 'block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm text-gray-900 placeholder-gray-500'
+    default: 'block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm text-gray-900 placeholder-gray-500 pr-10'
   },
   disabled: {
     type: Boolean,
@@ -79,109 +63,34 @@ const props = defineProps({
   showSecurityIndicator: {
     type: Boolean,
     default: true
-  },
-  showToggle: {
-    type: Boolean,
-    default: false // Only enable in development if needed
-  },
-  autoMask: {
-    type: Boolean,
-    default: true
-  },
-  isPreMasked: {
-    type: Boolean,
-    default: false
   }
 })
 
 const emit = defineEmits(['update:modelValue', 'focus', 'blur', 'input'])
 
 const inputRef = ref(null)
-const isFocused = ref(false)
-const isMasked = ref(true)
-const actualValue = ref(props.modelValue || '')
+const showValue = ref(false)
 
 // Computed properties
 const hasValue = computed(() => {
-  return actualValue.value && actualValue.value.length > 0
-})
-
-const displayValue = computed(() => {
-  if (!props.autoMask) {
-    return actualValue.value
-  }
-  
-  // If the value is pre-masked from backend and we're not focused, show it as-is
-  if (props.isPreMasked && actualValue.value.includes('*') && !isFocused.value) {
-    return actualValue.value
-  }
-  
-  // If focused and we have a masked value, show placeholder for editing
-  if (isFocused.value && actualValue.value.includes('*')) {
-    return ''
-  }
-  
-  return getSSNDisplayValue(
-    actualValue.value, 
-    isFocused.value || !isMasked.value, 
-    hasValue.value
-  )
+  return props.modelValue && props.modelValue.length > 0
 })
 
 // Event handlers
 const handleInput = (event) => {
-  const rawValue = event.target.value
-  
-  // If user is typing over a masked value, clear it first
-  if (rawValue.includes('*')) {
-    // If they're trying to edit a masked value, clear it
-    if (rawValue.length > actualValue.value.length || !isFocused.value) {
-      event.target.value = ''
-      actualValue.value = ''
-      emit('update:modelValue', '')
-      emit('input', '')
-      return
-    }
-  }
-  
-  // Format the input
-  const formattedValue = formatSSNInput(rawValue)
-  actualValue.value = formattedValue
-  
-  // Update the input field
-  event.target.value = formattedValue
-  
-  // Emit the actual value
-  emit('update:modelValue', formattedValue)
-  emit('input', formattedValue)
+  const value = event.target.value
+  // Format SSN with dashes
+  const formatted = formatSSN(value)
+  event.target.value = formatted
+  emit('update:modelValue', formatted)
+  emit('input', formatted)
 }
 
 const handleFocus = (event) => {
-  isFocused.value = true
-  
-  // Show actual value when focused
-  nextTick(() => {
-    if (inputRef.value && props.autoMask) {
-      inputRef.value.value = actualValue.value
-    }
-  })
-  
   emit('focus', event)
 }
 
 const handleBlur = (event) => {
-  isFocused.value = false
-  isMasked.value = true
-  
-  // Validate and format on blur
-  if (actualValue.value) {
-    const formattedValue = formatSSNInput(actualValue.value)
-    if (formattedValue !== actualValue.value) {
-      actualValue.value = formattedValue
-      emit('update:modelValue', formattedValue)
-    }
-  }
-  
   emit('blur', event)
 }
 
@@ -202,50 +111,30 @@ const handleKeydown = (event) => {
   }
   
   // Only allow numbers
-  if ((event.keyCode < 48 || event.keyCode > 57) && (event.keyCode < 96 || event.keyCode > 105)) {
+  if (event.keyCode < 48 || event.keyCode > 57) {
     event.preventDefault()
   }
 }
 
-const toggleMask = () => {
-  isMasked.value = !isMasked.value
+const toggleVisibility = () => {
+  showValue.value = !showValue.value
+}
+
+// Format SSN with dashes
+const formatSSN = (value) => {
+  // Remove all non-digits
+  const digits = value.replace(/\D/g, '')
   
-  nextTick(() => {
-    if (inputRef.value) {
-      inputRef.value.value = displayValue.value
-    }
-  })
-}
-
-// Watch for external value changes
-watch(() => props.modelValue, (newValue) => {
-  if (newValue !== actualValue.value) {
-    // If we receive a masked value from backend, store it but don't emit it back
-    actualValue.value = newValue || ''
-    
-    // If it's a masked value, we'll show it as masked but won't emit changes
-    // until user actually edits it
+  // Limit to 9 digits
+  const limited = digits.substring(0, 9)
+  
+  // Add dashes
+  if (limited.length >= 6) {
+    return `${limited.substring(0, 3)}-${limited.substring(3, 5)}-${limited.substring(5)}`
+  } else if (limited.length >= 4) {
+    return `${limited.substring(0, 3)}-${limited.substring(3)}`
+  } else {
+    return limited
   }
-})
-
-// Initialize
-actualValue.value = props.modelValue || ''
+}
 </script>
-
-<style scoped>
-/* Ensure the input field handles the masked display properly */
-input[type="text"] {
-  font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
-  letter-spacing: 0.05em;
-}
-
-/* Style for masked text */
-input[type="text"]:not(:focus) {
-  color: #374151; /* gray-700 */
-}
-
-/* Security indicator styling */
-.security-indicator {
-  pointer-events: none;
-}
-</style>

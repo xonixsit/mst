@@ -6,7 +6,9 @@ use App\Http\Controllers\Controller;
 use App\Models\Message;
 use App\Models\User;
 use App\Models\Client;
+use App\Mail\NewMessageNotification;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Mail;
 use Inertia\Inertia;
 
 class MessageController extends Controller
@@ -141,7 +143,7 @@ class MessageController extends Controller
             return back()->withErrors(['client_id' => 'Client does not have a user account.']);
         }
 
-        Message::create([
+        $message = Message::create([
             'client_id' => $request->client_id,
             'sender_id' => auth()->id(),
             'recipient_id' => $client->user->id, // Send to the client's user account
@@ -149,6 +151,19 @@ class MessageController extends Controller
             'body' => $request->body,
             'priority' => $request->priority
         ]);
+
+        // Send email notification to client if they have email notifications enabled
+        if ($client->email_notifications_enabled ?? true) {
+            try {
+                Mail::to($client->user->email)->send(new NewMessageNotification($message, $client->user));
+            } catch (\Exception $e) {
+                \Log::error('Failed to send message notification email to client', [
+                    'message_id' => $message->id,
+                    'client_email' => $client->user->email,
+                    'error' => $e->getMessage()
+                ]);
+            }
+        }
 
         return back()->with('success', 'Message sent successfully.');
     }
@@ -179,6 +194,19 @@ class MessageController extends Controller
             'body' => $request->body,
             'priority' => $originalMessage->priority ?: 'normal'
         ]);
+
+        // Send email notification to client if they have email notifications enabled
+        if ($client->email_notifications_enabled ?? true) {
+            try {
+                Mail::to($client->user->email)->send(new NewMessageNotification($replyMessage, $client->user));
+            } catch (\Exception $e) {
+                \Log::error('Failed to send reply notification email to client', [
+                    'message_id' => $replyMessage->id,
+                    'client_email' => $client->user->email,
+                    'error' => $e->getMessage()
+                ]);
+            }
+        }
 
         return back()->with('success', 'Reply sent successfully.');
     }

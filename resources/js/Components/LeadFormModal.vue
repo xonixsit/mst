@@ -192,11 +192,10 @@ const submit = async () => {
   successMessage.value = ''
 
   try {
-    const response = await fetch('/leads', {
+    const response = await fetch('/api/leads', {
       method: 'POST',
       headers: {
-        'Content-Type': 'application/json',
-        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.content
+        'Content-Type': 'application/json'
       },
       body: JSON.stringify(form.value)
     })

@@ -7,65 +7,57 @@ use App\Models\TwoFactorCode;
 use App\Mail\TwoFactorCodeMail;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Str;
-use PragmaRX\Google2FA\Google2FA;
 
 class TwoFactorAuthService
 {
-    protected $google2fa;
-
-    public function __construct()
-    {
-        $this->google2fa = new Google2FA();
-    }
-
     /**
-     * Generate a secret for 2FA
+     * Generate a secret for 2FA (not used for email OTP)
      */
     public function generateSecret(): string
     {
-        return $this->google2fa->generateSecretKey();
+        return Str::random(32);
     }
 
     /**
-     * Generate QR code for 2FA setup
+     * Generate QR code for 2FA setup (not used for email OTP)
      */
     public function generateQrCode(string $email, string $secret): string
     {
-        return $this->google2fa->getQRCodeInline(
-            config('app.name'),
-            $email,
-            $secret
-        );
+        return ''; // Not needed for email OTP
     }
 
     /**
-     * Verify 2FA code
+     * Verify 2FA code (email OTP)
      */
     public function verifyCode(User $user, string $code, ?string $secret = null): bool
     {
-        $secret = $secret ?? $user->two_factor_secret;
+        // For email OTP, check against stored codes
+        $twoFactorCode = $user->twoFactorCodes()
+            ->where('code', $code)
+            ->where('used', false)
+            ->where('expires_at', '>', now())
+            ->first();
 
-        if (!$secret) {
-            return false;
+        if ($twoFactorCode) {
+            $twoFactorCode->update(['used' => true]);
+            return true;
         }
 
-        return $this->google2fa->verifyKey($secret, $code);
+        return false;
     }
 
     /**
-     * Enable 2FA for user
+     * Enable 2FA for user (email-based)
      */
-    public function enableTwoFactor(User $user, string $secret): array
+    public function enableTwoFactor(User $user, string $secret = null): array
     {
-        $backupCodes = $this->generateBackupCodes();
-
         $user->update([
             'two_factor_enabled' => true,
-            'two_factor_secret' => $secret,
-            'two_factor_backup_codes' => json_encode($backupCodes),
+            'two_factor_secret' => null, // Not needed for email OTP
+            'two_factor_backup_codes' => null, // Not needed for email OTP
         ]);
 
-        return $backupCodes;
+        return []; // No backup codes for email OTP
     }
 
     /**
@@ -78,44 +70,33 @@ class TwoFactorAuthService
             'two_factor_secret' => null,
             'two_factor_backup_codes' => null,
         ]);
+
+        // Delete any unused codes
+        $user->twoFactorCodes()->delete();
     }
 
     /**
-     * Generate backup codes
+     * Generate backup codes (not used for email OTP)
      */
     public function generateBackupCodes(): array
     {
-        $codes = [];
-        for ($i = 0; $i < 10; $i++) {
-            $codes[] = Str::random(8);
-        }
-        return $codes;
+        return []; // Not needed for email OTP
     }
 
     /**
-     * Get backup codes for user
+     * Get backup codes for user (not used for email OTP)
      */
     public function getBackupCodes(User $user): array
     {
-        if (!$user->two_factor_backup_codes) {
-            return [];
-        }
-
-        return json_decode($user->two_factor_backup_codes, true);
+        return []; // Not needed for email OTP
     }
 
     /**
-     * Regenerate backup codes
+     * Regenerate backup codes (not used for email OTP)
      */
     public function regenerateBackupCodes(User $user): array
     {
-        $backupCodes = $this->generateBackupCodes();
-
-        $user->update([
-            'two_factor_backup_codes' => json_encode($backupCodes),
-        ]);
-
-        return $backupCodes;
+        return []; // Not needed for email OTP
     }
 
     /**

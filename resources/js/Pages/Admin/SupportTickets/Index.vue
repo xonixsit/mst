@@ -178,7 +178,8 @@
                 <span class="text-sm font-mono text-slate-600">{{ ticket.ticket_number }}</span>
               </td>
               <td class="px-6 py-4 whitespace-nowrap">
-                <p class="text-sm font-medium text-slate-900">{{ ticket.client.first_name }} {{ ticket.client.last_name }}</p>
+                <p v-if="ticket.client" class="text-sm font-medium text-slate-900">{{ ticket.client.first_name }} {{ ticket.client.last_name }}</p>
+                <p v-else class="text-sm text-slate-500">No client assigned</p>
               </td>
               <td class="px-6 py-4">
                 <p class="text-sm text-slate-900 truncate max-w-xs">{{ ticket.subject }}</p>

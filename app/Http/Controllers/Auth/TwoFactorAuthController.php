@@ -54,7 +54,12 @@ class TwoFactorAuthController extends Controller
         auth()->login($user);
         session()->forget(['2fa_pending', '2fa_user_id']);
         
-        return redirect()->intended(route('admin.dashboard'));
+        // Redirect based on user role
+        if ($user->isAdmin() || $user->isTaxProfessional()) {
+            return redirect()->route('admin.dashboard');
+        } else {
+            return redirect()->route('client.dashboard');
+        }
     }
 
     /**
@@ -88,38 +93,21 @@ class TwoFactorAuthController extends Controller
             return redirect()->route('admin.profile')->with('info', '2FA is already enabled');
         }
 
-        $secret = $this->twoFactorService->generateSecret();
-        session(['2fa_setup_secret' => $secret]);
-
-        $qrCode = $this->twoFactorService->generateQrCode($user->email, $secret);
-
         return Inertia::render('Auth/TwoFactorSetup', [
-            'qrCode' => $qrCode,
-            'secret' => $secret,
+            'qrCode' => '', // Not needed for email OTP
+            'secret' => '', // Not needed for email OTP
         ]);
     }
 
     /**
-     * Confirm 2FA setup
+     * Confirm 2FA setup (enable email OTP)
      */
     public function confirm(Request $request)
     {
-        $validated = $request->validate([
-            'code' => 'required|string|size:6',
-        ]);
+        $user = auth()->user();
 
-        $secret = session('2fa_setup_secret');
-
-        if (!$secret) {
-            return back()->withErrors(['code' => 'Setup session expired']);
-        }
-
-        if (!$this->twoFactorService->verifyCode(auth()->user(), $validated['code'], $secret)) {
-            return back()->withErrors(['code' => 'Invalid verification code']);
-        }
-
-        $backupCodes = $this->twoFactorService->enableTwoFactor(auth()->user(), $secret);
-        session()->forget('2fa_setup_secret');
+        // Simply enable 2FA for email OTP
+        $this->twoFactorService->enableTwoFactor($user);
 
         return redirect()->route('admin.profile')->with('success', '2FA has been enabled');
     }

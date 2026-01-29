@@ -151,7 +151,7 @@ class InformationController extends Controller
                 'last_name' => $client->user->last_name ?? '',
                 'email' => $client->user->email ?? '',
                 'phone' => $client->phone ?? '',
-                'ssn' => $this->maskSSN($client->ssn),
+                'ssn' => $client->ssn ?? '',
                 'date_of_birth' => $client->date_of_birth ?? '',
                 'marital_status' => $client->marital_status ?? 'single',
                 'occupation' => $client->occupation ?? '',
@@ -173,7 +173,7 @@ class InformationController extends Controller
                 'last_name' => $client->spouse->last_name,
                 'email' => $client->spouse->email,
                 'phone' => $client->spouse->phone,
-                'ssn' => $this->maskSSN($client->spouse->ssn),
+                'ssn' => $client->spouse->ssn ?? '',
                 'date_of_birth' => $client->spouse->date_of_birth ? $client->spouse->date_of_birth->format('Y-m-d') : '',
                 'occupation' => $client->spouse->occupation,
             ] : [],
@@ -766,8 +766,8 @@ class InformationController extends Controller
                     'timestamp' => now()->toISOString()
                 ]);
 
-                // Create notification for assigned tax professional
-                $this->createReviewNotification($client, $validatedData);
+                // Create notification for assigned tax professional (simplified to avoid circular references)
+                $this->sendReviewNotificationEmails($client, $validatedData);
                 
                 // Update cache for real-time sync
                 Cache::put("client_review_request_{$client->id}", [
@@ -792,37 +792,162 @@ class InformationController extends Controller
     }
 
     /**
-     * Create notification for tax professional about review request
+     * Send review notification emails (simplified to avoid circular references)
      */
-    private function createReviewNotification(Client $client, array $requestData): void
+    private function sendReviewNotificationEmails(Client $client, array $requestData): void
     {
-        // Notify all admins about the review request
-        $this->adminNotificationService->notifyReviewRequested($client, $requestData);
-        
-        // Also send individual notification to assigned tax professional if exists
-        $taxProfessional = $client->user ?? User::where('role', 'admin')->first();
-        
-        if ($taxProfessional) {
-            // Send individual notification
-            $taxProfessional->notify(new \App\Notifications\ClientReviewRequestNotification(
-                $client,
-                $requestData['sections'] ?? [],
-                $requestData['message'] ?? null,
-                $requestData['priority'] ?? 'normal'
-            ));
-            
-            Log::info('Review notification sent', [
+        try {
+            Log::info('Starting to send review notification emails', [
                 'client_id' => $client->id,
-                'client_name' => $client->full_name,
-                'tax_professional_id' => $taxProfessional->id,
-                'tax_professional_email' => $taxProfessional->email,
-                'sections' => $requestData['sections'] ?? [],
-                'priority' => $requestData['priority'] ?? 'normal'
+                'client_email' => $client->user->email
             ]);
-        } else {
-            Log::warning('No assigned tax professional found, but admin notifications sent', [
+            
+            $clientName = $client->user->first_name . ' ' . $client->user->last_name;
+            $sections = $requestData['sections'] ?? [];
+            $message = $requestData['message'] ?? null;
+            $priority = $requestData['priority'] ?? 'normal';
+            
+            // Send email to admin users
+            $adminUsers = \App\Models\User::where('role', 'admin')->get();
+            
+            Log::info('Found admin users', ['count' => $adminUsers->count()]);
+            
+            foreach ($adminUsers as $admin) {
+                try {
+                    $adminEmailBody = "
+                        <div style='font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;'>
+                            <h2 style='color: #1e40af;'>New Review Request</h2>
+                            <p><strong>{$clientName}</strong> has submitted a review request.</p>
+                            <p><strong>Priority:</strong> " . ucfirst($priority) . "</p>
+                            
+                            <div style='background-color: #f3f4f6; padding: 15px; border-radius: 8px; margin: 20px 0;'>
+                                <h3 style='color: #374151; margin-top: 0;'>Client Contact Information</h3>
+                                <p><strong>Name:</strong> {$clientName}</p>
+                                <p><strong>Email:</strong> {$client->user->email}</p>
+                                <p><strong>Phone:</strong> " . ($client->phone ?: 'Not provided') . "</p>
+                                <p><strong>Address:</strong> " . ($client->street_no ? $client->street_no . ($client->apartment_no ? ', ' . $client->apartment_no : '') . ', ' . $client->city . ', ' . $client->state . ' ' . $client->zip_code : 'Not provided') . "</p>
+                                <p><strong>Client ID:</strong> {$client->id}</p>
+                            </div>
+                    ";
+                    
+                    if (!empty($sections)) {
+                        $adminEmailBody .= "<p><strong>Sections for Review:</strong> " . implode(', ', array_map('ucfirst', $sections)) . "</p>";
+                    }
+                    
+                    if ($message) {
+                        $adminEmailBody .= "<div style='background-color: #fef3c7; padding: 15px; border-radius: 8px; margin: 20px 0;'>
+                                              <h4 style='color: #92400e; margin-top: 0;'>Client Message:</h4>
+                                              <p style='color: #92400e;'>{$message}</p>
+                                            </div>";
+                    }
+                    
+                    $adminEmailBody .= "
+                            <p style='margin-top: 30px;'><a href='" . route('admin.clients.show', $client->id) . "' style='background-color: #1e40af; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px;'>Review Client Information</a></p>
+                            
+                            <hr style='margin: 30px 0; border: none; border-top: 1px solid #e5e7eb;'>
+                            <div style='color: #6b7280; font-size: 14px;'>
+                                <p><strong>MySuperTax Consulting</strong></p>
+                                <p>Professional Tax Services</p>
+                                <p>Email: support@mysupertax.com</p>
+                                <p>Phone: +1 315-307-2751</p>
+                                <p>Address: Moline, IL-61265, USA</p>
+                                <p>Website: <a href='https://mysupertax.com'>www.mysupertax.com</a></p>
+                            </div>
+                        </div>
+                    ";
+                    
+                    \Illuminate\Support\Facades\Mail::html($adminEmailBody, function ($mail) use ($admin, $clientName) {
+                        $mail->to($admin->email)
+                             ->subject('New Review Request from ' . $clientName);
+                    });
+                    
+                    Log::info('Admin email sent successfully', ['admin_email' => $admin->email]);
+                } catch (\Exception $e) {
+                    Log::error('Failed to send admin email', [
+                        'admin_email' => $admin->email,
+                        'error' => $e->getMessage()
+                    ]);
+                }
+            }
+            
+            // Send confirmation email to client
+            try {
+                $clientEmailBody = "
+                    <div style='font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;'>
+                        <h2 style='color: #1e40af;'>Review Request Confirmation</h2>
+                        <p>Hello {$client->user->first_name},</p>
+                        <p>Thank you for submitting your review request. We have received it and our tax professionals will review your information shortly.</p>
+                        
+                        <div style='background-color: #f0f9ff; padding: 15px; border-radius: 8px; margin: 20px 0;'>
+                            <h3 style='color: #1e40af; margin-top: 0;'>Request Details</h3>
+                            <p><strong>Priority:</strong> " . ucfirst($priority) . "</p>
+                            <p><strong>Submitted:</strong> " . now()->format('F j, Y \a\t g:i A') . "</p>
+                ";
+                
+                if (!empty($sections)) {
+                    $clientEmailBody .= "<p><strong>Sections Submitted for Review:</strong> " . implode(', ', array_map('ucfirst', $sections)) . "</p>";
+                }
+                
+                if ($message) {
+                    $clientEmailBody .= "<p><strong>Your Message:</strong> {$message}</p>";
+                }
+                
+                $clientEmailBody .= "
+                        </div>
+                        
+                        <div style='background-color: #fef3c7; padding: 15px; border-radius: 8px; margin: 20px 0;'>
+                            <h4 style='color: #92400e; margin-top: 0;'>What Happens Next?</h4>
+                            <ul style='color: #92400e; margin: 0; padding-left: 20px;'>
+                                <li>Our tax professionals will review your submitted information</li>
+                                <li>You will receive an email notification when the review is complete</li>
+                                <li>Any feedback or required changes will be communicated to you</li>
+                                <li>You can continue to update your information if needed</li>
+                            </ul>
+                        </div>
+                        
+                        <p><a href='" . route('client.information') . "' style='background-color: #1e40af; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px;'>View Your Information</a></p>
+                        
+                        <hr style='margin: 30px 0; border: none; border-top: 1px solid #e5e7eb;'>
+                        <div style='color: #6b7280; font-size: 14px;'>
+                            <h4 style='color: #374151; margin-bottom: 10px;'>Contact Information</h4>
+                            <p><strong>MySuperTax Consulting</strong><br>
+                               Professional Tax Services</p>
+                            <p><strong>Email:</strong> support@mysupertax.com<br>
+                               <strong>Phone:</strong> +1 315-307-2751</p>
+                            <p><strong>Address:</strong><br>
+                               Moline, IL-61265, USA</p>
+                            <p><strong>Website:</strong> <a href='https://mysupertax.com'>www.mysupertax.com</a></p>
+                            <p style='margin-top: 20px; font-style: italic; border-top: 1px solid #e5e7eb; padding-top: 15px;'>
+                                Need help? Contact us at support@mysupertax.com or call +1 315-307-2751<br>
+                                This email was sent from an automated system. Please do not reply directly to this email.
+                            </p>
+                        </div>
+                    </div>
+                ";
+                
+                \Illuminate\Support\Facades\Mail::html($clientEmailBody, function ($mail) use ($client) {
+                    $mail->to($client->user->email)
+                         ->subject('Review Request Confirmation - MySuperTax');
+                });
+                
+                Log::info('Client email sent successfully', ['client_email' => $client->user->email]);
+            } catch (\Exception $e) {
+                Log::error('Failed to send client email', [
+                    'client_email' => $client->user->email,
+                    'error' => $e->getMessage()
+                ]);
+            }
+            
+            Log::info('Review notification emails process completed', [
                 'client_id' => $client->id,
-                'client_name' => $client->full_name
+                'admin_count' => $adminUsers->count()
+            ]);
+            
+        } catch (\Exception $e) {
+            Log::error('Failed to send review notification emails', [
+                'client_id' => $client->id,
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
             ]);
         }
     }

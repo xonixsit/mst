@@ -199,7 +199,12 @@ export default {
       { value: 'receipts', label: 'Receipts' },
       { value: 'bank_statements', label: 'Bank Statements' },
       { value: 'tax_returns', label: 'Previous Tax Returns' },
-      { value: 'id_documents', label: 'ID Documents' }
+      { value: 'id_documents', label: 'ID Documents' },
+      { value: 'invoice', label: 'Invoice'},
+      { value: 'contract', label: 'Contract'},
+      { value: 'identification', label:'Identification'},
+      { value: 'other', label: 'Other'}
+      
     ]
 
     const emailTemplates = {

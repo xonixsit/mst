@@ -7,7 +7,9 @@ use App\Models\Message;
 use App\Models\User;
 use App\Models\Client;
 use App\Services\AdminNotificationService;
+use App\Mail\NewMessageNotification;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Mail;
 use Inertia\Inertia;
 
 class MessageController extends Controller
@@ -97,6 +99,20 @@ class MessageController extends Controller
         // Notify admins about new message from client
         $this->adminNotificationService->notifyMessageSent($message);
 
+        // Send email notification to the specific admin recipient
+        $recipient = User::find($request->recipient_id);
+        if ($recipient) {
+            try {
+                Mail::to($recipient->email)->send(new NewMessageNotification($message, $recipient));
+            } catch (\Exception $e) {
+                \Log::error('Failed to send message notification email to admin', [
+                    'message_id' => $message->id,
+                    'admin_email' => $recipient->email,
+                    'error' => $e->getMessage()
+                ]);
+            }
+        }
+
         return back()->with('success', 'Message sent successfully.');
     }
 
@@ -168,6 +184,20 @@ class MessageController extends Controller
             'body' => $request->body,
             'priority' => $originalMessage->priority ?: 'normal'
         ]);
+
+        // Send email notification to admin
+        $adminUser = User::find($replyRecipientId);
+        if ($adminUser) {
+            try {
+                Mail::to($adminUser->email)->send(new NewMessageNotification($replyMessage, $adminUser));
+            } catch (\Exception $e) {
+                \Log::error('Failed to send reply notification email to admin', [
+                    'message_id' => $replyMessage->id,
+                    'admin_email' => $adminUser->email,
+                    'error' => $e->getMessage()
+                ]);
+            }
+        }
 
         return back()->with('success', 'Reply sent successfully.');
     }

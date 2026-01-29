@@ -132,11 +132,21 @@ class ClientController extends Controller
         
         // Send credentials email after client is created
         if ($shouldSendCredentials && $password) {
-            \Illuminate\Support\Facades\Mail::send(new \App\Mail\ClientCredentialsMail(
-                $client,
-                $validated['personal']['email'],
-                $password
-            ));
+            try {
+                \Log::info('Attempting to send credentials email to: ' . $validated['personal']['email']);
+                
+                \Illuminate\Support\Facades\Mail::to($validated['personal']['email'])
+                    ->send(new \App\Mail\ClientCredentialsMail(
+                        $client,
+                        $validated['personal']['email'],
+                        $password
+                    ));
+                    
+                \Log::info('Credentials email sent successfully to: ' . $validated['personal']['email']);
+            } catch (\Exception $e) {
+                \Log::error('Failed to send client credentials email: ' . $e->getMessage());
+                \Log::error('Stack trace: ' . $e->getTraceAsString());
+            }
         }
         
         $message = 'Client created successfully.';
@@ -202,6 +212,9 @@ class ClientController extends Controller
                 'bank_statements' => 'Bank Statements',
                 'tax_returns' => 'Tax Returns',
                 'id_documents' => 'ID Documents',
+                'invoice' => 'Invoice',
+                'contract' => 'Contract',
+                'identification' => 'Identification',
                 'other' => 'Other'
             ],
             'taxYears' => range(date('Y'), date('Y') - 10)

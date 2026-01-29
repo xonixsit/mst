@@ -144,11 +144,9 @@
                 />
               </label>
               <SSNInput
-                input-id="ssn"
                 v-model="localData.ssn"
                 :input-classes="inputClasses('ssn')"
-                :placeholder="data?.has_ssn && data?.ssn_masked ? `Current: ${data.ssn_masked} (leave empty to keep current)` : '123-45-6789'"
-                :is-pre-masked="true"
+                placeholder="123-45-6789"
                 @blur="validateField('ssn')"
                 @input="handleSSNInputChange"
               />
@@ -709,11 +707,8 @@ const handleInput = (fieldName, value) => {
 }
 
 const handleSSNInputChange = (value) => {
-  // Only update if user is actually entering a new SSN (not just the masked placeholder)
-  if (value && value !== props.data?.ssn_masked) {
-    localData.ssn = value
-    handleInput('ssn', value)
-  }
+  localData.ssn = value
+  handleInput('ssn', value)
 }
 
 const handlePhoneInputMask = (fieldName, event) => {

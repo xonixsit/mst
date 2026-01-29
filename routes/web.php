@@ -84,6 +84,7 @@ Route::get('/reset-password/{token}', function ($token) {
 Route::prefix('auth')->name('auth.')->group(function () {
     Route::get('/2fa/verify', [App\Http\Controllers\Auth\TwoFactorAuthController::class, 'verify'])->name('2fa.verify');
     Route::post('/2fa/verify', [App\Http\Controllers\Auth\TwoFactorAuthController::class, 'verifyCode'])->name('2fa.verify.code');
+    Route::post('/2fa/resend', [App\Http\Controllers\Auth\TwoFactorAuthController::class, 'resendCode'])->name('2fa.resend');
 });
 
 // Admin Authentication Routes
@@ -585,9 +586,6 @@ Route::middleware(['auth', 'auth.session', 'session.timeout', 'client'])->prefix
     Route::post('/support-tickets/{supportTicket}/reply', [App\Http\Controllers\Client\SupportTicketController::class, 'reply'])->name('support-tickets.reply');
 
 });
-
-// Lead submission route (public)
-Route::post('/leads', [App\Http\Controllers\LeadController::class, 'store'])->name('leads.store');
 
 // Contact submission route (public)
 Route::post('/contact', [App\Http\Controllers\ContactSubmissionController::class, 'store'])->name('contact.store');

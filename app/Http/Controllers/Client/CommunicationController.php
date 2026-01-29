@@ -70,10 +70,7 @@ class CommunicationController extends Controller
                 'preferences' => $validatedData
             ]);
 
-            return response()->json([
-                'message' => 'Communication preferences updated successfully',
-                'preferences' => $client->getCommunicationPreferences()
-            ]);
+            return back()->with('success', 'Communication preferences updated successfully');
 
         } catch (\Exception $e) {
             Log::error('Failed to update communication preferences', [
@@ -82,7 +79,7 @@ class CommunicationController extends Controller
                 'error' => $e->getMessage()
             ]);
 
-            return response()->json(['error' => 'Failed to update preferences'], 500);
+            return back()->withErrors(['error' => 'Failed to update preferences']);
         }
     }
 

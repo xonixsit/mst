@@ -244,7 +244,7 @@
     <div class="footer">
         <p><strong>MySuperTax Professional Services</strong></p>
         <p><strong>Office Address:</strong> TX-61265, USA</p>
-        <p><strong>Phone:</strong> +1 315-307-2751 | <strong>Email:</strong> help@mysupertax.com</p>
+        <p><strong>Phone:</strong> +1 315-307-2751 | <strong>Email:</strong> support@mysupertax.com</p>
         <p>Thank you for your payment! Please keep this receipt for your records.</p>
         <p style="margin-top: 10px; font-size: 11px; color: #666;">
             For any queries or support regarding this payment receipt, please contact us using the above details.

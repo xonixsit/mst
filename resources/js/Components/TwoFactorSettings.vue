@@ -31,15 +31,16 @@
         <p class="text-gray-600">
           Two-factor authentication adds an extra layer of security to your account. In addition to your password, you'll need to enter a code from your phone to sign in.
         </p>
-        <a
-          :href="route('auth.2fa.setup')"
-          class="inline-flex items-center px-4 py-2 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white rounded-lg font-semibold transition-all duration-200 shadow-lg hover:shadow-xl"
+        <button
+          @click="enableTwoFactor"
+          :disabled="enablingTwoFactor"
+          class="inline-flex items-center px-4 py-2 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 disabled:from-gray-300 disabled:to-gray-400 text-white rounded-lg font-semibold transition-all duration-200 shadow-lg hover:shadow-xl disabled:cursor-not-allowed"
         >
           <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
           </svg>
-          Enable 2FA
-        </a>
+          {{ enablingTwoFactor ? 'Enabling...' : 'Enable 2FA' }}
+        </button>
       </div>
 
       <div v-else class="space-y-6">
@@ -164,7 +165,7 @@ const props = defineProps({
 })
 
 // Expose route function to template
-const route = window.route
+// const route = window.route
 
 const backupCodes = ref([])
 const backupCodesVisible = ref(false)
@@ -172,15 +173,31 @@ const loadingBackupCodes = ref(false)
 const copiedBackupCodes = ref(false)
 const regeneratingCodes = ref(false)
 const showDisableConfirm = ref(false)
+const enablingTwoFactor = ref(false)
 
 const disableForm = useForm({
   password: '',
 })
 
+const enableTwoFactor = async () => {
+  enablingTwoFactor.value = true
+  try {
+    const response = await axios.post('/auth/2fa/confirm')
+    // Update the user prop to reflect the change
+    props.user.two_factor_enabled = true
+    // Show success message or refresh page
+    window.location.reload()
+  } catch (error) {
+    console.error('Error enabling 2FA:', error)
+  } finally {
+    enablingTwoFactor.value = false
+  }
+}
+
 const showBackupCodes = async () => {
   loadingBackupCodes.value = true
   try {
-    const response = await axios.get(route('auth.2fa.backup-codes'))
+    const response = await axios.get('/auth/2fa/backup-codes')
     backupCodes.value = response.data.codes
     backupCodesVisible.value = true
   } catch (error) {
@@ -206,7 +223,7 @@ const regenerateBackupCodes = async () => {
 
   regeneratingCodes.value = true
   try {
-    const response = await axios.post(route('auth.2fa.backup-codes.regenerate'), {
+    const response = await axios.post('/auth/2fa/backup-codes/regenerate', {
       password: prompt('Enter your password to confirm:'),
     })
     backupCodes.value = response.data.codes
@@ -219,7 +236,7 @@ const regenerateBackupCodes = async () => {
 }
 
 const disableTwoFactor = () => {
-  disableForm.post(route('auth.2fa.disable'), {
+  disableForm.post('/auth/2fa/disable', {
     onSuccess: () => {
       showDisableConfirm.value = false
       disableForm.reset()

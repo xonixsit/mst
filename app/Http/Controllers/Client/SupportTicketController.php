@@ -4,7 +4,10 @@ namespace App\Http\Controllers\Client;
 
 use App\Http\Controllers\Controller;
 use App\Models\SupportTicket;
+use App\Models\User;
+use App\Mail\SupportTicketNotification;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Mail;
 use Inertia\Inertia;
 
 class SupportTicketController extends Controller
@@ -89,6 +92,20 @@ class SupportTicketController extends Controller
             'status' => 'open',
         ]);
 
+        // Send email notification to all admins about new ticket
+        $admins = User::whereIn('role', ['admin', 'tax_professional'])->get();
+        foreach ($admins as $admin) {
+            try {
+                Mail::to($admin->email)->send(new SupportTicketNotification($ticket, $admin, 'created'));
+            } catch (\Exception $e) {
+                \Log::error('Failed to send ticket creation notification to admin', [
+                    'ticket_id' => $ticket->id,
+                    'admin_email' => $admin->email,
+                    'error' => $e->getMessage()
+                ]);
+            }
+        }
+
         return redirect()->route('client.support-tickets.show', $ticket)
             ->with('success', 'Support ticket created successfully.');
     }
@@ -111,6 +128,34 @@ class SupportTicketController extends Controller
         ]);
 
         $supportTicket->addReply($user, $validated['message']);
+
+        // Send email notification to assigned admin or all admins if not assigned
+        if ($supportTicket->assignedTo) {
+            // Send to assigned admin
+            try {
+                Mail::to($supportTicket->assignedTo->email)->send(new SupportTicketNotification($supportTicket, $supportTicket->assignedTo, 'reply'));
+            } catch (\Exception $e) {
+                \Log::error('Failed to send ticket reply notification to assigned admin', [
+                    'ticket_id' => $supportTicket->id,
+                    'admin_email' => $supportTicket->assignedTo->email,
+                    'error' => $e->getMessage()
+                ]);
+            }
+        } else {
+            // Send to all admins if not assigned
+            $admins = User::whereIn('role', ['admin', 'tax_professional'])->get();
+            foreach ($admins as $admin) {
+                try {
+                    Mail::to($admin->email)->send(new SupportTicketNotification($supportTicket, $admin, 'reply'));
+                } catch (\Exception $e) {
+                    \Log::error('Failed to send ticket reply notification to admin', [
+                        'ticket_id' => $supportTicket->id,
+                        'admin_email' => $admin->email,
+                        'error' => $e->getMessage()
+                    ]);
+                }
+            }
+        }
 
         return back()->with('success', 'Reply added successfully.');
     }

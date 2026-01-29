@@ -219,7 +219,7 @@
 
     <div class="footer">
         <p>MySuperTax Professional Services</p>
-        <p>📧 help@mysupertax.com | 📞 (555) 123-4567</p>
+        <p>📧 support@mysupertax.com | 📞 (555) 123-4567</p>
         <p>This is an automated email. Please do not reply directly to this message.</p>
     </div>
 </body>

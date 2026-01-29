@@ -11,6 +11,8 @@ class Lead extends Model
         'name',
         'email',
         'phone',
+        'state',
+        'city',
         'status',
         'source',
         'notes',

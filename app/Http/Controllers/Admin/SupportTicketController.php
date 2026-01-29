@@ -5,7 +5,9 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\SupportTicket;
 use App\Models\User;
+use App\Mail\SupportTicketNotification;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Mail;
 use Inertia\Inertia;
 
 class SupportTicketController extends Controller
@@ -79,6 +81,20 @@ class SupportTicketController extends Controller
             'status' => 'open',
         ]);
 
+        // Send email notification to client
+        $client = \App\Models\Client::with('user')->find($validated['client_id']);
+        if ($client && $client->user && ($client->email_notifications_enabled ?? true)) {
+            try {
+                Mail::to($client->user->email)->send(new SupportTicketNotification($ticket, $client->user, 'created'));
+            } catch (\Exception $e) {
+                \Log::error('Failed to send ticket creation notification to client', [
+                    'ticket_id' => $ticket->id,
+                    'client_email' => $client->user->email,
+                    'error' => $e->getMessage()
+                ]);
+            }
+        }
+
         return redirect()->route('admin.support-tickets.show', $ticket)
             ->with('success', 'Support ticket created successfully.');
     }
@@ -99,6 +115,19 @@ class SupportTicketController extends Controller
             $supportTicket->update(['status' => $validated['status']]);
         }
 
+        // Send email notification to client about status update
+        if ($supportTicket->client && $supportTicket->client->user && ($supportTicket->client->email_notifications_enabled ?? true)) {
+            try {
+                Mail::to($supportTicket->client->user->email)->send(new SupportTicketNotification($supportTicket, $supportTicket->client->user, 'updated'));
+            } catch (\Exception $e) {
+                \Log::error('Failed to send ticket status update notification to client', [
+                    'ticket_id' => $supportTicket->id,
+                    'client_email' => $supportTicket->client->user->email,
+                    'error' => $e->getMessage()
+                ]);
+            }
+        }
+
         return back()->with('success', 'Ticket status updated successfully.');
     }
 
@@ -110,6 +139,17 @@ class SupportTicketController extends Controller
 
         $user = User::findOrFail($validated['assigned_to']);
         $supportTicket->assign($user);
+
+        // Send email notification to assigned user
+        try {
+            Mail::to($user->email)->send(new SupportTicketNotification($supportTicket, $user, 'assigned'));
+        } catch (\Exception $e) {
+            \Log::error('Failed to send ticket assignment notification', [
+                'ticket_id' => $supportTicket->id,
+                'assigned_email' => $user->email,
+                'error' => $e->getMessage()
+            ]);
+        }
 
         return back()->with('success', 'Ticket assigned successfully.');
     }
@@ -132,6 +172,19 @@ class SupportTicketController extends Controller
         ]);
 
         $supportTicket->addReply(auth()->user(), $validated['message']);
+
+        // Send email notification to client about new reply
+        if ($supportTicket->client && $supportTicket->client->user && ($supportTicket->client->email_notifications_enabled ?? true)) {
+            try {
+                Mail::to($supportTicket->client->user->email)->send(new SupportTicketNotification($supportTicket, $supportTicket->client->user, 'reply'));
+            } catch (\Exception $e) {
+                \Log::error('Failed to send ticket reply notification to client', [
+                    'ticket_id' => $supportTicket->id,
+                    'client_email' => $supportTicket->client->user->email,
+                    'error' => $e->getMessage()
+                ]);
+            }
+        }
 
         return back()->with('success', 'Reply added successfully.');
     }

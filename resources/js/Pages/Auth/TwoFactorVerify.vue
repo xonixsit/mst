@@ -83,6 +83,7 @@
 import { ref } from 'vue'
 import { useForm } from '@inertiajs/vue3'
 import AuthLayout from '@/Layouts/AuthLayout.vue'
+import axios from 'axios'
 
 const resending = ref(false)
 
@@ -91,7 +92,7 @@ const form = useForm({
 })
 
 const submit = () => {
-  form.post(route('auth.2fa.verify.code'), {
+  form.post('/auth/2fa/verify', {
     onFinish: () => {
       form.code = ''
     },
@@ -101,7 +102,7 @@ const submit = () => {
 const resendCode = async () => {
   resending.value = true
   try {
-    await axios.post(route('auth.2fa.resend'))
+    await axios.post('/auth/2fa/resend')
   } catch (error) {
     console.error('Error resending code:', error)
   } finally {

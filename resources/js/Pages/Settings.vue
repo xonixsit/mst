@@ -1,10 +1,43 @@
 <template>
   <AppLayout>
     <template #header>
-      <div class="flex items-center justify-between">
-        <div>
-          <h1 class="text-2xl font-bold text-gray-900">Settings</h1>
-          <p class="mt-1 text-sm text-gray-600">Manage your application preferences and settings</p>
+      <div class="relative overflow-hidden">
+        <!-- Background Pattern -->
+        <div class="absolute inset-0 bg-gradient-to-r from-slate-50 via-blue-50 to-indigo-50"></div>
+        <div class="absolute top-0 right-0 w-64 h-32 bg-gradient-to-bl from-blue-100/40 to-transparent rounded-bl-full"></div>
+        <div class="absolute bottom-0 left-0 w-48 h-24 bg-gradient-to-tr from-indigo-100/30 to-transparent rounded-tr-full"></div>
+        
+        <!-- Content -->
+        <div class="relative flex flex-col lg:flex-row lg:justify-between lg:items-center space-y-6 lg:space-y-0 py-2 pr-2 pl-2">
+          <div class="flex items-center space-x-4">
+            <!-- Settings Icon -->
+            <div class="w-14 h-14 bg-gradient-to-br from-blue-500 via-blue-600 to-indigo-600 rounded-2xl flex items-center justify-center shadow-lg ring-4 ring-blue-100">
+              <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path>
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+              </svg>
+            </div>
+            
+            <!-- Title Section -->
+            <div>
+              <h1 class="text-2xl font-bold bg-gradient-to-r from-gray-900 via-blue-900 to-indigo-900 bg-clip-text text-transparent">
+                Application Settings
+              </h1>
+              <p class="mt-2 text-sm text-gray-600 font-medium">Manage your application preferences and settings</p>
+              
+              <!-- Status Indicators -->
+              <div class="flex items-center space-x-4 mt-3">
+                <div class="flex items-center space-x-2">
+                  <div class="w-2 h-2 bg-emerald-400 rounded-full animate-pulse"></div>
+                  <span class="text-xs font-semibold text-emerald-700">Auto-Save Enabled</span>
+                </div>
+                <div class="flex items-center space-x-2">
+                  <div class="w-2 h-2 bg-blue-400 rounded-full"></div>
+                  <span class="text-xs font-semibold text-blue-700">Preferences Synced</span>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </template>
@@ -129,18 +162,6 @@
         <div class="px-6 py-4 space-y-4">
           <div class="flex items-center justify-between">
             <div>
-              <h3 class="text-sm font-medium text-gray-900">Two-Factor Authentication</h3>
-              <p class="text-sm text-gray-600">Add an extra layer of security to your account</p>
-            </div>
-            <button
-              class="bg-indigo-600 text-white px-4 py-2 rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 text-sm"
-            >
-              Enable 2FA
-            </button>
-          </div>
-
-          <div class="flex items-center justify-between">
-            <div>
               <h3 class="text-sm font-medium text-gray-900">Session Timeout</h3>
               <p class="text-sm text-gray-600">Automatically log out after period of inactivity</p>
             </div>
@@ -174,10 +195,11 @@
 
 <script setup>
 import { ref, reactive } from 'vue'
-import { router } from '@inertiajs/vue3'
+import { router, usePage } from '@inertiajs/vue3'
 import AppLayout from '@/Layouts/AppLayout.vue'
 
 const saving = ref(false)
+const page = usePage()
 
 const settings = reactive({
   emailNotifications: true,
@@ -197,7 +219,7 @@ const updateSettings = () => {
 const saveSettings = () => {
   saving.value = true
   
-  const user = $page.props.auth.user
+  const user = page.props.auth.user
   const baseUrl = (user?.role === 'admin' || user?.role === 'tax_professional') ? '/admin' : '/client'
   
   router.post(`${baseUrl}/settings`, settings, {

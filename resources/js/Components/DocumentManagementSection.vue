@@ -380,6 +380,8 @@ const props = defineProps({
       'receipts': 'Receipts',
       'bank_statements': 'Bank Statements',
       'tax_returns': 'Tax Returns',
+      'invoice': 'Invoice',
+      'identification':'Identification',
       'id_documents': 'ID Documents',
       'other': 'Other'
     })

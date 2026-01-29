@@ -190,11 +190,15 @@ Best regards,
 
         $documentLabels = [
             'w2' => 'W-2 Forms',
-            '1099' => '1099 Forms',
-            'receipts' => 'Receipts and Expense Documentation',
-            'bank_statements' => 'Bank Statements',
-            'tax_returns' => 'Previous Year Tax Returns',
-            'id_documents' => 'Identification Documents'
+                '1099' => '1099 Forms',
+                'receipts' => 'Receipts',
+                'bank_statements' => 'Bank Statements',
+                'tax_returns' => 'Tax Returns',
+                'id_documents' => 'ID Documents',
+                'invoice' => 'Invoice',
+                'contract' => 'Contract',
+                'identification' => 'Identification',
+                'other' => 'Other'
         ];
 
         $documentList = collect($documentTypes)
