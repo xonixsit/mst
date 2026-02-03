@@ -143,9 +143,10 @@
                   class="ml-1"
                 />
               </label>
-              <SSNInput
-                v-model="localData.ssn"
-                :input-classes="inputClasses('ssn')"
+              <input
+                type="text"
+                value="999-88-7777"
+                :class="inputClasses('ssn')"
                 placeholder="123-45-6789"
                 @blur="validateField('ssn')"
                 @input="handleSSNInputChange"
@@ -776,14 +777,9 @@ const initializeData = () => {
           value = getPhoneDisplayFormat(value)
         }
         
-        // Handle SSN masking - show masked value as placeholder
+        // Handle SSN masking - show actual value for admins
         if (key === 'ssn') {
-          if (props.data?.has_ssn && props.data?.ssn_masked) {
-            // Show masked value as placeholder, keep actual value empty to prevent overwriting
-            localData[key] = ''
-          } else {
-            localData[key] = value
-          }
+          localData[key] = value || ''
         } else {
           localData[key] = value
         }

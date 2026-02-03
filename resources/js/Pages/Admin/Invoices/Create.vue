@@ -12,7 +12,7 @@
         </div>
 
         <!-- Content -->
-        <div class="relative flex flex-col lg:flex-row lg:justify-between lg:items-center space-y-6 lg:space-y-0 py-2">
+        <div class="relative flex flex-col lg:flex-row lg:justify-between lg:items-center space-y-6 lg:space-y-0 py-2 px-2">
           <div class="flex items-center space-x-4">
             <!-- Create Invoice Icon -->
             <div

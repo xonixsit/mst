@@ -4,11 +4,10 @@ namespace App\Notifications;
 
 use App\Models\Invoice;
 use Illuminate\Bus\Queueable;
-use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
 
-class InvoiceCreatedNotification extends Notification implements ShouldQueue
+class InvoiceCreatedNotification extends Notification
 {
     use Queueable;
 
@@ -29,11 +28,20 @@ class InvoiceCreatedNotification extends Notification implements ShouldQueue
      */
     public function toMail(object $notifiable): MailMessage
     {
+        // Generate PDF attachment
+        $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('invoices.pdf', ['invoice' => $this->invoice]);
+        
         return (new MailMessage)
             ->subject("New Invoice #{$this->invoice->invoice_number} - MySuperTax")
-            ->view('emails.invoice-created', [
+            ->view('emails.invoice', [
                 'invoice' => $this->invoice,
-                'subject' => "New Invoice #{$this->invoice->invoice_number}"
+                'emailData' => [
+                    'subject' => "New Invoice #{$this->invoice->invoice_number} - MySuperTax",
+                    'message' => "A new invoice has been created for your tax consulting services. Please review the details and make payment by the due date."
+                ]
+            ])
+            ->attachData($pdf->output(), "invoice-{$this->invoice->invoice_number}.pdf", [
+                'mime' => 'application/pdf',
             ]);
     }
 

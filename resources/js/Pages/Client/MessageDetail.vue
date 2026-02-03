@@ -6,7 +6,7 @@
         <div class="absolute top-0 right-0 w-64 h-32 bg-gradient-to-bl from-purple-100/40 to-transparent rounded-bl-full"></div>
         <div class="absolute bottom-0 left-0 w-48 h-24 bg-gradient-to-tr from-indigo-100/30 to-transparent rounded-tr-full"></div>
         
-        <div class="relative flex flex-col lg:flex-row lg:justify-between lg:items-center space-y-6 lg:space-y-0 py-2">
+        <div class="relative flex flex-col lg:flex-row lg:justify-between lg:items-center space-y-6 lg:space-y-0 px-8 py-2">
           <div class="flex items-center space-x-4">
             <button
               @click="$inertia.visit('/client/messages')"

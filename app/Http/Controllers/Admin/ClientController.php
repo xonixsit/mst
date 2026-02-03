@@ -195,8 +195,8 @@ class ClientController extends Controller
         if ($client->ssn) {
             $clientArray['ssn_masked'] = '***-**-' . substr($client->ssn, -4);
             $clientArray['has_ssn'] = true;
-            // Don't send actual SSN to frontend
-            $clientArray['ssn'] = null;
+            // Send actual SSN to admin for editing
+            $clientArray['ssn'] = $client->ssn;
         } else {
             $clientArray['ssn_masked'] = null;
             $clientArray['has_ssn'] = false;

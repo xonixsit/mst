@@ -11,7 +11,7 @@
     <h3 style="margin-top: 0; color: #2d3748;">Invoice Details</h3>
     <p><strong>Invoice Number:</strong> #{{ $invoice->invoice_number }}</p>
     <p><strong>Date:</strong> {{ $invoice->created_at->format('F j, Y') }}</p>
-    <p><strong>Due Date:</strong> {{ $invoice->due_date->format('F j, Y') }}</p>
+    <p><strong>Due Date:</strong> {{ $invoice->due_date ? $invoice->due_date->format('F j, Y') : 'To be determined' }}</p>
     <p><strong>Total Amount:</strong> ${{ number_format($invoice->total_amount, 2) }}</p>
     <p><strong>Status:</strong> <span style="color: #ed8936; font-weight: 600;">{{ ucfirst($invoice->status) }}</span></p>
 </div>
@@ -61,7 +61,7 @@
 </ul>
 
 <div class="info-box warning">
-    <p><strong>Important:</strong> This invoice is due on {{ $invoice->due_date->format('F j, Y') }}. Late payments may incur additional fees as outlined in our service agreement.</p>
+    <p><strong>Important:</strong> This invoice is {{ $invoice->due_date ? 'due on ' . $invoice->due_date->format('F j, Y') : 'pending due date assignment' }}. Late payments may incur additional fees as outlined in our service agreement.</p>
 </div>
 
 <p>If you have any questions about this invoice or need to discuss payment arrangements, please don't hesitate to contact us.</p>

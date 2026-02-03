@@ -58,7 +58,6 @@
       </div>
     </template>
 
-    <div class="space-y-8">
       <!-- Enhanced Stats Cards -->
       <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
         <div class="bg-white shadow-xl rounded-2xl border border-gray-100 overflow-hidden transform transition-all duration-200 hover:shadow-2xl hover:scale-105">
@@ -199,7 +198,7 @@
           </div>
         </div>
         <!-- Enhanced Invoices List -->
-        <div v-if="invoices.data && invoices.data.length > 0" class="divide-y divide-gray-100"></div>
+        <div v-if="invoices.data && invoices.data.length > 0" class="divide-y divide-gray-100">
           <div
             v-for="invoice in invoices.data"
             :key="invoice.id"
@@ -232,7 +231,7 @@
                       </svg>
                       <span class="font-medium">{{ formatDate(invoice.created_at) }}</span>
                     </div>
-                    <div class="flex items-center space-x-2"></div>
+                    <div class="flex items-center space-x-2">
                       <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1"></path>
                       </svg>
@@ -243,13 +242,13 @@
               </div>
               <div class="flex items-center space-x-3">
                 <Link
-                  :href="route('client.invoices.show', invoice.id)"
+                  :href="`/client/invoices/${invoice.id}`"
                   class="bg-gradient-to-r from-blue-500 to-indigo-500 hover:from-blue-600 hover:to-indigo-600 text-white px-4 py-2 rounded-lg text-sm font-semibold transition-all duration-200 shadow-sm hover:shadow-md transform hover:scale-105"
                 >
                   View Details
                 </Link>
                 <a
-                  :href="route('client.invoices.download', invoice.id)"
+                  :href="`/client/invoices/${invoice.id}/download`"
                   class="bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600 text-white px-4 py-2 rounded-lg text-sm font-semibold transition-all duration-200 shadow-sm hover:shadow-md transform hover:scale-105"
                 >
                   Download PDF
@@ -260,7 +259,7 @@
         </div>
 
         <!-- Enhanced Empty State -->
-        <div v-if="!invoices.data || invoices.data.length === 0" class="p-12 text-center"></div>
+        <div v-if="!invoices.data || invoices.data.length === 0" class="p-12 text-center">
           <div class="w-20 h-20 bg-gradient-to-br from-amber-100 to-orange-100 rounded-2xl flex items-center justify-center mx-auto mb-4">
             <svg class="w-10 h-10 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z"></path>
@@ -274,9 +273,10 @@
           >
             Contact Support
           </Link>
+        </div>
 
-          <!-- Pagination -->
-          <div v-if="invoices.data && invoices.data.length > 0" class="px-6 py-4 border-t border-gray-200">
+        <!-- Pagination -->
+        <div v-if="invoices.data && invoices.data.length > 0" class="px-6 py-4 border-t border-gray-200"></div>
             <div class="flex items-center justify-between">
               <div class="text-sm text-gray-700">
                 Showing {{ invoices.from }} to {{ invoices.to }} of {{ invoices.total }} results
@@ -306,9 +306,6 @@
 import { ref } from 'vue'
 import { Link, router } from '@inertiajs/vue3'
 import AppLayout from '@/Layouts/AppLayout.vue'
-
-// Use the global route function
-const route = window.route
 
 const props = defineProps({
   invoices: Object,
@@ -359,7 +356,7 @@ const getStatusText = (status) => {
 }
 
 const applyFilters = () => {
-  router.get(route('client.invoices'), {
+  router.get('/client/invoices', {
     search: searchQuery.value,
     status: statusFilter.value,
     year: yearFilter.value,
@@ -373,6 +370,6 @@ const clearFilters = () => {
   searchQuery.value = ''
   statusFilter.value = ''
   yearFilter.value = ''
-  router.get(route('client.invoices'))
+  router.get('/client/invoices')
 }
 </script>
