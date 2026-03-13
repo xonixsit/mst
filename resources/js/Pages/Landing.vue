@@ -384,7 +384,7 @@ const observeStats = () => {
         animateCounter(stat1.value, 5000)
         animateCounter(stat2.value, 50)
         animateCounter(stat3.value, 98)
-        animateCounter(stat4.value, 15)
+        animateCounter(stat4.value, 9)
         
         // Stop observing after animation starts
         observer.unobserve(entry.target)

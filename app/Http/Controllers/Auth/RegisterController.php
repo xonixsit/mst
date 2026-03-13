@@ -53,9 +53,6 @@ class RegisterController extends Controller
 
         Auth::login($user);
 
-        // Send email verification notification
-        $user->sendEmailVerificationNotification();
-
         // Send welcome notification for clients
         if ($user->isClient()) {
             $user->notify(new ClientWelcomeNotification($user));
@@ -64,11 +61,11 @@ class RegisterController extends Controller
             $this->adminNotificationService->notifyClientRegistered($user);
         }
 
-        // Redirect to email verification notice
+        // Redirect to dashboard
         if ($user->isTaxProfessional()) {
-            return redirect()->route('admin.verification.notice');
+            return redirect()->route('admin.dashboard');
         } else {
-            return redirect()->route('client.verification.notice');
+            return redirect()->route('client.dashboard');
         }
     }
 }
